@@ -36,44 +36,31 @@
       </button>
     </div>
 
-    <!-- 1-Click Demo Logins -->
-    <div style="margin-bottom: 20px; padding: 12px; background: rgba(99, 102, 241, 0.08); border-radius: var(--radius-sm); border: 1px dashed var(--primary-glow);">
-      <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary-light); margin-bottom: 8px; text-transform: uppercase;">
-        <i class="fa-solid fa-bolt"></i> Quick Demo Access:
-      </div>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="setDemoCredentials('student_alex', 'student123', 'STUDENT')">
-          Alex Morgan (Student)
-        </button>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="setDemoCredentials('faculty_smith', 'faculty123', 'FACULTY')">
-          Prof. Jenkins (Faculty)
-        </button>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="setDemoCredentials('admin', 'admin123', 'ADMIN')">
-          Dr. Vance (Admin)
-        </button>
-      </div>
-    </div>
-
     <!-- Login Form -->
     <form id="login-form">
       <div class="form-group">
         <label class="form-label" for="login-username"><i class="fa-regular fa-user"></i> Username or Email</label>
-        <input type="text" id="login-username" class="form-control" placeholder="Enter username (e.g., student_alex)" required value="student_alex">
+        <input type="text" id="login-username" class="form-control" placeholder="Enter username or email" required autocomplete="username">
       </div>
 
       <div class="form-group">
         <label class="form-label" for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
-        <input type="password" id="login-password" class="form-control" placeholder="••••••••" required value="student123">
+        <div style="position: relative; display: flex; align-items: center;">
+          <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required autocomplete="current-password" style="padding-right: 42px;">
+          <button type="button" id="toggle-password-btn" title="Show / Hide Password" style="position: absolute; right: 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 4px; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+            <i class="fa-regular fa-eye" id="toggle-password-icon"></i>
+          </button>
+        </div>
       </div>
 
-      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 14px;">
         <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Dashboard
       </button>
     </form>
 
     <div style="text-align: center; margin-top: 24px; font-size: 0.88rem; color: var(--text-muted);">
       <span>Need an account? </span>
-      <a href="#" onclick="showToast('Contact administrator or use demo logins above.', 'info')" style="font-weight: 600;">Register here</a>
+      <a href="#" onclick="showToast('Please contact your department administrator for portal registration.', 'info')" style="font-weight: 600;">Register here</a>
     </div>
   </div>
 
@@ -82,7 +69,7 @@
   <script>
     let selectedRole = 'STUDENT';
 
-    // Handle tab switching
+    // Role selection tabs
     const roleTabs = document.querySelectorAll('.role-tab');
     roleTabs.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -95,40 +82,38 @@
         tab.style.color = '#fff';
         tab.classList.add('active');
         selectedRole = tab.getAttribute('data-role');
-
-        if (selectedRole === 'STUDENT') {
-          setDemoCredentials('student_alex', 'student123', 'STUDENT');
-        } else if (selectedRole === 'FACULTY') {
-          setDemoCredentials('faculty_smith', 'faculty123', 'FACULTY');
-        } else if (selectedRole === 'ADMIN') {
-          setDemoCredentials('admin', 'admin123', 'ADMIN');
-        }
       });
     });
 
-    window.setDemoCredentials = function(username, password, role) {
-      document.getElementById('login-username').value = username;
-      document.getElementById('login-password').value = password;
-      selectedRole = role;
+    // Show / Hide Password Toggle
+    const passwordInput = document.getElementById('login-password');
+    const togglePasswordBtn = document.getElementById('toggle-password-btn');
+    const togglePasswordIcon = document.getElementById('toggle-password-icon');
 
-      roleTabs.forEach(t => {
-        if (t.getAttribute('data-role') === role) {
-          t.style.background = 'var(--primary)';
-          t.style.color = '#fff';
-          t.classList.add('active');
-        } else {
-          t.style.background = 'transparent';
-          t.style.color = 'var(--text-muted)';
-          t.classList.remove('active');
-        }
-      });
-    };
+    togglePasswordBtn.addEventListener('click', () => {
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        togglePasswordIcon.classList.remove('fa-eye');
+        togglePasswordIcon.classList.add('fa-eye-slash');
+        togglePasswordBtn.style.color = 'var(--primary-light)';
+      } else {
+        passwordInput.type = 'password';
+        togglePasswordIcon.classList.remove('fa-eye-slash');
+        togglePasswordIcon.classList.add('fa-eye');
+        togglePasswordBtn.style.color = 'var(--text-muted)';
+      }
+    });
 
     // Form Submission
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const username = document.getElementById('login-username').value;
+      const username = document.getElementById('login-username').value.trim();
       const password = document.getElementById('login-password').value;
+
+      if (!username || !password) {
+        showToast('Please enter both username and password.', 'error');
+        return;
+      }
 
       showToast('Authenticating with CampusAI...', 'info');
 
@@ -142,7 +127,7 @@
         AuthState.setUser(resp.user);
         if (resp.token) localStorage.setItem('campusai_token', resp.token);
 
-        showToast(`Welcome back, ${resp.user.fullName}! Redirecting...`, 'success');
+        showToast(`Welcome, ${resp.user.fullName}! Redirecting...`, 'success');
 
         setTimeout(() => {
           if (resp.user.role === 'ADMIN') {
