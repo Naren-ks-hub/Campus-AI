@@ -36,6 +36,49 @@ const AuthState = {
   }
 };
 
+// ==========================================
+// Theme Management (Dark & Light Mode Switch)
+// ==========================================
+function initTheme() {
+  const savedTheme = localStorage.getItem('campusai_theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+  } else {
+    document.body.classList.remove('light-theme');
+  }
+  updateThemeButtons(savedTheme);
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light-theme');
+  const theme = isLight ? 'light' : 'dark';
+  localStorage.setItem('campusai_theme', theme);
+  updateThemeButtons(theme);
+  showToast(`Switched to ${isLight ? 'Light' : 'Dark'} Mode`, 'info');
+}
+
+function updateThemeButtons(theme) {
+  document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+    const icon = btn.querySelector('i');
+    if (icon) {
+      if (theme === 'light') {
+        icon.className = 'fa-solid fa-moon';
+        btn.setAttribute('title', 'Switch to Dark Mode');
+      } else {
+        icon.className = 'fa-solid fa-sun';
+        btn.setAttribute('title', 'Switch to Light Mode');
+      }
+    }
+  });
+}
+
+// Auto-run theme initialization as early as possible
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initTheme);
+} else {
+  initTheme();
+}
+
 // Central API Request helper with graceful mock fallback
 async function apiRequest(endpoint, method = 'GET', data = null) {
   try {
