@@ -339,6 +339,107 @@
     </div>
   </div>
 
+  <!-- Event Registration Form Modal -->
+  <div class="modal-backdrop" id="event-register-modal">
+    <div class="modal-box" style="max-width: 580px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="event-modal-title" style="font-size: 1.25rem;">Event Registration Form</h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">V.S.B. Engineering College, Karur</p>
+        </div>
+        <button class="chat-btn-icon" onclick="closeEventModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="event-registration-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="reg-event-name">Event / Symposium Selected</label>
+            <input type="text" id="reg-event-name" class="form-control" readonly style="background: rgba(99, 102, 241, 0.1); font-weight: 700; color: var(--primary-light);">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="reg-student-name"><i class="fa-regular fa-user"></i> Full Name</label>
+              <input type="text" id="reg-student-name" class="form-control" placeholder="Your full name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-student-roll"><i class="fa-regular fa-id-badge"></i> Roll / Reg Number</label>
+              <input type="text" id="reg-student-roll" class="form-control" placeholder="e.g. 922521104042" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="reg-department">Department</label>
+              <select id="reg-department" class="form-control" required>
+                <option value="Computer Science & Engineering">Computer Science & Engg (CSE)</option>
+                <option value="Artificial Intelligence & Data Science">AI & Data Science (AI&DS)</option>
+                <option value="Information Technology">Information Technology (IT)</option>
+                <option value="Electronics & Communication">Electronics & Comm (ECE)</option>
+                <option value="Electrical & Electronics">Electrical & Electronics (EEE)</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-year-sem">Year & Semester</label>
+              <select id="reg-year-sem" class="form-control" required>
+                <option value="3rd Year (Sem 5)">3rd Year (Semester 5)</option>
+                <option value="4th Year (Sem 7)">4th Year (Semester 7)</option>
+                <option value="2nd Year (Sem 3)">2nd Year (Semester 3)</option>
+                <option value="1st Year (Sem 1)">1st Year (Semester 1)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-college-name"><i class="fa-solid fa-building-columns"></i> College / Institution</label>
+            <input type="text" id="reg-college-name" class="form-control" value="V.S.B. Engineering College, Karur" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="reg-track-select">Competition Track / Event Sub-Category</label>
+              <select id="reg-track-select" class="form-control" required>
+                <option value="Paper / Poster Presentation">Paper / Poster Presentation</option>
+                <option value="Code Sprint & Bug Hunt">Code Sprint & Bug Hunt</option>
+                <option value="AI & Web Hackathon">AI & Web Hackathon</option>
+                <option value="Line Follower / Robotics">Line Follower / Robotics Challenge</option>
+                <option value="Project Exhibition">Project Exhibition & Demo</option>
+                <option value="Technical Quiz">Technical Quiz</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-team-size">Participation Mode</label>
+              <select id="reg-team-size" class="form-control" required>
+                <option value="Individual (1 Member)">Individual (Solo)</option>
+                <option value="Team of 2">Team (2 Members)</option>
+                <option value="Team of 3">Team (3 Members)</option>
+                <option value="Team of 4">Team (4 Members)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="reg-email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+              <input type="email" id="reg-email" class="form-control" placeholder="student@vsbec.edu.in" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-phone"><i class="fa-solid fa-phone"></i> Mobile / WhatsApp</label>
+              <input type="tel" id="reg-phone" class="form-control" placeholder="+91 98765 43210" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeEventModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="padding: 10px 24px;">
+            <i class="fa-solid fa-ticket"></i> Confirm & Generate Entry Pass
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/api.js"></script>
   <script src="js/chatbot.js"></script>

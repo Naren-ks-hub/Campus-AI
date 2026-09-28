@@ -205,8 +205,8 @@ async function loadEvents() {
           <span><i class="fa-solid fa-location-dot"></i> ${ev.location}</span>
           <span><i class="fa-solid fa-user-tie"></i> ${ev.organizer}</span>
         </div>
-        <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="registerForEvent('${ev.title}')">
-          <i class="fa-solid fa-ticket"></i> Register for Event
+        <button class="btn btn-primary btn-sm" style="width:100%;" onclick="openEventModal('${encodeURIComponent(ev.title)}', '${ev.category}')">
+          <i class="fa-solid fa-ticket"></i> Register for Event &rarr;
         </button>
       </div>
     </div>
@@ -324,6 +324,69 @@ function setupAssignmentSubmissionForm() {
   });
 }
 
-window.registerForEvent = function(title) {
-  showToast(`Registered successfully for ${title}! Confirmation sent to email.`, 'success');
+// ==========================================
+// Event Registration Form Modal Functions
+// ==========================================
+window.openEventModal = function(encodedTitle, category) {
+  const title = decodeURIComponent(encodedTitle);
+  const user = AuthState.getUser() || {};
+
+  document.getElementById('reg-event-name').value = title;
+  document.getElementById('event-modal-title').textContent = `Register: ${title}`;
+
+  if (document.getElementById('reg-student-name')) {
+    document.getElementById('reg-student-name').value = user.fullName || 'Alex Morgan';
+  }
+  if (document.getElementById('reg-student-roll')) {
+    document.getElementById('reg-student-roll').value = user.rollNumber || 'CS2024-042';
+  }
+  if (document.getElementById('reg-email')) {
+    document.getElementById('reg-email').value = user.email || 'alex.m@campusai.edu';
+  }
+  if (document.getElementById('reg-phone')) {
+    document.getElementById('reg-phone').value = user.phone || '+91 98765 43210';
+  }
+
+  // Pre-adjust track select based on event type
+  const trackSelect = document.getElementById('reg-track-select');
+  if (trackSelect) {
+    if (title.includes('KANAL')) {
+      trackSelect.value = 'Code Sprint & Bug Hunt';
+    } else if (title.includes('LIRO')) {
+      trackSelect.value = 'Line Follower / Robotics';
+    } else if (title.includes('ILLUMINATE')) {
+      trackSelect.value = 'AI & Web Hackathon';
+    } else if (title.includes('DIGIVERSE')) {
+      trackSelect.value = 'Project Exhibition';
+    }
+  }
+
+  const modal = document.getElementById('event-register-modal');
+  if (modal) modal.classList.add('active');
 };
+
+window.closeEventModal = function() {
+  const modal = document.getElementById('event-register-modal');
+  if (modal) modal.classList.remove('active');
+};
+
+function setupEventRegistrationForm() {
+  const form = document.getElementById('event-registration-form');
+  if (!form) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const eventName = document.getElementById('reg-event-name').value;
+    const studentName = document.getElementById('reg-student-name').value;
+    const track = document.getElementById('reg-track-select').value;
+    const passCode = 'VSB-' + Math.floor(1000 + Math.random() * 9000);
+
+    closeEventModal();
+    showToast(`🎉 Registration Confirmed for ${studentName}! Pass ID: ${passCode} (${track})`, 'success');
+  });
+}
+
+// Auto init event form
+document.addEventListener('DOMContentLoaded', () => {
+  setupEventRegistrationForm();
+});

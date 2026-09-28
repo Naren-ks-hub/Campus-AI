@@ -85,7 +85,77 @@
 
     <div style="text-align: center; margin-top: 24px; font-size: 0.88rem; color: var(--text-muted);">
       <span>Need an account? </span>
-      <a href="#" onclick="showToast('Please contact your department administrator for portal registration.', 'info')" style="font-weight: 600;">Register here</a>
+      <a href="#" onclick="openRegisterModal()" style="font-weight: 600; color: var(--primary-light);">Register here</a>
+    </div>
+  </div>
+
+  <!-- Account Registration Modal Form -->
+  <div class="modal-backdrop" id="account-register-modal">
+    <div class="modal-box" style="max-width: 520px;">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1.25rem;">Create New Account</h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">V.S.B. Engineering College Portal</p>
+        </div>
+        <button class="chat-btn-icon" onclick="closeRegisterModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="account-register-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="acc-role">I am registering as</label>
+            <select id="acc-role" class="form-control" required>
+              <option value="STUDENT">Student</option>
+              <option value="FACULTY">Faculty Member</option>
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="acc-fullname"><i class="fa-regular fa-user"></i> Full Name</label>
+              <input type="text" id="acc-fullname" class="form-control" placeholder="e.g. Naren K S" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="acc-username">Username</label>
+              <input type="text" id="acc-username" class="form-control" placeholder="e.g. naren_vsb" required autocomplete="username">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="acc-email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+              <input type="email" id="acc-email" class="form-control" placeholder="naren@vsbec.edu.in" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="acc-roll">Roll / Reg Number</label>
+              <input type="text" id="acc-roll" class="form-control" placeholder="e.g. 922521104045" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="acc-dept">Department</label>
+              <select id="acc-dept" class="form-control" required>
+                <option value="Computer Science & Engineering">Computer Science (CSE)</option>
+                <option value="Artificial Intelligence & Data Science">AI & Data Science</option>
+                <option value="Information Technology">Information Technology (IT)</option>
+                <option value="Electronics & Communication">Electronics (ECE)</option>
+                <option value="Electrical & Electronics">Electrical (EEE)</option>
+                <option value="Mechanical Engineering">Mechanical</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="acc-password"><i class="fa-solid fa-lock"></i> Password</label>
+              <input type="password" id="acc-password" class="form-control" placeholder="Create a password" required autocomplete="new-password">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeRegisterModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="padding: 10px 24px;">
+            <i class="fa-solid fa-user-plus"></i> Complete Registration
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -134,7 +204,6 @@
       showToast('Connecting with Google Workspace...', 'info');
 
       setTimeout(() => {
-        // Authenticate as Google user based on selected role
         let googleUser = {
           id: 4,
           username: 'student_google',
@@ -209,6 +278,53 @@
       } else {
         showToast('Login failed. Please check credentials.', 'error');
       }
+    });
+
+    // Register Modal
+    window.openRegisterModal = function() {
+      document.getElementById('account-register-modal').classList.add('active');
+    };
+
+    window.closeRegisterModal = function() {
+      document.getElementById('account-register-modal').classList.remove('active');
+    };
+
+    document.getElementById('account-register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const role = document.getElementById('acc-role').value;
+      const fullName = document.getElementById('acc-fullname').value.trim();
+      const username = document.getElementById('acc-username').value.trim();
+      const email = document.getElementById('acc-email').value.trim();
+      const rollNumber = document.getElementById('acc-roll').value.trim();
+      const department = document.getElementById('acc-dept').value;
+      const password = document.getElementById('acc-password').value;
+
+      const newUser = {
+        id: Date.now(),
+        username,
+        password,
+        fullName,
+        email,
+        role,
+        department,
+        rollNumber,
+        semester: role === 'STUDENT' ? 5 : 0,
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'
+      };
+
+      AuthState.setUser(newUser);
+      localStorage.setItem('campusai_token', 'reg-token-' + Date.now());
+
+      closeRegisterModal();
+      showToast(`Account created for ${fullName}! Logging you in...`, 'success');
+
+      setTimeout(() => {
+        if (role === 'FACULTY') {
+          window.location.href = 'faculty-dashboard.html';
+        } else {
+          window.location.href = 'student-dashboard.html';
+        }
+      }, 800);
     });
   </script>
 </body>
