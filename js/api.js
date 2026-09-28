@@ -246,36 +246,47 @@ function getLocalFallbackData(endpoint, method, data) {
     return [
       {
         id: 1,
-        title: 'CampusAI Annual Hackathon 2026',
-        category: 'Hackathon',
-        description: '36-hour sprint on Generative AI & Web3 applications with $10,000 cash prizes and investor demos.',
-        eventDate: '2026-10-15T09:00:00',
-        location: 'Campus Tech Hub & Main Hall',
-        organizer: 'ACM Student Chapter',
+        title: 'KANAL 2K26 - National Level Technical Symposium',
+        category: 'Symposium',
+        description: 'Flagship National Level Technical Symposium by CSE & IT featuring Paper Presentation, Code Sprint, Bug Hunt, Web Design, and AI Hack Challenge with cash awards.',
+        eventDate: '2026-10-18T09:00:00',
+        location: 'VSB Main Auditorium & CSE Lab 4',
+        organizer: 'Dept of CSE & IT, VSBEC Karur',
         bannerUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600',
-        registrationLink: '#'
+        registrationLink: 'https://vsbec.edu.in/kanal2k26'
       },
       {
         id: 2,
-        title: 'National AI & Robotics Symposium',
-        category: 'Symposium',
-        description: 'Keynotes by top AI researchers exploring Autonomous Agents and Large Multimodal Models.',
-        eventDate: '2026-10-22T10:00:00',
-        location: 'Einstein Convention Hall',
-        organizer: 'Dept of Computer Science',
+        title: 'LIRO 2K26 - Line Follower Robotics Competition',
+        category: 'Robotics',
+        description: 'Inter-college autonomous robotics and IoT line follower navigation challenge testing speed, sensor accuracy, and algorithmic path optimization.',
+        eventDate: '2026-10-13T09:30:00',
+        location: 'Einstein Tech Block & ECE Robotics Lab',
+        organizer: 'Dept of ECE & Robotics Club',
         bannerUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600',
-        registrationLink: '#'
+        registrationLink: 'https://vsbec.edu.in/liro2k26'
       },
       {
         id: 3,
-        title: 'Inter-College Sports Carnival "VIGOR 2026"',
-        category: 'Sports',
-        description: 'Annual championship featuring football, basketball, badminton, cricket, and athletics.',
-        eventDate: '2026-11-02T08:00:00',
-        location: 'University Sports Complex',
-        organizer: 'Sports Council',
+        title: 'ILLUMINATE 2026 - E-Cell Entrepreneurship Summit',
+        category: 'Workshop',
+        description: 'Hands-on startup incubation, business modeling, and venture capital pitching workshop organized in association with E-Cell IIT Bombay.',
+        eventDate: '2026-10-14T10:00:00',
+        location: 'VSB Convention Center',
+        organizer: 'Entrepreneurship Development Cell (EDC)',
+        bannerUrl: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600',
+        registrationLink: 'https://vsbec.edu.in/illuminate'
+      },
+      {
+        id: 4,
+        title: 'DIGIVERSE XPOSE 2026 - Annual Project & Cultural Expo',
+        category: 'Cultural & Expo',
+        description: 'Grand annual inter-department innovative engineering project expo, AI demonstrations, and cultural music & dance fiesta.',
+        eventDate: '2026-11-05T08:30:00',
+        location: 'Central Open Air Amphitheatre',
+        organizer: 'Student Affairs Council',
         bannerUrl: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600',
-        registrationLink: '#'
+        registrationLink: 'https://vsbec.edu.in/digiverse'
       }
     ];
   }
@@ -284,24 +295,31 @@ function getLocalFallbackData(endpoint, method, data) {
     return [
       {
         id: 1,
-        title: 'Mid-Semester Examinations Schedule Released',
-        content: 'Mid-term exams for Semester 3, 5, and 7 begin October 12th. Hall tickets are available on the student portal.',
+        title: 'Autonomous COE End-Semester Examinations Schedule Released',
+        content: 'Controller of Examinations (COE) has released the End-Semester Examination timetable for all 3rd, 5th, and 7th semester B.E/B.Tech students. Exams commence on October 28th. Hall tickets are available on the student portal.',
         priority: 'URGENT',
-        createdAt: '2026-09-27T10:00:00'
+        createdAt: '2026-09-28T09:00:00'
       },
       {
         id: 2,
-        title: 'Campus AI Innovation Grant ($25,000)',
-        content: 'Applications are now open for student-led AI & robotics research projects. Deadline is October 30th.',
+        title: 'Campus Placement Drive 2026: Tier-1 IT & Product Companies (Autodesk, Zoho, TCS, Infosys)',
+        content: 'Career Development Center (CDC) announces registration for upcoming on-campus recruitment drives. Highest package offered this season is INR 47 Lakhs. Mandatory pre-placement training starts Monday.',
         priority: 'HIGH',
-        createdAt: '2026-09-26T14:30:00'
+        createdAt: '2026-09-27T14:30:00'
       },
       {
         id: 3,
-        title: 'Guest Lecture: Scalable Cloud Architectures',
-        content: 'Principal Architect from AWS will speak on distributed microservices this Monday in Seminar Hall 2.',
+        title: 'AICTE - IDEA Lab Hands-On Workshop on Generative AI & IoT',
+        content: 'Department of CSE & AI&DS is organizing a 3-day hands-on workshop on Edge Computing and Large Language Models at the VSB AICTE IDEA Lab.',
         priority: 'NORMAL',
-        createdAt: '2026-09-25T09:15:00'
+        createdAt: '2026-09-26T11:15:00'
+      },
+      {
+        id: 4,
+        title: 'College Bus Transport & Route Timings - Karur, Trichy, Dindigul & Erode',
+        content: 'Updated morning pick-up and evening drop schedules for all 50 college bus routes (covering Karur, Trichy, Dindigul, Erode, and Namakkal) have been posted.',
+        priority: 'NORMAL',
+        createdAt: '2026-09-25T10:00:00'
       }
     ];
   }

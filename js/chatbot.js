@@ -284,36 +284,85 @@ function processClientSideAI(query, user) {
     };
   }
 
-  if (/event|hackathon|fest|symposium|sports/.test(q)) {
+  if (/event|hackathon|fest|symposium|sports|kanal|liro|illuminate|digiverse/.test(q)) {
     return {
-      reply: "🎉 **Upcoming Campus Events:**\n\n• 🏆 **CampusAI Annual Hackathon 2026** (Oct 15) - 36hr AI sprint with $10k prizes\n• 🤖 **National AI & Robotics Symposium** (Oct 22) - Keynotes from AI researchers\n• 🏅 **Inter-College Sports Carnival** (Nov 02) - 30 Universities competing",
-      quickReplies: ["Hackathon details", "Latest notices", "Library timings"]
+      reply: "🎉 **Upcoming Events at VSB Engineering College, Karur:**\n\n"
+           + "• 🏆 **KANAL 2K26 - National Technical Symposium** (Oct 18): Paper presentation, Code sprint & AI hackathon by Dept of CSE & IT.\n"
+           + "• 🤖 **LIRO 2K26 - Line Follower Robotics Challenge** (Oct 13): Inter-college robotics competition at Einstein Tech Block.\n"
+           + "• 💡 **ILLUMINATE 2026 - E-Cell Summit** (Oct 14): Entrepreneurship workshop in association with E-Cell IIT Bombay.\n"
+           + "• 🎨 **DIGIVERSE XPOSE 2026** (Nov 05): Annual project exhibition and cultural fest.",
+      quickReplies: ["KANAL 2K26 registration", "LIRO robotics details", "Placement drives", "COE Exam circulars"]
+    };
+  }
+
+  if (/placement|package|recruiter|salary|company|companies|cdc|highest/.test(q)) {
+    return {
+      reply: "💼 **VSB Engineering College Career & Placements (CDC):**\n\n"
+           + "• **Highest Package:** **INR 47 Lakhs per annum**\n"
+           + "• **Top Recruiters:** Amazon, Autodesk, TCS, Cognizant, Infosys, Wipro, Zoho, Hexaware, Capgemini, Virtusa.\n"
+           + "• **Total Offers:** 1000+ offers across departments.\n"
+           + "• **Training:** Continuous aptitude, coding sprints, and mock interview coaching starting from 2nd year.",
+      quickReplies: ["Upcoming placement drives", "KANAL Symposium", "Library resources", "Admissions"]
+    };
+  }
+
+  if (/vsb|vsbec|karur|about|location|address/.test(q)) {
+    return {
+      reply: "🏫 **About V.S.B. Engineering College, Karur:**\n\n"
+           + "• **Status:** Autonomous Institution affiliated to Anna University, approved by AICTE New Delhi.\n"
+           + "• **Accreditations:** Accredited by **NAAC with 'A' Grade** & **NBA Accredited** (CSE, ECE, EEE, MECH, IT).\n"
+           + "• **TNEA Code:** **2622**\n"
+           + "• **Location:** NH-67 Covai Road, Karudayampalayam Post, Karur - 639111, Tamil Nadu.",
+      quickReplies: ["KANAL 2K26", "Placement packages", "Bus routes", "COE Exam timetable"]
+    };
+  }
+
+  if (/bus|transport|route|commute|travel|trichy|erode|dindigul/.test(q)) {
+    return {
+      reply: "🚌 **VSB College Bus Transport Routes:**\n\n"
+           + "The college operates **50+ dedicated buses** connecting students and staff across:\n"
+           + "• **Karur City & Suburbs**\n"
+           + "• **Tiruchirappalli (Trichy)**\n"
+           + "• **Dindigul**\n"
+           + "• **Erode & Namakkal**\n\n"
+           + "All buses depart campus daily at **4:45 PM**. Complete route timing sheets are on the portal.",
+      quickReplies: ["Hostel facilities", "Today's timetable", "Exam circulars"]
     };
   }
 
   if (/library|books|borrow|timing|digital library/.test(q)) {
     return {
-      reply: "📚 **Central Library Timings & Policies:**\n\n• **Weekdays:** 8:00 AM – 10:00 PM\n• **Weekends:** 9:00 AM – 6:00 PM\n• **Borrow Limit:** 5 books for 14 days\n• **Digital Access:** IEEE Xplore, ACM Digital Library & Springer available through campus Wi-Fi.",
-      quickReplies: ["Fee structure", "Hostel facilities", "Admissions"]
+      reply: "📚 **VSB Central Digital Library:**\n\n• **Collection:** 50,000+ volumes, IEEE Xplore, DELNET, Springer, NPTEL\n• **Timings:** 8:30 AM – 7:00 PM (Monday to Saturday)\n• **Borrow Limit:** 5 books with Book Bank facility available.",
+      quickReplies: ["Fee structure", "Hostel facilities", "Bus transport"]
+    };
+  }
+
+  if (/announcement|circular|notice|exam|coe|mid-sem|end-sem/.test(q)) {
+    return {
+      reply: "📢 **Latest VSBEC Official Notices:**\n\n"
+           + "1. 🚨 **Autonomous COE End-Semester Exams**: Scheduled from **October 28th**. Hall tickets ready on student portal.\n"
+           + "2. 💼 **CDC Placement Drive 2026**: Registrations open for Autodesk, Zoho, TCS & Infosys on-campus drives.\n"
+           + "3. 🔬 **AICTE IDEA Lab Workshop**: 3-day hands-on workshop on Edge Computing & Generative AI.",
+      quickReplies: ["KANAL 2K26 symposium", "Placement packages", "Timetable"]
     };
   }
 
   if (/fee|fees|tuition|scholarship|cost/.test(q)) {
     return {
-      reply: "💳 **Fee Structure & Financial Aid:**\n\n• **Annual Tuition:** $4,500 / INR 1,20,000 per year\n• **Merit Scholarships:** Up to 50% tuition waiver for CGPA > 9.0\n• **Installments:** 2 equal semester installments allowed via student finance desk.",
-      quickReplies: ["Hostel fee", "Admissions", "Check attendance"]
+      reply: "💳 **Fee Structure & VSB Trust Scholarships:**\n\n• Fees follow Tamil Nadu State Fee Committee guidelines.\n• Merit scholarships & fee concessions for top TNEA ranks and high CGPA scorers.",
+      quickReplies: ["Hostel fee", "TNEA code 2622", "Check attendance"]
     };
   }
 
   if (/complaint|grievance|wifi|problem|issue/.test(q)) {
     return {
-      reply: "🛠️ **Campus Grievance Redressal:**\n\nYou can file a complaint directly in the **Grievances tab** on your Student Dashboard. Administration addresses all queries within 24-48 hours.",
+      reply: "🛠️ **Campus Grievance Redressal Desk:**\n\nYou can file a complaint directly in the **Grievances tab** on your Student Dashboard. Administration addresses all queries within 24-48 hours.",
       quickReplies: ["File a complaint", "Check complaint status", "Today's schedule"]
     };
   }
 
   return {
-    reply: `🤖 **CampusAI Assistant:**\n\nRegarding *"${query}"*: I've referenced our college knowledge base. You can browse specific details in the departments or ask me about **attendance, timetable, assignments, hostel, fees, library, or events**!`,
-    quickReplies: ["What's my attendance?", "Today's timetable", "Active assignments", "Library timings"]
+    reply: `🤖 **CampusAI Assistant (VSBEC Karur):**\n\nRegarding *"${query}"*: I've referenced our VSB Engineering College knowledge base. Ask me about **KANAL symposium, LIRO robotics, 47 LPA placement stats, bus transport routes, COE exams, attendance, or timetable**!`,
+    quickReplies: ["KANAL 2K26 Symposium", "Placement stats", "Bus routes", "What's my attendance?"]
   };
 }

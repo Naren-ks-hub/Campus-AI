@@ -158,12 +158,12 @@ public class ChatbotService {
             }
             quickReplies = Arrays.asList("Upload assignment solution", "Check grades", "Contact professor");
         }
-        // 5. Events, Hackathons, Fests
-        else if (matches(lower, "event|events|hackathon|fest|workshop|webinar|symposium|carnival|sports")) {
+        // 5. Events, Hackathons, Fests, Symposiums
+        else if (matches(lower, "event|events|hackathon|fest|workshop|webinar|symposium|carnival|sports|kanal|liro|illuminate|digiverse")) {
             intent = "EVENTS_QUERY";
             List<Event> events = eventRepository.findAllByOrderByEventDateAsc();
             if (!events.isEmpty()) {
-                StringBuilder sb = new StringBuilder("🎉 **Upcoming Campus Events & Activities:**\n\n");
+                StringBuilder sb = new StringBuilder("🎉 **Upcoming Events at VSB Engineering College, Karur:**\n\n");
                 DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MMM dd, yyyy");
                 for (Event ev : events) {
                     sb.append(String.format("🏆 **%s** [%s]\n  📅 Date: %s | 📍 %s\n  Organizer: %s\n  ℹ️ *%s*\n\n",
@@ -171,12 +171,12 @@ public class ChatbotService {
                 }
                 reply = sb.toString();
             } else {
-                reply = "Stay tuned! Upcoming cultural and technical fests will be announced shortly.";
+                reply = "Stay tuned! KANAL 2K26 and upcoming department symposiums will be announced shortly.";
             }
-            quickReplies = Arrays.asList("Annual Hackathon details", "Sports carnival", "Latest announcements");
+            quickReplies = Arrays.asList("KANAL 2K26 details", "LIRO Robotics", "Placement drives", "Latest circulars");
         }
         // 6. Announcements & Notices
-        else if (matches(lower, "announcement|announcements|notice|notices|circular|news|update")) {
+        else if (matches(lower, "announcement|announcements|notice|notices|circular|news|update|coe|exam")) {
             intent = "ANNOUNCEMENT_QUERY";
             List<Announcement> notices = announcementRepository.findAllByOrderByCreatedAtDesc();
             if (!notices.isEmpty()) {
