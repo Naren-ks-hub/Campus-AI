@@ -219,15 +219,20 @@ async function loadAnnouncements() {
   if (!container || !notices) return;
 
   container.innerHTML = notices.map(n => `
-    <div class="glass-card announcement-card">
-      <div class="card-top">
-        <span class="badge ${n.priority === 'URGENT' ? 'badge-danger' : (n.priority === 'HIGH' ? 'badge-warning' : 'badge-primary')}">
-          ${n.priority}
-        </span>
-        <span style="font-size:0.8rem; color:var(--text-muted);">${new Date(n.createdAt || Date.now()).toLocaleDateString()}</span>
+    <div class="glass-card announcement-card interactive" onclick="openAnnouncementModal(${n.id})" title="Click to view detailed official circular">
+      <div>
+        <div class="card-top">
+          <span class="badge ${n.priority === 'URGENT' ? 'badge-danger' : (n.priority === 'HIGH' ? 'badge-warning' : 'badge-primary')}">
+            ${n.priority === 'URGENT' ? '🚨 URGENT' : (n.priority === 'HIGH' ? '⭐ HIGH' : '📌 NOTICE')}
+          </span>
+          <span style="font-size:0.8rem; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> ${new Date(n.createdAt || Date.now()).toLocaleDateString()}</span>
+        </div>
+        <h3 style="font-size:1.12rem; margin-bottom:8px; line-height:1.35;">${n.title}</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.6;">${n.content}</p>
       </div>
-      <h3 style="font-size:1.1rem; margin-bottom:8px;">${n.title}</h3>
-      <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.6;">${n.content}</p>
+      <div class="read-more-pill">
+        <span>Read Full Circular &amp; Action Items</span> <i class="fa-solid fa-arrow-right"></i>
+      </div>
     </div>
   `).join('');
 }
@@ -390,3 +395,119 @@ function setupEventRegistrationForm() {
 document.addEventListener('DOMContentLoaded', () => {
   setupEventRegistrationForm();
 });
+
+// ==========================================
+// Interactive Announcement Detail Modal
+// ==========================================
+const announcementDetails = {
+  1: {
+    title: "Autonomous COE End-Semester Examinations Schedule Released",
+    priority: "URGENT",
+    date: "28 Sep 2026",
+    issuer: "Controller of Examinations (COE)",
+    ref: "VSBEC/COE/2026/OCT-089",
+    content: "The Controller of Examinations has officially released the End-Semester Examination timetable for all **3rd, 5th, and 7th Semester B.E. / B.Tech (Autonomous)** regular and arrear candidates.\n\n• **Commencement Date**: October 28th, 2026\n• **Exam Sessions**: Morning (09:30 AM - 12:30 PM) | Afternoon (01:30 PM - 04:30 PM)\n• **Hall Tickets**: Available for direct download via the student portal from October 15th onwards.\n• **Arrear Examinations**: Timetable published concurrently under the student examination tab.",
+    extra: "⚠️ <strong>Mandatory Exam Regulations</strong>: Candidates must bring their original physical College ID Card and verified Hall Ticket. Possession of smart watches, programmable calculators, or mobile phones inside examination halls is strictly prohibited.",
+    actionText: "Download Full Examination Schedule PDF",
+    actionMsg: "📄 Downloading VSBEC End-Semester Exam Timetable 2026 PDF..."
+  },
+  2: {
+    title: "Campus Placement Drive 2026: Tier-1 IT & Product Companies",
+    priority: "HIGH",
+    date: "27 Sep 2026",
+    issuer: "Career Development Center (CDC)",
+    ref: "VSBEC/CDC/2026/PL-044",
+    content: "The Career Development Center (CDC) announces upcoming on-campus recruitment registrations for tier-1 IT & core product software companies.\n\n• **Participating Recruiters**: Autodesk (47 LPA), Zoho (12 LPA), TCS Digital/Ninja (3.8 - 9.2 LPA), Infosys (9.5 LPA), Hexaware, Virtusa.\n• **Eligibility**: B.E / B.Tech (All Branches) with CGPA ≥ 6.5 & No Standing Arrears.\n• **Selection Rounds**: Online Coding Assessment & Aptitude &rarr; Technical Interview 1 &rarr; Techno-Managerial &rarr; HR Round.\n• **Mandatory Prep**: 3-day intensive mock assessment starts this Monday in Lab Block B.",
+    extra: "⭐ <strong>Placement Cell Tip</strong>: Keep your resume updated in standard single-page format and ensure GitHub / LeetCode profile links are active in your CDC profile.",
+    actionText: "Register on CDC Placement Portal",
+    actionMsg: "💼 Redirecting to VSB CDC Placement Registration Portal..."
+  },
+  3: {
+    title: "AICTE - IDEA Lab Hands-On Workshop on Generative AI & IoT",
+    priority: "NORMAL",
+    date: "26 Sep 2026",
+    issuer: "Department of CSE & AI&DS",
+    ref: "VSBEC/CSE/2026/WS-012",
+    content: "Department of Computer Science and AI&DS is organizing a 3-day national hands-on workshop on **Edge AI, Jetson Nano Architectures, and Large Language Model Fine-Tuning** at the VSB AICTE IDEA Lab (Block C, 2nd Floor).\n\n• **Session 1**: Edge Computing with NVIDIA Jetson Nano & OpenCV\n• **Session 2**: Quantization and local deployment of LLMs (Llama 3 & Mistral)\n• **Session 3**: Capstone IoT Sensor Integration & Live Cloud Dashboarding\n• **Certificates**: AICTE IDEA Lab authorized participation certificates for all attendees.",
+    extra: "💡 <strong>Hardware Kit Access</strong>: All registered participants will receive individual access to hardware kits, edge microcontrollers, and high-compute GPU clusters during the lab sessions.",
+    actionText: "Register for AICTE IDEA Lab Workshop",
+    actionMsg: "🎉 Registered successfully for AICTE IDEA Lab Hands-On Workshop!"
+  },
+  4: {
+    title: "College Bus Transport & Route Timings - Karur, Trichy, Dindigul & Erode",
+    priority: "NORMAL",
+    date: "25 Sep 2026",
+    issuer: "Transport Department",
+    ref: "VSBEC/TR/2026/BUS-050",
+    content: "Updated morning pick-up and evening drop schedules for all **50 college bus routes** (covering Karur, Trichy, Dindigul, Erode, Namakkal, and Paramathi Velur) have been released.\n\n• **Morning Pickup**: All route buses start at terminal points by 07:15 AM to arrive on campus by 08:35 AM.\n• **Evening Departure**: All college buses depart from the main campus bus bay at 04:45 PM sharp.\n• **Emergency Transport Contacts**: Transport Officer: +91 98424 56789 | Control Room: 04324-290123.",
+    extra: "🚌 <strong>RFID Bus Pass Compliance</strong>: Students must scan/display their valid smart bus pass while boarding. Pass renewals can be done at the administrative accounts section.",
+    actionText: "Download 50 Bus Routes Timetable PDF",
+    actionMsg: "🚍 Downloading Complete VSB Bus Route Schedule PDF..."
+  }
+};
+
+let currentAnnounceAction = null;
+
+function formatText(text) {
+  if (!text) return '';
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
+}
+
+window.openAnnouncementModal = function(id) {
+  const data = announcementDetails[id] || {
+    title: "Official Campus Bulletin",
+    priority: "NORMAL",
+    date: new Date().toLocaleDateString(),
+    issuer: "VSB Administration",
+    ref: "VSB/CIR/2026",
+    content: "Please check with your department coordinator or HOD for full circular details.",
+    extra: "Notice for all enrolled students.",
+    actionText: "Open Attached Document",
+    actionMsg: "Opening document..."
+  };
+
+  const titleEl = document.getElementById('modal-announce-title');
+  const dateEl = document.getElementById('modal-announce-date');
+  const issuerEl = document.getElementById('modal-announce-issuer');
+  const refEl = document.getElementById('modal-announce-ref');
+  const contentEl = document.getElementById('modal-announce-content');
+  const extraEl = document.getElementById('modal-announce-extra');
+  const prioEl = document.getElementById('modal-announce-priority');
+  const actionBtn = document.getElementById('modal-announce-action-btn');
+
+  if (titleEl) titleEl.textContent = data.title;
+  if (dateEl) dateEl.textContent = data.date;
+  if (issuerEl) issuerEl.textContent = data.issuer;
+  if (refEl) refEl.textContent = data.ref;
+  if (contentEl) contentEl.innerHTML = formatText(data.content);
+  if (extraEl) extraEl.innerHTML = data.extra;
+  
+  if (prioEl) {
+    prioEl.className = 'badge ' + (data.priority === 'URGENT' ? 'badge-danger' : (data.priority === 'HIGH' ? 'badge-warning' : 'badge-primary'));
+    prioEl.textContent = data.priority === 'URGENT' ? '🚨 URGENT' : (data.priority === 'HIGH' ? '⭐ HIGH' : '📌 OFFICIAL NOTICE');
+  }
+
+  if (actionBtn) {
+    actionBtn.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> ${data.actionText}`;
+  }
+  currentAnnounceAction = data.actionMsg;
+
+  const modal = document.getElementById('announcement-detail-modal');
+  if (modal) modal.classList.add('active');
+};
+
+window.closeAnnouncementModal = function() {
+  const modal = document.getElementById('announcement-detail-modal');
+  if (modal) modal.classList.remove('active');
+};
+
+window.takeAnnouncementAction = function() {
+  if (currentAnnounceAction) {
+    showToast(currentAnnounceAction, 'success');
+  }
+  closeAnnouncementModal();
+};
+

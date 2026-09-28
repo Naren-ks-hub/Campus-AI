@@ -290,6 +290,35 @@
   justify-content: space-between;
 }
 
+.announcement-card.interactive {
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.announcement-card.interactive:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-light);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.25);
+  background: var(--bg-card-hover);
+}
+
+.announcement-card.interactive .read-more-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--primary-light);
+  transition: var(--transition);
+}
+
+.announcement-card.interactive:hover .read-more-pill {
+  color: #fff;
+  transform: translateX(4px);
+}
+
 .card-top {
   display: flex;
   align-items: flex-start;
