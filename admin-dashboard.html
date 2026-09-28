@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console - CampusAI</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div style="font-family:var(--font-heading); font-weight:800; font-size:1.2rem;">
+          Campus<span class="gradient-text">AI</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="sidebar-item active" data-tab="analytics">
+          <a href="#"><i class="fa-solid fa-chart-line"></i> <span>Analytics & Stats</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="users">
+          <a href="#"><i class="fa-solid fa-users-gear"></i> <span>User Management</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="grievances">
+          <a href="#"><i class="fa-solid fa-headset"></i> <span>Grievance Center</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="broadcast">
+          <a href="#"><i class="fa-solid fa-tower-broadcast"></i> <span>Campus Broadcast</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="events">
+          <a href="#"><i class="fa-solid fa-calendar-plus"></i> <span>Events Manager</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="knowledge-base">
+          <a href="#"><i class="fa-solid fa-brain"></i> <span>AI Knowledge Hub</span></a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-summary">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Avatar" class="avatar" id="admin-avatar">
+          <div class="user-meta" style="flex:1; min-width:0;">
+            <h4 id="admin-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Dr. Alistair Vance</h4>
+            <p id="admin-role-dept" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Dean / Administrator</p>
+          </div>
+          <button onclick="AuthState.logout()" class="btn-icon btn-secondary" style="border:none; cursor:pointer;" title="Logout">
+            <i class="fa-solid fa-power-off" style="color:var(--danger);"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h2 style="font-size:1.3rem;">Administrator Command Console</h2>
+          <span class="badge badge-danger"><i class="fa-solid fa-shield-halved"></i> Root Access</span>
+        </div>
+
+        <div class="topbar-actions">
+          <div style="display:flex; gap:8px;">
+            <a href="student-dashboard.html" class="btn btn-secondary btn-sm"><i class="fa-solid fa-user-graduate"></i> Student</a>
+            <a href="faculty-dashboard.html" class="btn btn-secondary btn-sm"><i class="fa-solid fa-chalkboard-user"></i> Faculty</a>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('chat-launcher').click()">
+            <i class="fa-solid fa-robot"></i> Campus AI
+          </button>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- 1. ANALYTICS TAB -->
+        <section id="tab-analytics" class="tab-pane active">
+          <div class="stat-grid">
+            <div class="glass-card stat-card stat-info">
+              <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-total-students">1,420</h3>
+                <p>Enrolled Students</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-warning">
+              <div class="stat-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-total-faculty">85</h3>
+                <p>Faculty & Staff</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-accent">
+              <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-pending-grievances">4</h3>
+                <p>Open Grievances</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-success">
+              <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-active-events">3</h3>
+                <p>Upcoming Events</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick System Health Status -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:24px;">
+            <div class="glass-card" style="padding:24px;">
+              <h3 style="font-size:1.15rem; margin-bottom:14px;"><i class="fa-solid fa-database" style="color:var(--secondary);"></i> Database & Services Health</h3>
+              <div style="display:flex; flex-direction:column; gap:12px; font-size:0.9rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>MySQL Database (Port 3306)</span>
+                  <span class="badge badge-success">Connected</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>Spring Boot REST API (Port 8080)</span>
+                  <span class="badge badge-success">Operational</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>AI Natural Language Engine</span>
+                  <span class="badge badge-success">Online (v2.5)</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>Attendance & Timetable Subsystem</span>
+                  <span class="badge badge-success">Active</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card" style="padding:24px;">
+              <h3 style="font-size:1.15rem; margin-bottom:14px;"><i class="fa-solid fa-bolt" style="color:var(--warning);"></i> Quick Actions</h3>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-tab=users]').click()">
+                  <i class="fa-solid fa-user-plus"></i> Register New Student / Faculty
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-tab=broadcast]').click()">
+                  <i class="fa-solid fa-bullhorn"></i> Broadcast Urgent Notice
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-tab=knowledge-base]').click()">
+                  <i class="fa-solid fa-brain"></i> Train AI Chatbot Knowledge
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. USERS TAB -->
+        <section id="tab-users" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>User Directory & Access Control</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Manage Students, Faculty, and Administrators</p>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 2fr; gap:24px;">
+            <!-- Add User Form -->
+            <div class="glass-card" style="padding:24px;">
+              <h3 style="font-size:1.1rem; margin-bottom:16px;"><i class="fa-solid fa-user-plus"></i> Add New User</h3>
+              <form id="add-user-form">
+                <div class="form-group">
+                  <label class="form-label" for="new-user-fullname">Full Name</label>
+                  <input type="text" id="new-user-fullname" class="form-control" placeholder="e.g. Jordan Lee" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="new-user-email">Email Address</label>
+                  <input type="email" id="new-user-email" class="form-control" placeholder="jordan.l@campusai.edu" required>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div class="form-group">
+                    <label class="form-label" for="new-user-role">Role</label>
+                    <select id="new-user-role" class="form-control">
+                      <option value="STUDENT">Student</option>
+                      <option value="FACULTY">Faculty</option>
+                      <option value="ADMIN">Admin</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="new-user-roll">Roll / Staff ID</label>
+                    <input type="text" id="new-user-roll" class="form-control" placeholder="CS2024-050" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="new-user-dept">Department</label>
+                  <select id="new-user-dept" class="form-control">
+                    <option value="Computer Science & Engineering">Computer Science</option>
+                    <option value="Artificial Intelligence & Data Science">AI & Data Science</option>
+                    <option value="Electronics & Communication">Electronics & Comm</option>
+                    <option value="Administration">Administration</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                  <i class="fa-solid fa-user-check"></i> Create User Account
+                </button>
+              </form>
+            </div>
+
+            <!-- Users List Table -->
+            <div>
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>ID / Roll</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. GRIEVANCES TAB -->
+        <section id="tab-grievances" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Student Grievance Redressal Center</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Review reported problems and issue official resolutions</p>
+            </div>
+          </div>
+
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Category</th>
+                <th>Subject & Description</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-complaints-table-body"></tbody>
+          </table>
+        </section>
+
+        <!-- 4. BROADCAST TAB -->
+        <section id="tab-broadcast" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Global Campus Announcement Broadcast</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Publish instant notices to student and faculty portals</p>
+            </div>
+          </div>
+
+          <div class="glass-card" style="padding:28px; max-width:640px;">
+            <form id="admin-broadcast-form">
+              <div class="form-group">
+                <label class="form-label" for="admin-announce-title">Bulletin Title</label>
+                <input type="text" id="admin-announce-title" class="form-control" placeholder="e.g. End Semester Examination Time Table Published" required>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                  <label class="form-label" for="admin-announce-priority">Priority</label>
+                  <select id="admin-announce-priority" class="form-control">
+                    <option value="NORMAL">Normal</option>
+                    <option value="HIGH">High</option>
+                    <option value="URGENT">Urgent 🚨</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="admin-announce-target">Audience</label>
+                  <select id="admin-announce-target" class="form-control">
+                    <option value="ALL">All Campus (Students & Staff)</option>
+                    <option value="STUDENT">Students Only</option>
+                    <option value="FACULTY">Faculty Only</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="admin-announce-content">Notice Content</label>
+                <textarea id="admin-announce-content" class="form-control" rows="4" placeholder="Type official notification body..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width:100%;">
+                <i class="fa-solid fa-paper-plane"></i> Broadcast Notice Immediately
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- 5. EVENTS TAB -->
+        <section id="tab-events" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Campus Events & Fests Manager</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Publish symposiums, hackathons, and sports tournaments</p>
+            </div>
+          </div>
+
+          <div class="glass-card" style="padding:28px; max-width:640px;">
+            <form id="admin-event-form">
+              <div class="form-group">
+                <label class="form-label" for="admin-event-title">Event Name</label>
+                <input type="text" id="admin-event-title" class="form-control" placeholder="e.g. CampusAI Winter Hackathon 2026" required>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                  <label class="form-label" for="admin-event-category">Category</label>
+                  <select id="admin-event-category" class="form-control">
+                    <option value="Hackathon">Hackathon</option>
+                    <option value="Symposium">Symposium</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Cultural">Cultural</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="admin-event-date">Date & Time</label>
+                  <input type="datetime-local" id="admin-event-date" class="form-control" value="2026-11-15T09:00" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="admin-event-location">Venue / Location</label>
+                <input type="text" id="admin-event-location" class="form-control" placeholder="Main Auditorium & Tech Hub" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="admin-event-desc">Event Description</label>
+                <textarea id="admin-event-desc" class="form-control" rows="3" placeholder="Provide event agenda and highlights..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width:100%;">
+                <i class="fa-solid fa-calendar-check"></i> Add to Events Calendar
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- 6. AI KNOWLEDGE BASE TAB -->
+        <section id="tab-knowledge-base" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>AI Chatbot Knowledge Base & Context Training</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Manage FAQs, institutional data, and semantic intents for the AI Assistant</p>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1.4fr; gap:24px;">
+            <div class="glass-card" style="padding:24px;">
+              <h3 style="font-size:1.1rem; margin-bottom:16px;"><i class="fa-solid fa-brain"></i> Add / Train AI Topic</h3>
+              <form id="add-kb-form">
+                <div class="form-group">
+                  <label class="form-label" for="kb-category">Category</label>
+                  <select id="kb-category" class="form-control">
+                    <option value="ADMISSION">Admissions & Eligibility</option>
+                    <option value="FEES">Fees & Scholarships</option>
+                    <option value="LIBRARY">Library & Digital Resources</option>
+                    <option value="HOSTEL">Hostel & Mess</option>
+                    <option value="PLACEMENTS">Placements & Careers</option>
+                    <option value="EXAMS">Exams & Grading</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="kb-topic-title">Topic Title</label>
+                  <input type="text" id="kb-topic-title" class="form-control" placeholder="e.g. Hostel Wi-Fi & Curfew Timings" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="kb-keywords">Trigger Keywords (comma separated)</label>
+                  <input type="text" id="kb-keywords" class="form-control" placeholder="curfew, gate timing, hostel rules, late entry" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="kb-content">AI Answer Content</label>
+                  <textarea id="kb-content" class="form-control" rows="4" placeholder="The bot will synthesize and present this text when triggered..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                  <i class="fa-solid fa-microchip"></i> Train & Save to AI Engine
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <h3 style="font-size:1.1rem; margin-bottom:16px;">Trained Knowledge Base Entries</h3>
+              <div id="kb-list-container"></div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Grievance Resolve Modal -->
+  <div class="modal-backdrop" id="resolve-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="resolve-modal-title">Resolve Grievance Ticket</h3>
+        <button class="chat-btn-icon" onclick="closeResolveModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="resolve-status-select">Update Status</label>
+          <select id="resolve-status-select" class="form-control">
+            <option value="IN_PROGRESS">In Progress ⏳</option>
+            <option value="RESOLVED" selected>Resolved ✅</option>
+            <option value="REJECTED">Rejected ❌</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="resolve-response-text">Official Administration Remarks / Actions Taken</label>
+          <textarea id="resolve-response-text" class="form-control" rows="4" placeholder="Explain steps taken to resolve this problem...">High-speed router replaced with dual-band access point. Connection tests verified.</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeResolveModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitResolveResponse()"><i class="fa-solid fa-check"></i> Submit Resolution</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

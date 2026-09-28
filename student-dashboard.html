@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portal - CampusAI Assistant</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div style="font-family:var(--font-heading); font-weight:800; font-size:1.2rem;">
+          Campus<span class="gradient-text">AI</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="sidebar-item active" data-tab="overview">
+          <a href="#"><i class="fa-solid fa-chart-simple"></i> <span>Overview</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="timetable">
+          <a href="#"><i class="fa-solid fa-calendar-week"></i> <span>Timetable</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="attendance">
+          <a href="#"><i class="fa-solid fa-clipboard-user"></i> <span>Attendance</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="assignments">
+          <a href="#"><i class="fa-solid fa-book-bookmark"></i> <span>Assignments</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="events">
+          <a href="#"><i class="fa-solid fa-champagne-glasses"></i> <span>Events & Fests</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="announcements">
+          <a href="#"><i class="fa-solid fa-bullhorn"></i> <span>Announcements</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="complaints">
+          <a href="#"><i class="fa-solid fa-hand-holding-hand"></i> <span>Grievance Desk</span></a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-summary">
+          <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150" alt="Avatar" class="avatar" id="user-avatar">
+          <div class="user-meta" style="flex:1; min-width:0;">
+            <h4 id="user-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Alex Morgan</h4>
+            <p id="user-role">Student</p>
+          </div>
+          <button onclick="AuthState.logout()" class="btn-icon btn-secondary" style="border:none; cursor:pointer;" title="Logout">
+            <i class="fa-solid fa-power-off" style="color:var(--danger);"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-title">
+          <h2 id="page-title" style="font-size:1.3rem;">Student Dashboard</h2>
+          <span class="badge badge-primary">CS Semester 5</span>
+        </div>
+
+        <div class="topbar-actions">
+          <!-- Switch Role Buttons for fast pair-programming testing -->
+          <div style="display:flex; gap:8px;">
+            <a href="faculty-dashboard.html" class="btn btn-secondary btn-sm" title="Switch to Faculty View">
+              <i class="fa-solid fa-chalkboard-user"></i> Faculty
+            </a>
+            <a href="admin-dashboard.html" class="btn btn-secondary btn-sm" title="Switch to Admin View">
+              <i class="fa-solid fa-shield-halved"></i> Admin
+            </a>
+          </div>
+
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('chat-launcher').click()">
+            <i class="fa-solid fa-robot"></i> Ask AI Assistant
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Content Viewports -->
+      <div class="content-area">
+
+        <!-- 1. OVERVIEW TAB -->
+        <section id="tab-overview" class="tab-pane active">
+          <!-- Welcome Hero Banner -->
+          <div class="glass-card" style="padding:28px; margin-bottom:28px; background:linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(6, 182, 212, 0.15) 100%); border:1px solid var(--border-glass-bright); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+            <div>
+              <span class="badge badge-success" style="margin-bottom:8px;"><i class="fa-solid fa-circle"></i> Active Semester Fall 2026</span>
+              <h2 style="font-size:1.8rem; margin-bottom:4px;">Welcome back, <span id="welcome-student-name">Alex Morgan</span>! 👋</h2>
+              <p style="color:var(--text-muted); font-size:0.95rem;" id="student-roll-dept">Roll No: CS2024-042 | Computer Science & Engineering</p>
+            </div>
+            <div style="display:flex; gap:12px;">
+              <button class="btn btn-primary" onclick="document.querySelector('[data-tab=timetable]').click()">
+                <i class="fa-solid fa-calendar-day"></i> View Today's Classes
+              </button>
+            </div>
+          </div>
+
+          <!-- Stat KPI Cards -->
+          <div class="stat-grid">
+            <div class="glass-card stat-card stat-success">
+              <div class="stat-icon"><i class="fa-solid fa-chart-pie"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-attendance-rate">87.5%</h3>
+                <p>Overall Attendance</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-info">
+              <div class="stat-icon"><i class="fa-solid fa-user-check"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-present-count">21 / 24</h3>
+                <p>Lectures Attended</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-warning">
+              <div class="stat-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-pending-assignments">2</h3>
+                <p>Pending Assignments</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-accent">
+              <div class="stat-icon"><i class="fa-solid fa-ticket"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-active-complaints">2</h3>
+                <p>Grievances Logged</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Attendance Visual Donut + Quick Schedule row -->
+          <div style="display:grid; grid-template-columns:320px 1fr; gap:24px; margin-bottom:28px;">
+            <!-- Attendance Donut Card -->
+            <div class="glass-card" style="padding:24px; text-align:center;">
+              <h3 style="font-size:1.1rem; margin-bottom:18px;">Attendance Health</h3>
+              <div class="attendance-ring-container">
+                <svg width="140" height="140">
+                  <circle class="attendance-ring-bg" cx="70" cy="70" r="60"></circle>
+                  <circle class="attendance-ring-val" id="attendance-ring-circle" cx="70" cy="70" r="60"></circle>
+                </svg>
+                <div class="attendance-ring-text">
+                  <h2 style="font-size:1.7rem;">87.5%</h2>
+                  <p>Target > 75%</p>
+                </div>
+              </div>
+              <div class="badge badge-success" style="margin-top:6px;">Status: Eligible for Finals</div>
+            </div>
+
+            <!-- AI Quick Assistant Bar -->
+            <div class="glass-card" style="padding:24px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                  <span class="badge badge-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Campus Co-Pilot</span>
+                </div>
+                <h3 style="font-size:1.2rem; margin-bottom:8px;">Have a question about your classes, exams, or campus?</h3>
+                <p style="color:var(--text-muted); font-size:0.9rem;">
+                  Our NLP AI Assistant is linked with the university database and can give you real-time updates on schedules, subject marks, professor contacts, and fee reminders.
+                </p>
+              </div>
+
+              <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
+                <button class="btn btn-secondary btn-sm" onclick="askAiQuick('What is my attendance rate?')">📊 Check Attendance</button>
+                <button class="btn btn-secondary btn-sm" onclick="askAiQuick('Show today\'s class timetable')">📅 Today's Schedule</button>
+                <button class="btn btn-secondary btn-sm" onclick="askAiQuick('What assignments are pending?')">📝 Pending Work</button>
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('chat-launcher').click()"><i class="fa-solid fa-comments"></i> Open Full AI Chat</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. TIMETABLE TAB -->
+        <section id="tab-timetable" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Weekly Class Schedule</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Computer Science & Engineering • 5th Semester</p>
+            </div>
+            <span class="badge badge-info"><i class="fa-solid fa-clock"></i> Timings: 09:00 AM - 02:30 PM</span>
+          </div>
+
+          <div class="timetable-grid" id="timetable-container"></div>
+        </section>
+
+        <!-- 3. ATTENDANCE TAB -->
+        <section id="tab-attendance" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Attendance Records & Logs</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Verified lecture attendance logged by faculty members</p>
+            </div>
+            <span class="badge badge-success">75% Minimum Required</span>
+          </div>
+
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Subject Code</th>
+                <th>Subject Name</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Faculty Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-table-body"></tbody>
+          </table>
+        </section>
+
+        <!-- 4. ASSIGNMENTS TAB -->
+        <section id="tab-assignments" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Course Assignments & Tasks</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Submit your homework and view professor evaluations</p>
+            </div>
+          </div>
+
+          <div class="card-list" id="assignments-list"></div>
+        </section>
+
+        <!-- 5. EVENTS TAB -->
+        <section id="tab-events" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Campus Events, Hackathons & Fests</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Explore upcoming tech, sports, and cultural festivals</p>
+            </div>
+          </div>
+
+          <div class="card-list" id="student-events-list"></div>
+        </section>
+
+        <!-- 6. ANNOUNCEMENTS TAB -->
+        <section id="tab-announcements" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Official Campus Bulletins & Circulars</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Urgent notifications from Dean, Examination cell, and HODs</p>
+            </div>
+          </div>
+
+          <div class="card-list" id="student-announcements-list"></div>
+        </section>
+
+        <!-- 7. COMPLAINTS / GRIEVANCE TAB -->
+        <section id="tab-complaints" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Grievance & Issue Redressal Desk</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Submit complaints and track administration response</p>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+            <!-- Lodge Form -->
+            <div class="glass-card" style="padding:24px;">
+              <h3 style="font-size:1.15rem; margin-bottom:16px;"><i class="fa-solid fa-pen-nib"></i> Lodge New Grievance</h3>
+              <form id="complaint-form">
+                <div class="form-group">
+                  <label class="form-label" for="complaint-category">Category</label>
+                  <select id="complaint-category" class="form-control" required>
+                    <option value="Infrastructure">Infrastructure (Wi-Fi, Labs, Classrooms)</option>
+                    <option value="Hostel">Hostel Accommodation & Facilities</option>
+                    <option value="Academic">Academic / Lecture Curriculum</option>
+                    <option value="Library">Library Resources</option>
+                    <option value="Canteen">Canteen & Dining</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="complaint-subject">Subject</label>
+                  <input type="text" id="complaint-subject" class="form-control" placeholder="Brief summary of the issue" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="complaint-description">Detailed Description</label>
+                  <textarea id="complaint-description" class="form-control" rows="4" placeholder="Explain the problem in detail..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                  <i class="fa-solid fa-paper-plane"></i> Submit Grievance Ticket
+                </button>
+              </form>
+            </div>
+
+            <!-- Complaint History -->
+            <div>
+              <h3 style="font-size:1.15rem; margin-bottom:16px;"><i class="fa-solid fa-clock-rotate-left"></i> My Ticket History</h3>
+              <div id="complaints-list"></div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Assignment Submission Modal -->
+  <div class="modal-backdrop" id="submit-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="submit-modal-title">Submit Solution</h3>
+        <button class="chat-btn-icon" onclick="closeSubmitModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="assignment-submit-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="submission-text">Solution Notes / Description</label>
+            <textarea id="submission-text" class="form-control" rows="3" placeholder="Provide summary of your implementation, algorithms used..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="submission-link">GitHub / Project Drive Link</label>
+            <input type="url" id="submission-link" class="form-control" placeholder="https://github.com/username/project" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeSubmitModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-upload"></i> Confirm & Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script src="js/student.js"></script>
+  <script>
+    function askAiQuick(question) {
+      const container = document.getElementById('chat-container');
+      if (!container.classList.contains('open')) {
+        document.getElementById('chat-launcher').click();
+      }
+      document.getElementById('chat-input').value = question;
+      document.getElementById('chat-send-btn').click();
+    }
+  </script>
+</body>
+</html>

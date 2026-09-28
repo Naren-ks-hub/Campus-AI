@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusAI - Next-Gen College Management & AI Assistant</title>
+  <meta name="description" content="AI-Powered College Management Assistant Web Application with Attendance, Timetable, Events, Assignments, Complaints, and 24/7 AI Chatbot.">
+  
+  <!-- Google Fonts & Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <span>Campus<span class="gradient-text">AI</span></span>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#modules">Modules</a></li>
+      <li><a href="#ai-assistant">AI Chatbot</a></li>
+      <li><a href="#about">About Campus</a></li>
+    </ul>
+
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <a href="login.html" class="btn btn-primary">
+        <i class="fa-solid fa-right-to-bracket"></i> Login Portal
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section style="padding: 90px 20px 60px 20px; text-align: center; max-width: 1100px; margin: 0 auto;">
+    <span class="badge badge-primary pulse-glow" style="margin-bottom: 20px; padding: 6px 16px; font-size: 0.85rem;">
+      <i class="fa-solid fa-wand-magic-sparkles"></i> Powered by Java, MySQL & Intelligent NLP
+    </span>
+
+    <h1 style="font-size: clamp(2.4rem, 5vw, 4.2rem); line-height: 1.15; margin-bottom: 24px; font-weight: 800;">
+      Smart College Management <br>
+      with an <span class="gradient-text">Intelligent AI Chatbot</span>
+    </h1>
+
+    <p style="font-size: 1.15rem; color: var(--text-muted); max-width: 780px; margin: 0 auto 36px auto;">
+      Empowering students, faculty, and administrators with real-time attendance tracking, dynamic timetables, assignment grading, grievance redressal, and 24/7 AI conversational guidance.
+    </p>
+
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px;">
+      <a href="student-dashboard.html" class="btn btn-primary" style="padding: 14px 28px; font-size: 1rem;">
+        <i class="fa-solid fa-user-graduate"></i> Student Portal Demo
+      </a>
+      <a href="faculty-dashboard.html" class="btn btn-secondary" style="padding: 14px 28px; font-size: 1rem;">
+        <i class="fa-solid fa-chalkboard-user"></i> Faculty Portal Demo
+      </a>
+      <a href="admin-dashboard.html" class="btn btn-outline" style="padding: 14px 28px; font-size: 1rem;">
+        <i class="fa-solid fa-shield-halved"></i> Admin Console
+      </a>
+    </div>
+
+    <!-- Quick Role Switcher Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; text-align: left;">
+      <div class="glass-card" style="padding: 28px; border-top: 3px solid var(--primary);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+          <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; color: var(--primary-light); font-size: 1.3rem;">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 1.2rem;">Student Assistant</h3>
+            <span class="badge badge-primary">Student Role</span>
+          </div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+          Check live attendance percentages, timetable periods, active assignments, campus events, and talk to your AI assistant.
+        </p>
+        <a href="student-dashboard.html" class="btn btn-secondary btn-sm" style="width: 100%;">Open Student Portal &rarr;</a>
+      </div>
+
+      <div class="glass-card" style="padding: 28px; border-top: 3px solid var(--warning);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+          <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--warning-bg); display: flex; align-items: center; justify-content: center; color: var(--warning); font-size: 1.3rem;">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 1.2rem;">Faculty Hub</h3>
+            <span class="badge badge-warning">Faculty Role</span>
+          </div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+          Mark bulk class attendance, create homework assignments, review student submissions with instant feedback, and broadcast notices.
+        </p>
+        <a href="faculty-dashboard.html" class="btn btn-secondary btn-sm" style="width: 100%;">Open Faculty Hub &rarr;</a>
+      </div>
+
+      <div class="glass-card" style="padding: 28px; border-top: 3px solid var(--secondary);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+          <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: rgba(6, 182, 212, 0.15); display: flex; align-items: center; justify-content: center; color: var(--secondary); font-size: 1.3rem;">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 1.2rem;">Admin Console</h3>
+            <span class="badge badge-info">Admin Role</span>
+          </div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+          Institutional analytics, student/staff directory management, student grievance redressal, and AI chatbot knowledge training.
+        </p>
+        <a href="admin-dashboard.html" class="btn btn-secondary btn-sm" style="width: 100%;">Open Admin Console &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" style="padding: 80px 20px; max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 50px;">
+      <span class="badge badge-primary">Comprehensive Features</span>
+      <h2 style="font-size: 2.2rem; margin-top: 10px;">Everything Needed for a Modern Smart Campus</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+      <div class="glass-card" style="padding: 24px;">
+        <div style="font-size: 1.8rem; color: var(--primary-light); margin-bottom: 12px;"><i class="fa-solid fa-robot"></i></div>
+        <h3 style="margin-bottom: 8px;">24/7 AI Chatbot Assistant</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Voice & text natural language assistant capable of retrieving attendance, class schedules, fee structures, library rules, and exam notices instantly.</p>
+      </div>
+
+      <div class="glass-card" style="padding: 24px;">
+        <div style="font-size: 1.8rem; color: var(--success); margin-bottom: 12px;"><i class="fa-solid fa-chart-pie"></i></div>
+        <h3 style="margin-bottom: 8px;">Live Attendance Analytics</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Automated 75% threshold alerts, subject-by-subject attendance percentages, and rapid bulk attendance marking for professors.</p>
+      </div>
+
+      <div class="glass-card" style="padding: 24px;">
+        <div style="font-size: 1.8rem; color: var(--secondary); margin-bottom: 12px;"><i class="fa-solid fa-calendar-days"></i></div>
+        <h3 style="margin-bottom: 8px;">Dynamic Visual Timetable</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Interactive day-wise class grids showing classroom numbers, subject codes, faculty details, and current period highlights.</p>
+      </div>
+
+      <div class="glass-card" style="padding: 24px;">
+        <div style="font-size: 1.8rem; color: var(--warning); margin-bottom: 12px;"><i class="fa-solid fa-book-open"></i></div>
+        <h3 style="margin-bottom: 8px;">Assignments & Submission LMS</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Faculty post tasks with deadlines and maximum marks. Students submit work with links and receive graded feedback.</p>
+      </div>
+
+      <div class="glass-card" style="padding: 24px;">
+        <div style="font-size: 1.8rem; color: var(--accent); margin-bottom: 12px;"><i class="fa-solid fa-bullhorn"></i></div>
+        <h3 style="margin-bottom: 8px;">Campus Events & Bulletins</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Centralized broadcast system for hackathons, symposiums, sports carnivals, and urgent academic circulars.</p>
+      </div>
+
+      <div class="glass-card" style="padding: 24px;">
+        <div style="font-size: 1.8rem; color: var(--danger); margin-bottom: 12px;"><i class="fa-solid fa-hand-holding-heart"></i></div>
+        <h3 style="margin-bottom: 8px;">Grievance Redressal System</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Transparent complaint filing for hostel, academic, Wi-Fi, and canteen issues with real-time administrator resolution tracking.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="padding: 40px 20px; text-align: center; border-top: 1px solid var(--border-glass); margin-top: 60px; color: var(--text-muted); font-size: 0.9rem;">
+    <p>© 2026 <strong>CampusAI</strong> - Built with Java, Spring Boot, MySQL & Modern Web Technologies.</p>
+  </footer>
+
+  <!-- Central API and Chatbot scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

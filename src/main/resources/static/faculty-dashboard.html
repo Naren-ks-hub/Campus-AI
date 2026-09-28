@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Portal - CampusAI</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div style="font-family:var(--font-heading); font-weight:800; font-size:1.2rem;">
+          Campus<span class="gradient-text">AI</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="sidebar-item active" data-tab="overview">
+          <a href="#"><i class="fa-solid fa-chart-pie"></i> <span>Overview</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="attendance">
+          <a href="#"><i class="fa-solid fa-user-check"></i> <span>Mark Attendance</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="assignments">
+          <a href="#"><i class="fa-solid fa-file-pen"></i> <span>Manage Assignments</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="timetable">
+          <a href="#"><i class="fa-solid fa-calendar-days"></i> <span>Teaching Schedule</span></a>
+        </li>
+        <li class="sidebar-item" data-tab="broadcast">
+          <a href="#"><i class="fa-solid fa-bullhorn"></i> <span>Broadcast Notice</span></a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-summary">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150" alt="Avatar" class="avatar" id="faculty-avatar">
+          <div class="user-meta" style="flex:1; min-width:0;">
+            <h4 id="faculty-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Prof. Sarah Jenkins</h4>
+            <p id="faculty-dept" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">CSE Faculty</p>
+          </div>
+          <button onclick="AuthState.logout()" class="btn-icon btn-secondary" style="border:none; cursor:pointer;" title="Logout">
+            <i class="fa-solid fa-power-off" style="color:var(--danger);"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h2 style="font-size:1.3rem;">Faculty Hub</h2>
+          <span class="badge badge-warning">Professor Console</span>
+        </div>
+
+        <div class="topbar-actions">
+          <div style="display:flex; gap:8px;">
+            <a href="student-dashboard.html" class="btn btn-secondary btn-sm"><i class="fa-solid fa-user-graduate"></i> Student</a>
+            <a href="admin-dashboard.html" class="btn btn-secondary btn-sm"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('chat-launcher').click()">
+            <i class="fa-solid fa-robot"></i> Campus AI
+          </button>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- 1. OVERVIEW TAB -->
+        <section id="tab-overview" class="tab-pane active">
+          <div class="stat-grid">
+            <div class="glass-card stat-card stat-info">
+              <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-my-students">120</h3>
+                <p>Enrolled Students</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-success">
+              <div class="stat-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-classes-today">3 Lectures</h3>
+                <p>Scheduled Today</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-warning">
+              <div class="stat-icon"><i class="fa-solid fa-file-signature"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-pending-grading">5</h3>
+                <p>Pending Submissions to Grade</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+            <div class="glass-card" style="padding:24px;">
+              <h3 style="margin-bottom:12px;"><i class="fa-solid fa-bolt" style="color:var(--warning);"></i> Quick Action: Mark Attendance</h3>
+              <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:18px;">
+                Record class presence for today's Artificial Intelligence & Neural Networks lecture.
+              </p>
+              <button class="btn btn-primary btn-sm" onclick="document.querySelector('[data-tab=attendance]').click()">
+                Take Attendance Now &rarr;
+              </button>
+            </div>
+
+            <div class="glass-card" style="padding:24px;">
+              <h3 style="margin-bottom:12px;"><i class="fa-solid fa-plus-circle" style="color:var(--secondary);"></i> Create New Assignment</h3>
+              <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:18px;">
+                Post a new problem set or capstone submission task for Semester 5 students.
+              </p>
+              <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-tab=assignments]').click()">
+                Post Assignment &rarr;
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. ATTENDANCE TAB -->
+        <section id="tab-attendance" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Class Attendance Marker</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Mark presence for students in your assigned subjects</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-secondary btn-sm" id="mark-all-present-btn"><i class="fa-solid fa-check-double"></i> Mark All Present</button>
+              <button class="btn btn-primary btn-sm" id="save-attendance-btn"><i class="fa-solid fa-floppy-disk"></i> Save to MySQL</button>
+            </div>
+          </div>
+
+          <!-- Filter Toolbar -->
+          <div class="glass-card" style="padding:16px; margin-bottom:20px; display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+            <div style="flex:1; min-width:200px;">
+              <label class="form-label">Subject</label>
+              <select id="attendance-subject-select" class="form-control">
+                <option value="CS501">CS501 - Artificial Intelligence & Neural Nets</option>
+                <option value="CS503">CS503 - Operating Systems & Concurrency</option>
+                <option value="CS505">CS505 - Software Engineering & Agile</option>
+              </select>
+            </div>
+
+            <div style="width:180px;">
+              <label class="form-label">Lecture Date</label>
+              <input type="date" id="attendance-date-input" class="form-control" value="2026-09-28">
+            </div>
+          </div>
+
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Roll Number</th>
+                <th>Student Name</th>
+                <th>Status</th>
+                <th>Notes / Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="faculty-attendance-table-body"></tbody>
+          </table>
+        </section>
+
+        <!-- 3. ASSIGNMENTS TAB -->
+        <section id="tab-assignments" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Course Assignments & Grading</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Publish new tasks and grade student project solutions</p>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1.3fr; gap:24px;">
+            <!-- Create Form -->
+            <div class="glass-card" style="padding:24px;">
+              <h3 style="font-size:1.15rem; margin-bottom:16px;"><i class="fa-solid fa-file-circle-plus"></i> Post Assignment</h3>
+              <form id="create-assignment-form">
+                <div class="form-group">
+                  <label class="form-label" for="new-assign-title">Assignment Title</label>
+                  <input type="text" id="new-assign-title" class="form-control" placeholder="e.g. LLM Fine-Tuning with LoRA" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="new-assign-subject">Subject</label>
+                  <select id="new-assign-subject" class="form-control">
+                    <option value="CS501">CS501 - Artificial Intelligence</option>
+                    <option value="CS502">CS502 - Database Systems</option>
+                    <option value="CS503">CS503 - Operating Systems</option>
+                  </select>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div class="form-group">
+                    <label class="form-label" for="new-assign-marks">Max Marks</label>
+                    <input type="number" id="new-assign-marks" class="form-control" value="100" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="new-assign-due">Due Date</label>
+                    <input type="date" id="new-assign-due" class="form-control" value="2026-10-15" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="new-assign-desc">Instructions & Submission Criteria</label>
+                  <textarea id="new-assign-desc" class="form-control" rows="3" placeholder="Provide problem details..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                  <i class="fa-solid fa-upload"></i> Publish Assignment
+                </button>
+              </form>
+            </div>
+
+            <!-- Active List -->
+            <div>
+              <h3 style="font-size:1.15rem; margin-bottom:16px;">Active Department Assignments</h3>
+              <div id="faculty-assignments-list" class="card-list" style="grid-template-columns:1fr;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. TIMETABLE TAB -->
+        <section id="tab-timetable" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>My Teaching Schedule</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Weekly classes and laboratory sessions</p>
+            </div>
+          </div>
+          <div id="faculty-timetable-container"></div>
+        </section>
+
+        <!-- 5. BROADCAST TAB -->
+        <section id="tab-broadcast" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Department Notice Broadcast</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Post circulars visible to your students</p>
+            </div>
+          </div>
+
+          <div class="glass-card" style="padding:28px; max-width:600px;">
+            <form id="faculty-announcement-form">
+              <div class="form-group">
+                <label class="form-label" for="announce-title">Notice Title</label>
+                <input type="text" id="announce-title" class="form-control" placeholder="e.g. Lab 301 System Maintenance Notice" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="announce-content">Notice Content</label>
+                <textarea id="announce-content" class="form-control" rows="4" placeholder="Type notice description..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width:100%;">
+                <i class="fa-solid fa-bullhorn"></i> Send Circular to Students
+              </button>
+            </form>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Grading Review Modal -->
+  <div class="modal-backdrop" id="grading-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="grading-modal-title">Review Student Submission</h3>
+        <button class="chat-btn-icon" onclick="closeGradingModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom:16px; padding:12px; background:rgba(255,255,255,0.03); border-radius:var(--radius-sm);">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <strong>Student: Alex Morgan (CS2024-042)</strong>
+            <span class="badge badge-success">Submitted</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">
+            "Implemented 3-layer MLP with Sigmoid & ReLU activation. Accuracy reached 96.4% on test split."
+          </p>
+          <a href="https://github.com/alexmorgan/mnist-neural-net" target="_blank" style="font-size:0.85rem; color:var(--primary-light);">
+            <i class="fa-brands fa-github"></i> https://github.com/alexmorgan/mnist-neural-net
+          </a>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="grade-marks-input">Marks Awarded (out of 100)</label>
+          <input type="number" id="grade-marks-input" class="form-control" value="94" max="100" min="0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="grade-feedback-input">Instructor Feedback</label>
+          <textarea id="grade-feedback-input" class="form-control" rows="3">Excellent mathematical analysis and clean code structure.</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeGradingModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveStudentGrade()"><i class="fa-solid fa-check"></i> Submit Grade</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script src="js/faculty.js"></script>
+</body>
+</html>
