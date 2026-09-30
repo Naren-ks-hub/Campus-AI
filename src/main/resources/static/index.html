@@ -29,14 +29,17 @@
       <li><a href="#about">About Campus</a></li>
     </ul>
 
-    <div style="display: flex; gap: 12px; align-items: center;">
+    <div style="display: flex; gap: 10px; align-items: center;">
       <!-- Dark / Light Mode Switch Button -->
       <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark / Light Mode">
         <i class="fa-solid fa-sun"></i>
       </button>
 
-      <a href="login.html" class="btn btn-primary">
-        <i class="fa-solid fa-right-to-bracket"></i> Login Portal
+      <a href="login.html?mode=login" class="btn btn-secondary btn-sm" style="padding: 8px 16px; font-weight: 600;">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </a>
+      <a href="login.html?mode=signup" class="btn btn-primary btn-sm" style="padding: 8px 16px; font-weight: 600;">
+        <i class="fa-solid fa-user-plus"></i> Sign Up
       </a>
     </div>
   </nav>

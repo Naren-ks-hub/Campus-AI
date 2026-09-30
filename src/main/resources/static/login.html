@@ -70,7 +70,7 @@
     </div>
 
     <!-- Role Selection Tabs -->
-    <div style="display: flex; background: rgba(15, 23, 42, 0.6); padding: 4px; border-radius: var(--radius-sm); margin-bottom: 24px; border: 1px solid var(--border-glass);">
+    <div style="display: flex; background: rgba(15, 23, 42, 0.6); padding: 4px; border-radius: var(--radius-sm); margin-bottom: 16px; border: 1px solid var(--border-glass);">
       <button class="role-tab active" data-role="STUDENT" style="flex: 1; padding: 8px; border: none; background: var(--primary); color: #fff; font-weight: 600; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
         <i class="fa-solid fa-user-graduate"></i> Student
       </button>
@@ -79,6 +79,16 @@
       </button>
       <button class="role-tab" data-role="ADMIN" style="flex: 1; padding: 8px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
         <i class="fa-solid fa-shield-halved"></i> Admin
+      </button>
+    </div>
+
+    <!-- Auth Mode Switcher (Login vs Sign Up) -->
+    <div style="display: flex; gap: 8px; margin-bottom: 20px; background: rgba(255, 255, 255, 0.04); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+      <button type="button" id="auth-mode-login" class="btn btn-sm btn-primary" style="flex: 1; border-radius: 6px; font-weight: 600; font-size: 0.88rem;" onclick="switchAuthMode('login')">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </button>
+      <button type="button" id="auth-mode-signup" class="btn btn-sm btn-secondary" style="flex: 1; border-radius: 6px; font-weight: 600; font-size: 0.88rem;" onclick="switchAuthMode('signup')">
+        <i class="fa-solid fa-user-plus"></i> Sign Up
       </button>
     </div>
 
@@ -568,6 +578,26 @@
       }
     });
 
+    // Auth Mode Switching (Login vs Sign Up)
+    window.switchAuthMode = function(mode) {
+      const loginBtn = document.getElementById('auth-mode-login');
+      const signupBtn = document.getElementById('auth-mode-signup');
+
+      if (mode === 'signup') {
+        loginBtn?.classList.remove('btn-primary');
+        loginBtn?.classList.add('btn-secondary');
+        signupBtn?.classList.remove('btn-secondary');
+        signupBtn?.classList.add('btn-primary');
+        openRegisterModal();
+      } else {
+        signupBtn?.classList.remove('btn-primary');
+        signupBtn?.classList.add('btn-secondary');
+        loginBtn?.classList.remove('btn-secondary');
+        loginBtn?.classList.add('btn-primary');
+        closeRegisterModal();
+      }
+    };
+
     // Register Modal
     window.openRegisterModal = function() {
       document.getElementById('account-register-modal').classList.add('active');
@@ -575,7 +605,22 @@
 
     window.closeRegisterModal = function() {
       document.getElementById('account-register-modal').classList.remove('active');
+      const loginBtn = document.getElementById('auth-mode-login');
+      const signupBtn = document.getElementById('auth-mode-signup');
+      signupBtn?.classList.remove('btn-primary');
+      signupBtn?.classList.add('btn-secondary');
+      loginBtn?.classList.remove('btn-secondary');
+      loginBtn?.classList.add('btn-primary');
     };
+
+    // Check query params on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get('mode');
+      if (mode === 'signup' || mode === 'register') {
+        switchAuthMode('signup');
+      }
+    });
 
     document.getElementById('account-register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
