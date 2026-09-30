@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadAttendance();
   await loadAssignments();
   await loadEvents();
+  await loadClubs();
   await loadAnnouncements();
   await loadComplaints();
 
@@ -68,6 +69,8 @@ function setupTabs() {
 
       if (tabId === 'events') {
         loadEvents().catch(console.error);
+      } else if (tabId === 'clubs') {
+        loadClubs();
       } else if (tabId === 'announcements') {
         loadAnnouncements().catch(console.error);
       } else if (tabId === 'timetable') {
@@ -532,4 +535,477 @@ window.takeAnnouncementAction = function() {
   }
   closeAnnouncementModal();
 };
+
+/* ==========================================================================
+   STUDENT CLUBS & SOCIETIES MODULE
+   ========================================================================== */
+
+const CAMPUS_CLUBS = [
+  {
+    id: "electronics",
+    name: "Electronics Club",
+    category: "TECHNICAL",
+    categoryName: "Technical Society",
+    icon: "fa-microchip",
+    color: "#6366f1",
+    tagline: "Designing Next-Gen Embedded Circuits & IoT Innovations",
+    description: "The Electronics Club is a student-driven technical society focused on PCB design, embedded systems, IoT devices, microcontrollers (STM32, Arduino, ESP32), and analog/digital VLSI design. Members gain hands-on access to lab equipment, oscilloscopes, soldering stations, and rapid prototyping tools.",
+    timing: "Every Wednesday, 4:30 PM – 6:00 PM",
+    venue: "IoT & Embedded Systems Lab (Block C, 2nd Floor)",
+    facultyAdvisor: "Dr. V. Rajesh Kumar (Asso. Prof, ECE)",
+    studentLead: "Arun Varma (IV Year ECE)",
+    membersCount: 148,
+    tags: ["IoT", "PCB Design", "VLSI", "Arduino", "ESP32", "Embedded Systems"],
+    activities: [
+      "Annual Circuit Design Challenge (Electra 2026)",
+      "Hands-on SMD Soldering & PCB Prototyping Workshop",
+      "Edge AI Microcontroller Hackathon",
+      "Industrial Visit to Texas Instruments Design Center"
+    ]
+  },
+  {
+    id: "electrical",
+    name: "Electrical Club",
+    category: "TECHNICAL",
+    categoryName: "Technical Society",
+    icon: "fa-bolt",
+    color: "#f59e0b",
+    tagline: "Powering Tomorrow with Smart Grids, EV & Green Energy",
+    description: "The Electrical Club empowers engineering students to explore power electronics, renewable energy systems, electric vehicle (EV) powertrains, PLC/SCADA industrial automation, and smart electrical grid simulations through industry-aligned projects.",
+    timing: "Every Tuesday, 4:30 PM – 6:00 PM",
+    venue: "Power Electronics & Drives Lab (Block B, 1st Floor)",
+    facultyAdvisor: "Dr. S. Meganathan (HOD, EEE)",
+    studentLead: "Praveen Kumar (IV Year EEE)",
+    membersCount: 124,
+    tags: ["Electric Vehicles", "Solar PV", "Smart Grid", "Power Electronics", "MATLAB", "PLC/SCADA"],
+    activities: [
+      "Solar EV Go-Kart Prototype Build",
+      "MATLAB Power System Simulation Bootcamp",
+      "Energy Audit & Green Campus Initiative",
+      "High Voltage Safety & Switchgear Practical Training"
+    ]
+  },
+  {
+    id: "coding",
+    name: "Coding Club",
+    category: "TECHNICAL",
+    categoryName: "Technical Society",
+    icon: "fa-code",
+    color: "#10b981",
+    tagline: "Crafting Code, Algorithms & Open Source Solutions",
+    description: "The Coding Club is the campus hub for competitive programming, full-stack web development, machine learning algorithms, open-source software contributions, and collaborative hackathon teams. We host weekly coding sprints on LeetCode, Codeforces, and GitHub.",
+    timing: "Every Thursday, 5:00 PM – 6:45 PM",
+    venue: "Advanced Computing Lab 4 (Block A, 3rd Floor)",
+    facultyAdvisor: "Prof. K. Sundaramoorthy (CSE)",
+    studentLead: "Alex Morgan (III Year CSE)",
+    membersCount: 310,
+    tags: ["Data Structures", "Algorithms", "React", "Python", "Competitive Programming", "Git"],
+    activities: [
+      "CodeWars 24-Hour Inter-College Hackathon",
+      "Weekly LeetCode & DSA Mastery Sprints",
+      "Open Source Hacktoberfest Sprint",
+      "Masterclasses on Cloud Deployments (AWS/Docker)"
+    ]
+  },
+  {
+    id: "literature",
+    name: "Literature Club",
+    category: "LITERARY",
+    categoryName: "Literary & Debate",
+    icon: "fa-book-open",
+    color: "#8b5cf6",
+    tagline: "Where Words Ignite Minds, Debates & Creative Expression",
+    description: "The Literature Club fosters deep intellectual dialogue, creative prose, poetry writing, parliamentary debating, book discussions, and public speaking. It hosts both English and vernacular literary activities designed to hone eloquence and critical thinking.",
+    timing: "Every Monday, 4:30 PM – 5:45 PM",
+    venue: "Central Library Seminar Hall (Block D)",
+    facultyAdvisor: "Dr. Ananya Sharma (Dept of English & Humanities)",
+    studentLead: "Divya Bharathi (III Year IT)",
+    membersCount: 95,
+    tags: ["Debating", "Creative Writing", "Poetry Slam", "Book Reviews", "Public Speaking", "MUN"],
+    activities: [
+      "Annual Model United Nations (VSB-MUN 2026)",
+      "Bilingual Slam Poetry & Storytelling Night",
+      "Inter-Department Parliamentary Debate Championship",
+      "Monthly Book Critics Circle & Author Meets"
+    ]
+  },
+  {
+    id: "photography",
+    name: "Photography Club",
+    category: "CREATIVE",
+    categoryName: "Creative & Visual Arts",
+    icon: "fa-camera-retro",
+    color: "#ec4899",
+    tagline: "Freezing Moments, Framing Perspectives & Visual Stories",
+    description: "The Photography Club unites visual storytellers, DSLR enthusiasts, mobile photography creators, and digital post-processing editors. Members capture all campus festivals, run photo walks, master portraiture and lighting, and produce festival aftermovies.",
+    timing: "Every Friday, 4:30 PM – 6:00 PM",
+    venue: "Media & Visual Design Studio (Admin Block 2nd Floor)",
+    facultyAdvisor: "Prof. R. Karthikeyan (Mechanical / Media Cell)",
+    studentLead: "Sanjay Balaji (IV Year Mech)",
+    membersCount: 118,
+    tags: ["DSLR Photography", "Photo Editing", "Cinematography", "Lightroom", "Visual Arts", "Drones"],
+    activities: [
+      "'Campus Through the Lens' Photo Exhibition",
+      "Adobe Lightroom & Photoshop Post-Processing Workshops",
+      "Golden Hour Nature & Macro Photography Walks",
+      "Official Campus Fest Media Coverage Crew"
+    ]
+  },
+  {
+    id: "eco",
+    name: "Eco Club",
+    category: "SOCIAL",
+    categoryName: "Environment & Social Impact",
+    icon: "fa-leaf",
+    color: "#14b8a6",
+    tagline: "Championing Sustainability, Biodiversity & Green Living",
+    description: "The Eco Club leads environmental action, organic campus farming, e-waste recycling drives, plastic-free campaigns, and tree-plantation missions to cultivate an eco-conscious student generation and reduce carbon footprints.",
+    timing: "Every Saturday, 9:30 AM – 11:00 AM",
+    venue: "Botanical Garden & Green House Complex",
+    facultyAdvisor: "Dr. P. Manoharan (Dept of Chemistry & Environmental Sci)",
+    studentLead: "Kavitha Selvam (III Year BioTech)",
+    membersCount: 135,
+    tags: ["Sustainability", "Tree Plantation", "Waste Management", "Solar Power", "Organic Farming", "E-Waste"],
+    activities: [
+      "Mega 1000-Sapling Campus Green Canopy Drive",
+      "Campus E-Waste & Plastic Segregation Drive",
+      "World Environment Day Cleanliness Drive",
+      "Workshops on Composting and Urban Terrace Farming"
+    ]
+  },
+  {
+    id: "robotics",
+    name: "Robotics Club",
+    category: "TECHNICAL",
+    categoryName: "Technical Society",
+    icon: "fa-robot",
+    color: "#3b82f6",
+    tagline: "Engineering Autonomous Bots, Drones & Robotic Systems",
+    description: "The Robotics Club brings together mechanical, electrical, and computer science engineers to build autonomous line followers, combat robo-wars fighters, quadcopters, ROS-based navigation bots, and industrial robotic arms.",
+    timing: "Every Thursday, 4:30 PM – 6:30 PM",
+    venue: "Robotics & AICTE IDEA Lab (Block C, Ground Floor)",
+    facultyAdvisor: "Dr. N. Saravanan (Mechanical & Mechatronics)",
+    studentLead: "Rohan Nair (IV Year Mechatronics)",
+    membersCount: 175,
+    tags: ["RoboWars", "ROS", "Drone Tech", "3D Printing", "Autonomous Navigation", "Sensors"],
+    activities: [
+      "National Robowars Championship (RoboKombat)",
+      "Autonomous Maze Solver & Line Follower Contest",
+      "Quadcopter Flight Dynamics & PID Tuning Bootcamp",
+      "3D CAD Modeling & Rapid 3D Printing Sessions"
+    ]
+  },
+  {
+    id: "finearts",
+    name: "Fine Arts Club",
+    category: "CREATIVE",
+    categoryName: "Creative & Fine Arts",
+    icon: "fa-palette",
+    color: "#f43f5e",
+    tagline: "Unleashing Imagination Through Canvas, Sculptures & Design",
+    description: "The Fine Arts Club is a creative sanctuary for painters, sketch artists, digital illustrators, sculptors, and calligraphers. The club is responsible for campus art murals, stage decor for festivals, and gallery exhibitions.",
+    timing: "Every Wednesday, 4:00 PM – 5:30 PM",
+    venue: "Art & Creativity Studio (Auditorium Wing)",
+    facultyAdvisor: "Prof. S. Gomathi (Civil / Architecture)",
+    studentLead: "Sneha Ramakrishnan (III Year AI&DS)",
+    membersCount: 102,
+    tags: ["Oil Painting", "Digital Art", "Calligraphy", "Sculpture", "Mural Painting", "Sketching"],
+    activities: [
+      "Annual 'Chitrakala' State-Level Painting Competition",
+      "Live Campus Wall Mural Painting Festival",
+      "Charcoal & Watercolor Portrait Workshop",
+      "Digital Art with Procreate & Graphic Tablets Bootcamp"
+    ]
+  },
+  {
+    id: "puzzle",
+    name: "Puzzle Club",
+    category: "LITERARY",
+    categoryName: "Logic & Mind Sports",
+    icon: "fa-puzzle-piece",
+    color: "#06b6d4",
+    tagline: "Decoding Mysteries, Sudoku, Chess & Logical Conundrums",
+    description: "The Puzzle Club is dedicated to sharpening cognitive power, lateral thinking, chess strategy, Sudoku solving, cryptography ciphers, escape-room puzzles, and mathematical riddles for analytical minds.",
+    timing: "Every Tuesday, 4:30 PM – 5:45 PM",
+    venue: "Math & Logic Lab (Block A, 2nd Floor)",
+    facultyAdvisor: "Dr. T. Venkataraman (Dept of Mathematics)",
+    studentLead: "Harish Venkat (II Year CSE)",
+    membersCount: 88,
+    tags: ["Chess", "Rubik's Cube", "Cryptography", "Sudoku", "Brain Teasers", "Escape Room"],
+    activities: [
+      "Annual Inter-College Blitz Chess & Blitz Sudoku Open",
+      "Speedcubing 3x3 Rubik's Cube Championship",
+      "Cryptic Treasure Hunt & Campus Escape Room",
+      "Mathematical Riddles & Logical Aptitude Showdown"
+    ]
+  },
+  {
+    id: "cultural",
+    name: "Cultural Club",
+    category: "CREATIVE",
+    categoryName: "Music, Dance & Drama",
+    icon: "fa-masks-theater",
+    color: "#d946ef",
+    tagline: "Celebrating Music, Dance, Theater & Vibrant Heritage",
+    description: "The Cultural Club is the heartbeat of college life, organizing Western & classical dance troupes, music bands, street plays (Nukkad Natak), drama productions, and the grand annual inter-college cultural fest.",
+    timing: "Every Friday & Saturday, 4:30 PM – 6:30 PM",
+    venue: "Main Open-Air Amphitheatre & Music Studio",
+    facultyAdvisor: "Dr. K. Jayalakshmi (Dept of Management / Cultural Head)",
+    studentLead: "Vikramaditya Rao (IV Year CSE)",
+    membersCount: 285,
+    tags: ["Classical Dance", "Western Music Band", "Dramatics", "Street Play", "Singing", "Festivals"],
+    activities: [
+      "Dhruva Mega Annual Cultural Festival",
+      "Battle of the Campus Rock Bands",
+      "Street Play / Nukkad Natak for Social Awareness",
+      "Classical Fusion Carnatic & Western Ensemble Concert"
+    ]
+  }
+];
+
+let activeClubFilter = 'ALL';
+let activeClubSearch = '';
+let activeModalClubId = null;
+
+function getJoinedClubs() {
+  try {
+    const raw = localStorage.getItem('campusai_joined_clubs');
+    if (!raw) {
+      // Default initial memberships for student
+      const initial = ['coding', 'robotics'];
+      localStorage.setItem('campusai_joined_clubs', JSON.stringify(initial));
+      return initial;
+    }
+    return JSON.parse(raw);
+  } catch (e) {
+    return ['coding', 'robotics'];
+  }
+}
+
+function saveJoinedClubs(list) {
+  localStorage.setItem('campusai_joined_clubs', JSON.stringify(list));
+}
+
+async function loadClubs() {
+  const container = document.getElementById('student-clubs-grid');
+  if (!container) return;
+
+  const joinedList = getJoinedClubs();
+
+  // Update badge count
+  const badgeEl = document.getElementById('my-joined-clubs-badge');
+  if (badgeEl) {
+    badgeEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${joinedList.length} Clubs Joined`;
+  }
+
+  // Filter dataset
+  const filtered = CAMPUS_CLUBS.filter(club => {
+    const matchesCategory = activeClubFilter === 'ALL' || club.category === activeClubFilter;
+    const q = activeClubSearch.trim().toLowerCase();
+    if (!q) return matchesCategory;
+    const matchesSearch = 
+      club.name.toLowerCase().includes(q) ||
+      club.tagline.toLowerCase().includes(q) ||
+      club.description.toLowerCase().includes(q) ||
+      club.studentLead.toLowerCase().includes(q) ||
+      club.facultyAdvisor.toLowerCase().includes(q) ||
+      club.tags.some(t => t.toLowerCase().includes(q));
+    return matchesCategory && matchesSearch;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 48px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed var(--border-glass);">
+        <i class="fa-solid fa-magnifying-glass" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 12px;"></i>
+        <h4 style="margin-bottom: 6px;">No clubs found</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Try adjusting your filter or search keywords.</p>
+        <button class="btn btn-secondary btn-sm" style="margin-top: 10px;" onclick="filterClubCategory('ALL')">Reset Filters</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(club => {
+    const isJoined = joinedList.includes(club.id);
+    const categoryBadgeClass = 
+      club.category === 'TECHNICAL' ? 'badge-primary' :
+      club.category === 'CREATIVE' ? 'badge-danger' :
+      club.category === 'LITERARY' ? 'badge-warning' : 'badge-success';
+
+    return `
+      <div class="glass-card club-card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid ${club.color}; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <!-- Header -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <div style="width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: ${club.color}22; color: ${club.color};">
+                <i class="fa-solid ${club.icon}"></i>
+              </div>
+              <div>
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700;">${club.name}</h3>
+                <span class="badge ${categoryBadgeClass}" style="font-size: 0.72rem; padding: 2px 8px; margin-top: 4px;">${club.categoryName}</span>
+              </div>
+            </div>
+            ${isJoined ? `<span class="badge badge-success" style="font-size: 0.72rem;"><i class="fa-solid fa-check"></i> Joined</span>` : ''}
+          </div>
+
+          <!-- Tagline & Description -->
+          <p style="font-size: 0.88rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">${club.tagline}</p>
+          <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+            ${club.description}
+          </p>
+
+          <!-- Quick Metadata info -->
+          <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass);">
+            <div><i class="fa-regular fa-clock" style="color: ${club.color}; width: 16px;"></i> ${club.timing}</div>
+            <div><i class="fa-solid fa-location-dot" style="color: var(--danger); width: 16px;"></i> ${club.venue}</div>
+            <div><i class="fa-solid fa-graduation-cap" style="color: var(--secondary); width: 16px;"></i> Lead: ${club.studentLead}</div>
+          </div>
+
+          <!-- Tags -->
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+            ${club.tags.slice(0, 4).map(t => `<span style="font-size: 0.72rem; padding: 3px 8px; background: rgba(255,255,255,0.05); border-radius: 6px; color: var(--text-muted); border: 1px solid var(--border-glass);">#${t}</span>`).join('')}
+          </div>
+        </div>
+
+        <!-- Card Footer Actions -->
+        <div style="display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 14px;">
+          <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="openClubDetailModal('${club.id}')">
+            <i class="fa-solid fa-circle-info"></i> View Details
+          </button>
+          <button class="btn ${isJoined ? 'btn-danger' : 'btn-primary'} btn-sm" style="flex: 1;" onclick="toggleJoinClub('${club.id}')">
+            <i class="fa-solid ${isJoined ? 'fa-user-minus' : 'fa-user-plus'}"></i> ${isJoined ? 'Leave' : 'Join Club'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.filterClubCategory = function(cat) {
+  activeClubFilter = cat;
+  document.querySelectorAll('.club-filter-btn').forEach(btn => {
+    if (btn.getAttribute('data-filter') === cat) {
+      btn.classList.add('btn-primary', 'active');
+      btn.classList.remove('btn-secondary');
+    } else {
+      btn.classList.remove('btn-primary', 'active');
+      btn.classList.add('btn-secondary');
+    }
+  });
+  loadClubs();
+};
+
+window.searchClubs = function(query) {
+  activeClubSearch = query;
+  loadClubs();
+};
+
+window.openClubDetailModal = function(clubId) {
+  const club = CAMPUS_CLUBS.find(c => c.id === clubId);
+  if (!club) return;
+
+  activeModalClubId = clubId;
+  const joinedList = getJoinedClubs();
+  const isJoined = joinedList.includes(clubId);
+
+  const nameEl = document.getElementById('modal-club-name');
+  const taglineEl = document.getElementById('modal-club-tagline');
+  const catEl = document.getElementById('modal-club-category');
+  const descEl = document.getElementById('modal-club-desc');
+  const timingEl = document.getElementById('modal-club-timing');
+  const venueEl = document.getElementById('modal-club-venue');
+  const facultyEl = document.getElementById('modal-club-faculty');
+  const leadEl = document.getElementById('modal-club-lead');
+  const activitiesEl = document.getElementById('modal-club-activities');
+  const tagsEl = document.getElementById('modal-club-tags');
+  const iconWrapEl = document.getElementById('modal-club-icon-wrap');
+  const iconEl = document.getElementById('modal-club-icon');
+  const statusBadge = document.getElementById('modal-club-status-badge');
+  const joinBtn = document.getElementById('modal-club-join-btn');
+
+  if (nameEl) nameEl.textContent = club.name;
+  if (taglineEl) taglineEl.textContent = club.tagline;
+  if (catEl) {
+    catEl.textContent = club.categoryName;
+    catEl.className = 'badge ' + (
+      club.category === 'TECHNICAL' ? 'badge-primary' :
+      club.category === 'CREATIVE' ? 'badge-danger' :
+      club.category === 'LITERARY' ? 'badge-warning' : 'badge-success'
+    );
+  }
+  if (descEl) descEl.textContent = club.description;
+  if (timingEl) timingEl.textContent = club.timing;
+  if (venueEl) venueEl.textContent = club.venue;
+  if (facultyEl) facultyEl.textContent = club.facultyAdvisor;
+  if (leadEl) leadEl.textContent = club.studentLead;
+  
+  if (iconWrapEl) {
+    iconWrapEl.style.background = `${club.color}22`;
+    iconWrapEl.style.color = club.color;
+  }
+  if (iconEl) {
+    iconEl.className = `fa-solid ${club.icon}`;
+  }
+
+  if (statusBadge) {
+    statusBadge.style.display = isJoined ? 'inline-flex' : 'none';
+  }
+
+  if (joinBtn) {
+    joinBtn.className = isJoined ? 'btn btn-danger' : 'btn btn-primary';
+    joinBtn.innerHTML = `<i class="fa-solid ${isJoined ? 'fa-user-minus' : 'fa-plus-circle'}"></i> ${isJoined ? 'Leave Club' : 'Join Club'}`;
+  }
+
+  if (activitiesEl) {
+    activitiesEl.innerHTML = club.activities.map(act => `
+      <li style="margin-bottom: 6px;"><strong style="color:var(--text-main);">${act}</strong></li>
+    `).join('');
+  }
+
+  if (tagsEl) {
+    tagsEl.innerHTML = club.tags.map(tag => `
+      <span class="badge" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-glass); color: var(--text-muted); font-size: 0.8rem; padding: 4px 10px;">#${tag}</span>
+    `).join('');
+  }
+
+  const modal = document.getElementById('club-detail-modal');
+  if (modal) modal.style.display = 'flex';
+};
+
+window.closeClubDetailModal = function() {
+  const modal = document.getElementById('club-detail-modal');
+  if (modal) modal.style.display = 'none';
+  activeModalClubId = null;
+};
+
+window.toggleJoinClub = function(clubId) {
+  let joined = getJoinedClubs();
+  const club = CAMPUS_CLUBS.find(c => c.id === clubId);
+  const clubName = club ? club.name : 'Club';
+
+  if (joined.includes(clubId)) {
+    joined = joined.filter(id => id !== clubId);
+    saveJoinedClubs(joined);
+    showToast(`You have left ${clubName}.`, 'warning');
+  } else {
+    joined.push(clubId);
+    saveJoinedClubs(joined);
+    showToast(`🎉 Congratulations! You have joined ${clubName}!`, 'success');
+  }
+
+  loadClubs();
+
+  // If modal is open for this club, update modal UI as well
+  if (activeModalClubId === clubId) {
+    openClubDetailModal(clubId);
+  }
+};
+
+window.toggleJoinClubFromModal = function() {
+  if (activeModalClubId) {
+    toggleJoinClub(activeModalClubId);
+  }
+};
+
 

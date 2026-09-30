@@ -40,6 +40,9 @@
         <li class="sidebar-item" data-tab="events">
           <a href="#"><i class="fa-solid fa-champagne-glasses"></i> <span>Events & Fests</span></a>
         </li>
+        <li class="sidebar-item" data-tab="clubs">
+          <a href="#"><i class="fa-solid fa-users-viewfinder"></i> <span>Clubs & Societies</span></a>
+        </li>
         <li class="sidebar-item" data-tab="announcements">
           <a href="#"><i class="fa-solid fa-bullhorn"></i> <span>Announcements</span></a>
         </li>
@@ -248,7 +251,50 @@
           <div class="card-list" id="student-events-list"></div>
         </section>
 
-        <!-- 6. ANNOUNCEMENTS TAB -->
+        <!-- 6. CLUBS & SOCIETIES TAB -->
+        <section id="tab-clubs" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Student Clubs & Technical Societies</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Join official campus student chapters, build practical projects, and connect with peer innovators</p>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <span class="badge badge-success" id="my-joined-clubs-badge"><i class="fa-solid fa-check-circle"></i> 0 Clubs Joined</span>
+            </div>
+          </div>
+
+          <!-- Controls: Category Filters & Search Bar -->
+          <div class="glass-card" style="padding:16px 20px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;" id="club-filter-buttons">
+              <button class="btn btn-primary btn-sm club-filter-btn active" data-filter="ALL" onclick="filterClubCategory('ALL')">
+                All Clubs (10)
+              </button>
+              <button class="btn btn-secondary btn-sm club-filter-btn" data-filter="TECHNICAL" onclick="filterClubCategory('TECHNICAL')">
+                <i class="fa-solid fa-microchip"></i> Technical (4)
+              </button>
+              <button class="btn btn-secondary btn-sm club-filter-btn" data-filter="CREATIVE" onclick="filterClubCategory('CREATIVE')">
+                <i class="fa-solid fa-palette"></i> Creative & Arts (3)
+              </button>
+              <button class="btn btn-secondary btn-sm club-filter-btn" data-filter="LITERARY" onclick="filterClubCategory('LITERARY')">
+                <i class="fa-solid fa-book-open"></i> Literary & Logic (2)
+              </button>
+              <button class="btn btn-secondary btn-sm club-filter-btn" data-filter="SOCIAL" onclick="filterClubCategory('SOCIAL')">
+                <i class="fa-solid fa-leaf"></i> Eco & Social (1)
+              </button>
+            </div>
+
+            <div style="min-width:240px; flex:1; max-width:320px;">
+              <input type="text" id="club-search-input" class="form-control" placeholder="🔍 Search clubs, keywords, tags..." style="padding:8px 14px; font-size:0.85rem;" oninput="searchClubs(this.value)">
+            </div>
+          </div>
+
+          <!-- Clubs Cards Grid -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:20px;" id="student-clubs-grid">
+            <!-- Rendered dynamically by student.js -->
+          </div>
+        </section>
+
+        <!-- 7. ANNOUNCEMENTS TAB -->
         <section id="tab-announcements" class="tab-pane">
           <div class="section-header">
             <div>
@@ -466,6 +512,69 @@
           <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Attachment / Portal
         </button>
         <button type="button" class="btn btn-secondary" onclick="closeAnnouncementModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Club Detail & Activities Modal -->
+  <div class="modal-overlay" id="club-detail-modal" style="display:none;" onclick="if(event.target===this) closeClubDetailModal()">
+    <div class="modal-content glass-card" style="max-width: 680px; max-height: 90vh; overflow-y: auto; padding: 28px; position: relative;">
+      <button class="modal-close-btn" onclick="closeClubDetailModal()" style="position: absolute; top: 18px; right: 18px; background: none; border: none; font-size: 1.3rem; color: var(--text-muted); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div id="modal-club-header" style="display: flex; gap: 18px; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-glass); padding-bottom: 18px;">
+        <div id="modal-club-icon-wrap" style="width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2rem; background: rgba(99,102,241,0.15); color: var(--primary);">
+          <i id="modal-club-icon" class="fa-solid fa-microchip"></i>
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+            <span id="modal-club-category" class="badge badge-primary">Technical</span>
+            <span id="modal-club-status-badge" class="badge badge-success" style="display:none;"><i class="fa-solid fa-check"></i> Member</span>
+          </div>
+          <h2 id="modal-club-name" style="margin: 0; font-size: 1.4rem;">Electronics Club</h2>
+          <p id="modal-club-tagline" style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.88rem;">Innovating with Hardware, IoT & Embedded Systems</p>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);"><i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> About the Club</h4>
+        <p id="modal-club-desc" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin: 0;"></p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 10px; padding: 12px 14px;">
+          <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;"><i class="fa-regular fa-clock" style="color: var(--primary);"></i> Regular Meetings</div>
+          <div id="modal-club-timing" style="font-size: 0.88rem; font-weight: 600;">Every Wednesday, 4:30 PM</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 10px; padding: 12px 14px;">
+          <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;"><i class="fa-solid fa-location-dot" style="color: var(--danger);"></i> Venue / Lab</div>
+          <div id="modal-club-venue" style="font-size: 0.88rem; font-weight: 600;">ECE IoT Lab, Block C</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 10px; padding: 12px 14px;">
+          <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;"><i class="fa-solid fa-user-tie" style="color: var(--secondary);"></i> Faculty Advisor</div>
+          <div id="modal-club-faculty" style="font-size: 0.88rem; font-weight: 600;">Dr. V. Rajesh Kumar</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 10px; padding: 12px 14px;">
+          <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;"><i class="fa-solid fa-graduation-cap" style="color: var(--success);"></i> Student Lead</div>
+          <div id="modal-club-lead" style="font-size: 0.88rem; font-weight: 600;">Arun Varma (IV Year ECE)</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Key Activities & Flagship Events</h4>
+        <ul id="modal-club-activities" style="margin: 0; padding-left: 20px; color: var(--text-muted); font-size: 0.88rem; line-height: 1.7;">
+        </ul>
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);"><i class="fa-solid fa-tags" style="color: var(--primary-light);"></i> Focus Areas</h4>
+        <div id="modal-club-tags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 18px; margin-top: 0;">
+        <button type="button" class="btn btn-secondary" onclick="closeClubDetailModal()">Close</button>
+        <button type="button" class="btn btn-primary" id="modal-club-join-btn" onclick="toggleJoinClubFromModal()">
+          <i class="fa-solid fa-plus-circle"></i> Join Club
+        </button>
       </div>
     </div>
   </div>
