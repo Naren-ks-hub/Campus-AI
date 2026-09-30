@@ -13,9 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAdminEventForm();
   setupEditEventForm();
   setupKbForm();
+  setupAdminAddStudentForm();
 
   // Fetch tables and metrics
   loadAdminAnalytics().catch(console.error);
+  loadRegisteredStudentsTab().catch(console.error);
   loadUserDirectory().catch(console.error);
   loadAdminComplaints().catch(console.error);
   loadAdminEventsList().catch(console.error);
@@ -48,33 +50,452 @@ function setupTabs() {
       if (activePane) activePane.classList.add('active');
 
       if (tabId === 'analytics') loadAdminAnalytics().catch(console.error);
+      else if (tabId === 'students') filterAndRenderStudents();
       else if (tabId === 'users') loadUserDirectory().catch(console.error);
-      else if (tabId === 'complaints') loadAdminComplaints().catch(console.error);
+      else if (tabId === 'grievances' || tabId === 'complaints') loadAdminComplaints().catch(console.error);
       else if (tabId === 'events') loadAdminEventsList().catch(console.error);
       else if (tabId === 'knowledge-base') loadKnowledgeBaseManager().catch(console.error);
     });
   });
 }
 
+// -------------------------------------------------------------
+// 1. Dashboard Overview & Department Analytics
+// -------------------------------------------------------------
 async function loadAdminAnalytics() {
+  const students = (typeof getStoredStudentsList === 'function') ? getStoredStudentsList() : await apiRequest('/admin/students');
   const stats = await apiRequest('/admin/analytics');
-  if (stats) {
-    const s1 = document.getElementById('stat-total-students');
-    const s2 = document.getElementById('stat-total-faculty');
-    const s3 = document.getElementById('stat-pending-grievances');
-    const s4 = document.getElementById('stat-active-events');
-    
-    let eventCount = stats.upcomingEvents || 4;
-    try {
-      const storedEvents = JSON.parse(localStorage.getItem('campusai_events_data'));
-      if (Array.isArray(storedEvents)) eventCount = storedEvents.length;
-    } catch(e) {}
 
-    if (s1) s1.textContent = stats.totalStudents || 1420;
-    if (s2) s2.textContent = stats.totalFaculty || 85;
-    if (s3) s3.textContent = stats.pendingComplaints || 4;
-    if (s4) s4.textContent = eventCount;
+  if (students && Array.isArray(students)) {
+    const totalStudents = students.length;
+    const activeStudents = students.filter(s => s.status === 'Active').length;
+    const distinctDepts = new Set(students.map(s => s.department).filter(Boolean));
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const newRegs = students.filter(s => !s.registrationDate || new Date(s.registrationDate) >= thirtyDaysAgo).length;
+
+    const s1 = document.getElementById('stat-total-students');
+    const s2 = document.getElementById('stat-total-departments');
+    const s3 = document.getElementById('stat-active-students');
+    const s4 = document.getElementById('stat-new-registrations');
+
+    if (s1) s1.textContent = totalStudents;
+    if (s2) s2.textContent = distinctDepts.size;
+    if (s3) s3.textContent = activeStudents;
+    if (s4) s4.textContent = newRegs;
+
+    renderDepartmentAnalyticsChart(students);
+    renderRecentlyRegisteredStudents(students);
+  } else if (stats) {
+    const s1 = document.getElementById('stat-total-students');
+    const s2 = document.getElementById('stat-total-departments');
+    const s3 = document.getElementById('stat-active-students');
+    const s4 = document.getElementById('stat-new-registrations');
+
+    if (s1) s1.textContent = stats.totalStudents || 12;
+    if (s2) s2.textContent = stats.totalDepartments || 7;
+    if (s3) s3.textContent = stats.activeStudents || 11;
+    if (s4) s4.textContent = stats.newRegistrations || 12;
   }
+}
+
+function renderDepartmentAnalyticsChart(students) {
+  const container = document.getElementById('dept-analytics-chart-container');
+  if (!container) return;
+
+  const deptCounts = {};
+  students.forEach(s => {
+    const d = s.department || 'Unassigned';
+    deptCounts[d] = (deptCounts[d] || 0) + 1;
+  });
+
+  const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]);
+  const total = students.length || 1;
+  const maxCount = Math.max(...Object.values(deptCounts), 1);
+
+  const deptIcons = {
+    'Computer Science & Engineering': 'fa-laptop-code',
+    'Artificial Intelligence & Data Science': 'fa-brain',
+    'Information Technology': 'fa-microchip',
+    'Electronics & Communication Engineering': 'fa-satellite-dish',
+    'Electrical & Electronics Engineering': 'fa-bolt',
+    'Mechanical Engineering': 'fa-gears',
+    'Civil Engineering': 'fa-building'
+  };
+
+  container.innerHTML = sortedDepts.map(([dept, count]) => {
+    const pct = Math.round((count / total) * 100);
+    const barWidth = Math.max(12, Math.round((count / maxCount) * 100));
+    const icon = deptIcons[dept] || 'fa-graduation-cap';
+
+    return `
+      <div class="dept-bar-row">
+        <div class="dept-bar-header">
+          <span class="dept-bar-label">
+            <i class="fa-solid ${icon}" style="color:var(--primary-light); width:18px;"></i>
+            <span>${dept}</span>
+          </span>
+          <span style="display:flex; align-items:center; gap:8px;">
+            <span class="dept-count-pill">${count} ${count === 1 ? 'student' : 'students'}</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">${pct}%</span>
+          </span>
+        </div>
+        <div class="dept-bar-track">
+          <div class="dept-bar-fill" style="width: ${barWidth}%;"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRecentlyRegisteredStudents(students) {
+  const tbody = document.getElementById('recent-students-table-body');
+  if (!tbody) return;
+
+  const sorted = [...students].sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate));
+  const recent = sorted.slice(0, 8);
+
+  if (!recent.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">No registered students yet.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = recent.map(s => {
+    const dateStr = s.registrationDate ? new Date(s.registrationDate).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }) : 'Recent';
+
+    const statusBadge = s.status === 'Active' 
+      ? `<span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Active</span>`
+      : `<span class="badge badge-danger"><i class="fa-solid fa-circle-xmark"></i> Inactive</span>`;
+
+    return `
+      <tr>
+        <td>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <img src="${s.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120'}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:1px solid var(--border-glass);">
+            <div>
+              <strong style="color:var(--text-main); font-size:0.9rem;">${s.name}</strong>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${s.email}</div>
+            </div>
+          </div>
+        </td>
+        <td><code>${s.studentId}</code></td>
+        <td><span style="font-size:0.85rem;">${s.department}</span></td>
+        <td><span style="font-size:0.82rem; color:var(--text-muted);">${dateStr}</span></td>
+        <td>${statusBadge}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="openStudentViewModal('${s.studentId}')" title="View Student Details">
+            <i class="fa-solid fa-eye"></i> View
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// -------------------------------------------------------------
+// 2. Registered Students Tab: Search, Filter, Management Table
+// -------------------------------------------------------------
+async function loadRegisteredStudentsTab() {
+  const deptSelect = document.getElementById('student-dept-filter');
+  const searchInput = document.getElementById('student-search-input');
+  const statusSelect = document.getElementById('student-status-filter');
+
+  const students = (typeof getStoredStudentsList === 'function') ? getStoredStudentsList() : await apiRequest('/admin/students');
+
+  if (deptSelect && students && Array.isArray(students)) {
+    const distinctDepts = Array.from(new Set(students.map(s => s.department).filter(Boolean))).sort();
+    const currentVal = deptSelect.value || 'ALL';
+    
+    deptSelect.innerHTML = `<option value="ALL">All Departments</option>` + 
+      distinctDepts.map(d => `<option value="${d}">${d}</option>`).join('');
+
+    deptSelect.value = currentVal;
+  }
+
+  if (searchInput && !searchInput.dataset.listenerAttached) {
+    searchInput.addEventListener('input', () => filterAndRenderStudents());
+    searchInput.dataset.listenerAttached = 'true';
+  }
+
+  if (deptSelect && !deptSelect.dataset.listenerAttached) {
+    deptSelect.addEventListener('change', () => filterAndRenderStudents());
+    deptSelect.dataset.listenerAttached = 'true';
+  }
+
+  if (statusSelect && !statusSelect.dataset.listenerAttached) {
+    statusSelect.addEventListener('change', () => filterAndRenderStudents());
+    statusSelect.dataset.listenerAttached = 'true';
+  }
+
+  filterAndRenderStudents();
+}
+
+function filterAndRenderStudents() {
+  const students = (typeof getStoredStudentsList === 'function') ? getStoredStudentsList() : [];
+  const searchInput = document.getElementById('student-search-input');
+  const deptSelect = document.getElementById('student-dept-filter');
+  const statusSelect = document.getElementById('student-status-filter');
+  const tbody = document.getElementById('registered-students-table-body');
+  const countBadge = document.getElementById('student-count-badge');
+  const emptyState = document.getElementById('students-empty-state');
+
+  const query = (searchInput?.value || '').trim().toLowerCase();
+  const selectedDept = deptSelect?.value || 'ALL';
+  const selectedStatus = statusSelect?.value || 'ALL';
+
+  const filtered = students.filter(s => {
+    const matchesQuery = !query || 
+      (s.studentId && s.studentId.toLowerCase().includes(query)) ||
+      (s.name && s.name.toLowerCase().includes(query)) ||
+      (s.email && s.email.toLowerCase().includes(query)) ||
+      (s.department && s.department.toLowerCase().includes(query)) ||
+      (s.phone && s.phone.toLowerCase().includes(query));
+
+    const matchesDept = selectedDept === 'ALL' || s.department === selectedDept;
+    const matchesStatus = selectedStatus === 'ALL' || s.status === selectedStatus;
+
+    return matchesQuery && matchesDept && matchesStatus;
+  });
+
+  if (countBadge) {
+    countBadge.textContent = `Showing ${filtered.length} of ${students.length} Students`;
+  }
+
+  if (!tbody) return;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    if (emptyState) emptyState.style.display = 'block';
+    return;
+  }
+
+  if (emptyState) emptyState.style.display = 'none';
+
+  tbody.innerHTML = filtered.map(s => {
+    const dateStr = s.registrationDate ? new Date(s.registrationDate).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }) : 'Recent';
+
+    const statusBadge = s.status === 'Active'
+      ? `<span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Active</span>`
+      : `<span class="badge badge-danger"><i class="fa-solid fa-circle-xmark"></i> Inactive</span>`;
+
+    return `
+      <tr>
+        <td><strong style="color:var(--primary-light); font-family:monospace; font-size:0.9rem;">${s.studentId}</strong></td>
+        <td>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <img src="${s.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120'}" style="width:34px; height:34px; border-radius:50%; object-fit:cover; border:1px solid var(--border-glass);">
+            <div>
+              <div style="font-weight:600; color:var(--text-main);">${s.name}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${s.residenceType || 'Student'}</div>
+            </div>
+          </div>
+        </td>
+        <td><a href="mailto:${s.email}" style="color:var(--secondary); text-decoration:none; font-size:0.88rem;">${s.email}</a></td>
+        <td><span style="font-size:0.88rem;">${s.department}</span></td>
+        <td><span class="badge badge-info" style="font-size:0.78rem;">${s.year || '3rd Year'}</span></td>
+        <td><span style="font-size:0.85rem; color:var(--text-muted); font-family:monospace;">${s.phone || 'N/A'}</span></td>
+        <td><span style="font-size:0.82rem; color:var(--text-muted);">${dateStr}</span></td>
+        <td>${statusBadge}</td>
+        <td style="text-align:center;">
+          <div style="display:inline-flex; gap:6px;">
+            <button class="btn btn-secondary btn-sm" onclick="openStudentViewModal('${s.studentId}')" title="View Complete Profile">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="toggleStudentStatus('${s.studentId}')" title="Toggle Status (${s.status === 'Active' ? 'Deactivate' : 'Activate'})">
+              <i class="fa-solid fa-arrows-rotate" style="color:${s.status === 'Active' ? 'var(--warning)' : 'var(--success)'};"></i>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="deleteStudentPrompt('${s.studentId}')" title="Delete Student Record">
+              <i class="fa-solid fa-trash" style="color:var(--danger);"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+window.resetStudentFilters = function() {
+  const searchInput = document.getElementById('student-search-input');
+  const deptSelect = document.getElementById('student-dept-filter');
+  const statusSelect = document.getElementById('student-status-filter');
+
+  if (searchInput) searchInput.value = '';
+  if (deptSelect) deptSelect.value = 'ALL';
+  if (statusSelect) statusSelect.value = 'ALL';
+
+  filterAndRenderStudents();
+};
+
+// -------------------------------------------------------------
+// 3. Student Modals & Status Operations
+// -------------------------------------------------------------
+let currentActiveModalStudent = null;
+
+window.openStudentViewModal = function(studentId) {
+  const students = (typeof getStoredStudentsList === 'function') ? getStoredStudentsList() : [];
+  const student = students.find(s => s.studentId === studentId || s.id == studentId);
+  if (!student) {
+    showToast('Student record not found.', 'error');
+    return;
+  }
+
+  currentActiveModalStudent = student;
+
+  const avatar = document.getElementById('modal-student-avatar');
+  const name = document.getElementById('modal-student-name');
+  const idSub = document.getElementById('modal-student-id-sub');
+  const email = document.getElementById('modal-student-email');
+  const phone = document.getElementById('modal-student-phone');
+  const dept = document.getElementById('modal-student-dept');
+  const year = document.getElementById('modal-student-year');
+  const regDate = document.getElementById('modal-student-regdate');
+  const status = document.getElementById('modal-student-status');
+  const toggleBtn = document.getElementById('modal-toggle-status-btn');
+  const deleteBtn = document.getElementById('modal-delete-student-btn');
+
+  if (avatar) avatar.src = student.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120';
+  if (name) name.textContent = student.name;
+  if (idSub) idSub.textContent = `Student ID: ${student.studentId}`;
+  if (email) email.textContent = student.email;
+  if (phone) phone.textContent = student.phone || 'Not Provided';
+  if (dept) dept.textContent = student.department;
+  if (year) year.textContent = `${student.year || '3rd Year'} • ${student.residenceType || 'Dayscholar'}`;
+
+  const formattedDate = student.registrationDate ? new Date(student.registrationDate).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }) : 'Recent';
+  if (regDate) regDate.textContent = formattedDate;
+
+  if (status) {
+    status.innerHTML = student.status === 'Active'
+      ? `<span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Active</span>`
+      : `<span class="badge badge-danger"><i class="fa-solid fa-circle-xmark"></i> Inactive</span>`;
+  }
+
+  if (toggleBtn) {
+    toggleBtn.onclick = () => {
+      toggleStudentStatus(student.studentId);
+      openStudentViewModal(student.studentId);
+    };
+  }
+
+  if (deleteBtn) {
+    deleteBtn.onclick = () => {
+      closeStudentViewModal();
+      deleteStudentPrompt(student.studentId);
+    };
+  }
+
+  document.getElementById('student-view-modal').classList.add('active');
+};
+
+window.closeStudentViewModal = function() {
+  document.getElementById('student-view-modal').classList.remove('active');
+};
+
+window.toggleStudentStatus = function(studentId) {
+  let students = (typeof getStoredStudentsList === 'function') ? getStoredStudentsList() : [];
+  let updatedName = '';
+  let newStatus = 'Active';
+
+  students = students.map(s => {
+    if (s.studentId === studentId || s.id == studentId) {
+      newStatus = s.status === 'Active' ? 'Inactive' : 'Active';
+      updatedName = s.name;
+      return { ...s, status: newStatus };
+    }
+    return s;
+  });
+
+  if (typeof saveStoredStudentsList === 'function') {
+    saveStoredStudentsList(students);
+  }
+
+  showToast(`Status of ${updatedName} updated to ${newStatus}.`, 'info');
+  loadAdminAnalytics();
+  filterAndRenderStudents();
+};
+
+window.deleteStudentPrompt = function(studentId) {
+  let students = (typeof getStoredStudentsList === 'function') ? getStoredStudentsList() : [];
+  const target = students.find(s => s.studentId === studentId || s.id == studentId);
+  if (!target) return;
+
+  if (confirm(`Are you sure you want to delete student record: ${target.name} (${target.studentId})?`)) {
+    students = students.filter(s => s.studentId !== studentId && s.id != studentId);
+    if (typeof saveStoredStudentsList === 'function') {
+      saveStoredStudentsList(students);
+    }
+    showToast(`Student ${target.name} removed from registered database.`, 'info');
+    loadAdminAnalytics();
+    loadRegisteredStudentsTab();
+  }
+};
+
+window.openAdminAddStudentModal = function() {
+  document.getElementById('admin-register-student-modal').classList.add('active');
+};
+
+window.closeAdminAddStudentModal = function() {
+  document.getElementById('admin-register-student-modal').classList.remove('active');
+};
+
+function setupAdminAddStudentForm() {
+  const form = document.getElementById('admin-add-student-form');
+  if (!form) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fullName = document.getElementById('add-student-fullname').value.trim();
+    const studentId = document.getElementById('add-student-id').value.trim();
+    const email = document.getElementById('add-student-email').value.trim();
+    const phone = document.getElementById('add-student-phone').value.trim();
+    const department = document.getElementById('add-student-dept').value;
+    const year = document.getElementById('add-student-year').value;
+    const residenceType = document.getElementById('add-student-residence').value;
+    const status = document.getElementById('add-student-status').value;
+
+    const newStudent = {
+      id: Date.now(),
+      studentId,
+      name: fullName,
+      email,
+      phone,
+      department,
+      year,
+      residenceType,
+      status,
+      registrationDate: new Date().toISOString(),
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120'
+    };
+
+    if (typeof registerNewStudentEntry === 'function') {
+      registerNewStudentEntry(newStudent);
+    } else {
+      let list = getStoredStudentsList();
+      list.unshift(newStudent);
+      saveStoredStudentsList(list);
+    }
+
+    closeAdminAddStudentModal();
+    form.reset();
+    showToast(`Student ${fullName} (${studentId}) registered successfully!`, 'success');
+
+    loadAdminAnalytics();
+    loadRegisteredStudentsTab();
+  });
 }
 
 async function loadUserDirectory() {

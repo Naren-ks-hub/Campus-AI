@@ -340,11 +340,8 @@
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div class="form-group">
-              <label class="form-label" for="acc-residence">Accommodation</label>
-              <select id="acc-residence" class="form-control" required>
-                <option value="Hostel">Hostel (Hosteler)</option>
-                <option value="Dayscholar">Dayscholar</option>
-              </select>
+              <label class="form-label" for="acc-phone"><i class="fa-solid fa-phone"></i> Phone Number</label>
+              <input type="tel" id="acc-phone" class="form-control" placeholder="+91 98424-55667">
             </div>
             <div class="form-group">
               <label class="form-label" for="acc-password"><i class="fa-solid fa-lock"></i> Password</label>
@@ -506,6 +503,23 @@
       pendingAuthUser.semester = semester;
       pendingAuthUser.residenceType = residenceType;
       pendingAuthUser.rollNumber = pendingAuthUser.rollNumber || ('CS2026-' + Math.floor(100 + Math.random() * 900));
+      pendingAuthUser.phone = pendingAuthUser.phone || ('+91 98424-' + Math.floor(10000 + Math.random() * 90000));
+
+      // Register new student in central student database
+      if (typeof registerNewStudentEntry === 'function') {
+        registerNewStudentEntry({
+          id: pendingAuthUser.id,
+          studentId: pendingAuthUser.rollNumber,
+          name: pendingAuthUser.fullName,
+          email: pendingAuthUser.email,
+          department: pendingAuthUser.department,
+          year: pendingAuthUser.year,
+          phone: pendingAuthUser.phone,
+          registrationDate: new Date().toISOString(),
+          status: 'Active',
+          residenceType: pendingAuthUser.residenceType
+        });
+      }
 
       closeStudentInfoModal();
       finalizeLogin(pendingAuthUser, 'student-dashboard.html');
@@ -632,6 +646,7 @@
       const department = document.getElementById('acc-dept').value;
       const year = document.getElementById('acc-year').value;
       const residenceType = document.getElementById('acc-residence').value;
+      const phone = (document.getElementById('acc-phone')?.value || '').trim() || ('+91 98424-' + Math.floor(10000 + Math.random() * 90000));
       const password = document.getElementById('acc-password').value;
 
       let semester = 5;
@@ -649,11 +664,28 @@
         role,
         department,
         rollNumber,
+        phone,
         year,
         semester: role === 'STUDENT' ? semester : 0,
         residenceType,
         avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120'
       };
+
+      // Save to central student registry if role is STUDENT
+      if (role === 'STUDENT' && typeof registerNewStudentEntry === 'function') {
+        registerNewStudentEntry({
+          id: newUser.id,
+          studentId: rollNumber,
+          name: fullName,
+          email: email,
+          department: department,
+          year: year,
+          phone: phone,
+          registrationDate: new Date().toISOString(),
+          status: 'Active',
+          residenceType: residenceType
+        });
+      }
 
       AuthState.setUser(newUser);
       localStorage.setItem('campusai_token', 'reg-token-' + Date.now());

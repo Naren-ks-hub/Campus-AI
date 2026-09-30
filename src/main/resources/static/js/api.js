@@ -444,8 +444,18 @@ function getLocalFallbackData(endpoint, method, data) {
   }
 
   if (endpoint.startsWith('/admin/analytics')) {
+    const students = getStoredStudentsList();
+    const activeCount = students.filter(s => s.status === 'Active').length;
+    const depts = new Set(students.map(s => s.department).filter(Boolean));
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const newRegs = students.filter(s => new Date(s.registrationDate) >= thirtyDaysAgo).length;
+
     return {
-      totalStudents: 1420,
+      totalStudents: students.length,
+      activeStudents: activeCount,
+      totalDepartments: depts.size,
+      newRegistrations: newRegs,
       totalFaculty: 85,
       totalAdmins: 6,
       pendingComplaints: 4,
@@ -455,17 +465,286 @@ function getLocalFallbackData(endpoint, method, data) {
     };
   }
 
+  if (endpoint.startsWith('/admin/students/stats')) {
+    const students = getStoredStudentsList();
+    const deptMap = {};
+    students.forEach(s => {
+      const dept = s.department || 'Unassigned';
+      deptMap[dept] = (deptMap[dept] || 0) + 1;
+    });
+    return {
+      total: students.length,
+      active: students.filter(s => s.status === 'Active').length,
+      inactive: students.filter(s => s.status === 'Inactive').length,
+      departments: Object.entries(deptMap).map(([name, count]) => ({ name, count }))
+    };
+  }
+
+  if (endpoint.startsWith('/admin/students')) {
+    let students = getStoredStudentsList();
+
+    if (method === 'POST' && data) {
+      const newStudent = {
+        id: data.id || Date.now(),
+        studentId: data.studentId || data.rollNumber || `CS2026-${Math.floor(100 + Math.random() * 900)}`,
+        name: data.name || data.fullName || 'New Student',
+        email: data.email || 'student@campusai.edu',
+        department: data.department || 'Computer Science & Engineering',
+        year: data.year || '1st Year',
+        phone: data.phone || '+91 98424-00000',
+        registrationDate: data.registrationDate || new Date().toISOString(),
+        status: data.status || 'Active',
+        residenceType: data.residenceType || 'Dayscholar'
+      };
+      students.unshift(newStudent);
+      saveStoredStudentsList(students);
+      return { success: true, student: newStudent, message: 'Student registered successfully' };
+    }
+
+    if (method === 'PUT' && data) {
+      const targetId = data.studentId || data.id;
+      students = students.map(s => {
+        if (s.studentId === targetId || s.id == targetId) {
+          return { ...s, ...data };
+        }
+        return s;
+      });
+      saveStoredStudentsList(students);
+      return { success: true, message: 'Student updated successfully' };
+    }
+
+    if (method === 'DELETE') {
+      const urlParts = endpoint.split('/');
+      const delId = urlParts[urlParts.length - 1];
+      students = students.filter(s => s.studentId !== delId && s.id != delId);
+      saveStoredStudentsList(students);
+      return { success: true, message: 'Student removed successfully' };
+    }
+
+    return students;
+  }
+
   if (endpoint.startsWith('/admin/users')) {
-    return [
+    const students = getStoredStudentsList();
+    const baseStaff = [
       { id: 1, username: 'admin', fullName: 'Dr. Alistair Vance', email: 'admin@campusai.edu', role: 'ADMIN', department: 'Administration', rollNumber: 'ADM-001', status: 'ACTIVE' },
       { id: 2, username: 'faculty_smith', fullName: 'Prof. Sarah Jenkins', email: 's.jenkins@campusai.edu', role: 'FACULTY', department: 'Computer Science & Engineering', rollNumber: 'FAC-CS-101', status: 'ACTIVE' },
-      { id: 3, username: 'faculty_rao', fullName: 'Dr. Ramesh Rao', email: 'r.rao@campusai.edu', role: 'FACULTY', department: 'Computer Science & Engineering', rollNumber: 'FAC-CS-102', status: 'ACTIVE' },
-      { id: 4, username: 'student_alex', fullName: 'Alex Morgan', email: 'alex.m@campusai.edu', role: 'STUDENT', department: 'Computer Science & Engineering', rollNumber: 'CS2024-042', status: 'ACTIVE' },
-      { id: 5, username: 'student_priya', fullName: 'Priya Sharma', email: 'priya.s@campusai.edu', role: 'STUDENT', department: 'Computer Science & Engineering', rollNumber: 'CS2024-043', status: 'ACTIVE' }
+      { id: 3, username: 'faculty_rao', fullName: 'Dr. Ramesh Rao', email: 'r.rao@campusai.edu', role: 'FACULTY', department: 'Computer Science & Engineering', rollNumber: 'FAC-CS-102', status: 'ACTIVE' }
     ];
+    const studentUsers = students.slice(0, 10).map(s => ({
+      id: s.id,
+      username: (s.email.split('@')[0] || s.name.toLowerCase().replace(/\s+/g, '_')),
+      fullName: s.name,
+      email: s.email,
+      role: 'STUDENT',
+      department: s.department,
+      rollNumber: s.studentId,
+      status: s.status.toUpperCase()
+    }));
+    return [...baseStaff, ...studentUsers];
   }
 
   return { success: true, message: 'Action executed successfully.' };
+}
+
+// Student Data Storage Helpers
+function getStoredStudentsList() {
+  try {
+    const stored = localStorage.getItem('campusai_registered_students_data');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.error('Error loading stored students:', e);
+  }
+
+  const defaultStudents = [
+    {
+      id: 4,
+      studentId: 'CS2024-042',
+      name: 'Alex Morgan',
+      email: 'alex.m@campusai.edu',
+      department: 'Computer Science & Engineering',
+      year: '3rd Year',
+      phone: '+91 98424-30001',
+      registrationDate: '2026-09-01T09:15:00',
+      status: 'Active',
+      residenceType: 'Hostel'
+    },
+    {
+      id: 5,
+      studentId: 'CS2024-043',
+      name: 'Priya Sharma',
+      email: 'priya.s@campusai.edu',
+      department: 'Computer Science & Engineering',
+      year: '3rd Year',
+      phone: '+91 98424-30002',
+      registrationDate: '2026-09-02T10:45:00',
+      status: 'Active',
+      residenceType: 'Dayscholar'
+    },
+    {
+      id: 6,
+      studentId: 'AIDS-2024-019',
+      name: 'Naren K S',
+      email: 'narenks.vsb@gmail.com',
+      department: 'Artificial Intelligence & Data Science',
+      year: '3rd Year',
+      phone: '+91 94432-51201',
+      registrationDate: '2026-09-05T14:20:00',
+      status: 'Active',
+      residenceType: 'Hostel'
+    },
+    {
+      id: 7,
+      studentId: 'AIDS-2024-020',
+      name: 'Aarav Patel',
+      email: 'aarav.p@campusai.edu',
+      department: 'Artificial Intelligence & Data Science',
+      year: '2nd Year',
+      phone: '+91 94432-51202',
+      registrationDate: '2026-09-08T11:30:00',
+      status: 'Active',
+      residenceType: 'Dayscholar'
+    },
+    {
+      id: 8,
+      studentId: 'IT2024-088',
+      name: 'Sneha Reddy',
+      email: 'sneha.r@campusai.edu',
+      department: 'Information Technology',
+      year: '3rd Year',
+      phone: '+91 97890-44101',
+      registrationDate: '2026-09-10T16:00:00',
+      status: 'Active',
+      residenceType: 'Hostel'
+    },
+    {
+      id: 9,
+      studentId: 'IT2024-089',
+      name: 'Karthik Raja',
+      email: 'karthik.r@campusai.edu',
+      department: 'Information Technology',
+      year: '1st Year',
+      phone: '+91 97890-44102',
+      registrationDate: '2026-09-12T09:30:00',
+      status: 'Active',
+      residenceType: 'Dayscholar'
+    },
+    {
+      id: 10,
+      studentId: 'ECE-2024-051',
+      name: 'Divya Sundaram',
+      email: 'divya.s@campusai.edu',
+      department: 'Electronics & Communication Engineering',
+      year: '3rd Year',
+      phone: '+91 98401-77210',
+      registrationDate: '2026-09-15T13:10:00',
+      status: 'Active',
+      residenceType: 'Hostel'
+    },
+    {
+      id: 11,
+      studentId: 'ECE-2024-052',
+      name: 'Rahul Verma',
+      email: 'rahul.v@campusai.edu',
+      department: 'Electronics & Communication Engineering',
+      year: '4th Year',
+      phone: '+91 98401-77211',
+      registrationDate: '2026-09-18T15:45:00',
+      status: 'Active',
+      residenceType: 'Dayscholar'
+    },
+    {
+      id: 12,
+      studentId: 'EEE-2024-014',
+      name: 'Ananya Iyer',
+      email: 'ananya.i@campusai.edu',
+      department: 'Electrical & Electronics Engineering',
+      year: '2nd Year',
+      phone: '+91 99402-33100',
+      registrationDate: '2026-09-20T10:00:00',
+      status: 'Active',
+      residenceType: 'Hostel'
+    },
+    {
+      id: 13,
+      studentId: 'MECH-2024-033',
+      name: 'Vikram Seth',
+      email: 'vikram.s@campusai.edu',
+      department: 'Mechanical Engineering',
+      year: '3rd Year',
+      phone: '+91 96001-99880',
+      registrationDate: '2026-09-22T11:20:00',
+      status: 'Active',
+      residenceType: 'Dayscholar'
+    },
+    {
+      id: 14,
+      studentId: 'CIVIL-2024-027',
+      name: 'Meera Krishnan',
+      email: 'meera.k@campusai.edu',
+      department: 'Civil Engineering',
+      year: '1st Year',
+      phone: '+91 94441-66770',
+      registrationDate: '2026-09-25T14:00:00',
+      status: 'Active',
+      residenceType: 'Hostel'
+    },
+    {
+      id: 15,
+      studentId: 'CS2024-044',
+      name: 'Rohan Das',
+      email: 'rohan.d@campusai.edu',
+      department: 'Computer Science & Engineering',
+      year: '2nd Year',
+      phone: '+91 98424-30003',
+      registrationDate: '2026-08-20T09:00:00',
+      status: 'Inactive',
+      residenceType: 'Dayscholar'
+    }
+  ];
+
+  localStorage.setItem('campusai_registered_students_data', JSON.stringify(defaultStudents));
+  return defaultStudents;
+}
+
+function saveStoredStudentsList(list) {
+  localStorage.setItem('campusai_registered_students_data', JSON.stringify(list));
+}
+
+// Global helper to register a student and save across the entire app
+function registerNewStudentEntry(student) {
+  const list = getStoredStudentsList();
+  // Check if roll number or email already exists
+  const existingIndex = list.findIndex(s => 
+    (student.studentId && s.studentId === student.studentId) || 
+    (student.rollNumber && s.studentId === student.rollNumber) ||
+    (student.email && s.email.toLowerCase() === student.email.toLowerCase())
+  );
+
+  const studentObj = {
+    id: student.id || Date.now(),
+    studentId: student.studentId || student.rollNumber || ('CS2026-' + Math.floor(100 + Math.random() * 900)),
+    name: student.name || student.fullName || 'Student User',
+    email: student.email || 'student@campusai.edu',
+    department: student.department || 'Computer Science & Engineering',
+    year: student.year || '3rd Year',
+    phone: student.phone || '+91 98424-' + Math.floor(10000 + Math.random() * 90000),
+    registrationDate: student.registrationDate || new Date().toISOString(),
+    status: student.status || 'Active',
+    residenceType: student.residenceType || 'Dayscholar'
+  };
+
+  if (existingIndex >= 0) {
+    list[existingIndex] = { ...list[existingIndex], ...studentObj };
+  } else {
+    list.unshift(studentObj);
+  }
+
+  saveStoredStudentsList(list);
+  return studentObj;
 }
 
 // Show interactive toast

@@ -159,12 +159,22 @@ CREATE TABLE IF NOT EXISTS chatbot_logs (
 -- ==========================================================
 
 -- Default Users
-INSERT INTO users (id, username, password, full_name, email, role, department, roll_number, semester, phone, avatar) VALUES
-(1, 'admin', 'admin123', 'Dr. Alistair Vance', 'admin@campusai.edu', 'ADMIN', 'Administration', 'ADM-001', 0, '+1 (555) 100-2000', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'),
-(2, 'faculty_smith', 'faculty123', 'Prof. Sarah Jenkins', 's.jenkins@campusai.edu', 'FACULTY', 'Computer Science & Engineering', 'FAC-CS-101', 0, '+1 (555) 200-3001', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150'),
-(3, 'faculty_rao', 'faculty123', 'Dr. Ramesh Rao', 'r.rao@campusai.edu', 'FACULTY', 'Computer Science & Engineering', 'FAC-CS-102', 0, '+1 (555) 200-3002', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150'),
-(4, 'student_alex', 'student123', 'Alex Morgan', 'alex.m@campusai.edu', 'STUDENT', 'Computer Science & Engineering', 'CS2024-042', 5, '+1 (555) 300-4001', 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'),
-(5, 'student_priya', 'student123', 'Priya Sharma', 'priya.s@campusai.edu', 'STUDENT', 'Computer Science & Engineering', 'CS2024-043', 5, '+1 (555) 300-4002', 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150')
+INSERT INTO users (id, username, password, full_name, email, role, department, roll_number, semester, academic_year, phone, avatar, status, created_at) VALUES
+(1, 'admin', 'admin123', 'Dr. Alistair Vance', 'admin@campusai.edu', 'ADMIN', 'Administration', 'ADM-001', 0, 'Faculty', '+91 98424-10001', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'ACTIVE', '2026-08-01 09:00:00'),
+(2, 'faculty_smith', 'faculty123', 'Prof. Sarah Jenkins', 's.jenkins@campusai.edu', 'FACULTY', 'Computer Science & Engineering', 'FAC-CS-101', 0, 'Faculty', '+91 98424-20001', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150', 'ACTIVE', '2026-08-05 10:30:00'),
+(3, 'faculty_rao', 'faculty123', 'Dr. Ramesh Rao', 'r.rao@campusai.edu', 'FACULTY', 'Computer Science & Engineering', 'FAC-CS-102', 0, 'Faculty', '+91 98424-20002', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150', 'ACTIVE', '2026-08-10 11:15:00'),
+(4, 'student_alex', 'student123', 'Alex Morgan', 'alex.m@campusai.edu', 'STUDENT', 'Computer Science & Engineering', 'CS2024-042', 5, '3rd Year', '+91 98424-30001', 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150', 'ACTIVE', '2026-09-01 09:15:00'),
+(5, 'student_priya', 'student123', 'Priya Sharma', 'priya.s@campusai.edu', 'STUDENT', 'Computer Science & Engineering', 'CS2024-043', 5, '3rd Year', '+91 98424-30002', 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150', 'ACTIVE', '2026-09-02 10:45:00'),
+(6, 'student_naren', 'student123', 'Naren K S', 'narenks.vsb@gmail.com', 'STUDENT', 'Artificial Intelligence & Data Science', 'AIDS-2024-019', 5, '3rd Year', '+91 94432-51201', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150', 'ACTIVE', '2026-09-05 14:20:00'),
+(7, 'student_aarav', 'student123', 'Aarav Patel', 'aarav.p@campusai.edu', 'STUDENT', 'Artificial Intelligence & Data Science', 'AIDS-2024-020', 3, '2nd Year', '+91 94432-51202', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'ACTIVE', '2026-09-08 11:30:00'),
+(8, 'student_sneha', 'student123', 'Sneha Reddy', 'sneha.r@campusai.edu', 'STUDENT', 'Information Technology', 'IT2024-088', 5, '3rd Year', '+91 97890-44101', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', 'ACTIVE', '2026-09-10 16:00:00'),
+(9, 'student_karthik', 'student123', 'Karthik Raja', 'karthik.r@campusai.edu', 'STUDENT', 'Information Technology', 'IT2024-089', 1, '1st Year', '+91 97890-44102', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', 'ACTIVE', '2026-09-12 09:30:00'),
+(10, 'student_divya', 'student123', 'Divya Sundaram', 'divya.s@campusai.edu', 'STUDENT', 'Electronics & Communication Engineering', 'ECE-2024-051', 5, '3rd Year', '+91 98401-77210', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150', 'ACTIVE', '2026-09-15 13:10:00'),
+(11, 'student_rahul', 'student123', 'Rahul Verma', 'rahul.v@campusai.edu', 'STUDENT', 'Electronics & Communication Engineering', 'ECE-2024-052', 7, '4th Year', '+91 98401-77211', 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150', 'ACTIVE', '2026-09-18 15:45:00'),
+(12, 'student_ananya', 'student123', 'Ananya Iyer', 'ananya.i@campusai.edu', 'STUDENT', 'Electrical & Electronics Engineering', 'EEE-2024-014', 3, '2nd Year', '+91 99402-33100', 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150', 'ACTIVE', '2026-09-20 10:00:00'),
+(13, 'student_vikram', 'student123', 'Vikram Seth', 'vikram.s@campusai.edu', 'STUDENT', 'Mechanical Engineering', 'MECH-2024-033', 5, '3rd Year', '+91 96001-99880', 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150', 'ACTIVE', '2026-09-22 11:20:00'),
+(14, 'student_meera', 'student123', 'Meera Krishnan', 'meera.k@campusai.edu', 'STUDENT', 'Civil Engineering', 'CIVIL-2024-027', 1, '1st Year', '+91 94441-66770', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'ACTIVE', '2026-09-25 14:00:00'),
+(15, 'student_rohan', 'student123', 'Rohan Das', 'rohan.d@campusai.edu', 'STUDENT', 'Computer Science & Engineering', 'CS2024-044', 3, '2nd Year', '+91 98424-30003', 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150', 'INACTIVE', '2026-08-20 09:00:00')
 ON DUPLICATE KEY UPDATE full_name=VALUES(full_name);
 
 -- Knowledge Base / College Information for AI Bot (VSB Engineering College Karur)
