@@ -979,20 +979,103 @@ window.closeClubDetailModal = function() {
   activeModalClubId = null;
 };
 
-window.toggleJoinClub = function(clubId) {
-  let joined = getJoinedClubs();
+window.openClubJoinModal = function(clubId) {
+  const club = CAMPUS_CLUBS.find(c => c.id === clubId);
+  if (!club) return;
+
+  const user = AuthState.getUser() || {};
+
+  const clubIdInput = document.getElementById('join-club-id');
+  const clubNameEl = document.getElementById('join-modal-club-name');
+  const clubIconWrap = document.getElementById('join-modal-club-icon-wrap');
+  const clubIconEl = document.getElementById('join-modal-club-icon');
+
+  if (clubIdInput) clubIdInput.value = clubId;
+  if (clubNameEl) clubNameEl.textContent = `Join ${club.name}`;
+  if (clubIconWrap) {
+    clubIconWrap.style.background = `${club.color}22`;
+    clubIconWrap.style.color = club.color;
+  }
+  if (clubIconEl) clubIconEl.className = `fa-solid ${club.icon}`;
+
+  // Pre-fill student info
+  const fullNameEl = document.getElementById('join-full-name');
+  const rollNoEl = document.getElementById('join-roll-no');
+  const deptYearEl = document.getElementById('join-dept-year');
+  const sectionEl = document.getElementById('join-section');
+  const emailEl = document.getElementById('join-email');
+  const phoneEl = document.getElementById('join-phone');
+
+  const deptShort = user.department || 'Computer Science & Engineering';
+  const yearText = user.year || (user.semester ? `Year ${Math.ceil(user.semester / 2)}` : '3rd Year');
+
+  if (fullNameEl) fullNameEl.value = user.fullName || 'Alex Morgan';
+  if (rollNoEl) rollNoEl.value = user.rollNumber || 'CS2026-042';
+  if (deptYearEl) deptYearEl.value = `${deptShort}, ${yearText}`;
+  if (sectionEl) sectionEl.value = user.section || 'Section A';
+  if (emailEl) emailEl.value = user.email || 'alex.morgan@vsb.edu.in';
+  if (phoneEl) phoneEl.value = user.phone || '+91 98424 56789';
+
+  const modal = document.getElementById('club-join-modal');
+  if (modal) modal.style.display = 'flex';
+};
+
+window.closeClubJoinModal = function() {
+  const modal = document.getElementById('club-join-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.handleClubJoinSubmit = function(e) {
+  e.preventDefault();
+
+  const clubId = document.getElementById('join-club-id').value;
   const club = CAMPUS_CLUBS.find(c => c.id === clubId);
   const clubName = club ? club.name : 'Club';
 
-  if (joined.includes(clubId)) {
-    joined = joined.filter(id => id !== clubId);
-    saveJoinedClubs(joined);
-    showToast(`You have left ${clubName}.`, 'warning');
-  } else {
+  const fullName = document.getElementById('join-full-name').value.trim();
+  const rollNumber = document.getElementById('join-roll-no').value.trim();
+  const deptYear = document.getElementById('join-dept-year').value.trim();
+  const section = document.getElementById('join-section').value.trim();
+  const email = document.getElementById('join-email').value.trim();
+  const phone = document.getElementById('join-phone').value.trim();
+
+  if (!fullName || !rollNumber || !deptYear || !email || !phone) {
+    showToast('Please fill in all required fields (*)', 'danger');
+    return;
+  }
+
+  // Save membership registration record
+  const registrationRecord = {
+    clubId,
+    clubName,
+    fullName,
+    rollNumber,
+    deptYear,
+    section: section || 'N/A',
+    email,
+    phone,
+    registeredAt: new Date().toLocaleString()
+  };
+
+  try {
+    const rawRegs = localStorage.getItem('campusai_club_registrations');
+    let regs = rawRegs ? JSON.parse(rawRegs) : [];
+    regs = regs.filter(r => !(r.clubId === clubId && r.rollNumber === rollNumber));
+    regs.push(registrationRecord);
+    localStorage.setItem('campusai_club_registrations', JSON.stringify(regs));
+  } catch (err) {
+    console.error('Error saving registration', err);
+  }
+
+  // Add to joined list
+  let joined = getJoinedClubs();
+  if (!joined.includes(clubId)) {
     joined.push(clubId);
     saveJoinedClubs(joined);
-    showToast(`🎉 Congratulations! You have joined ${clubName}!`, 'success');
   }
+
+  closeClubJoinModal();
+  showToast(`🎉 Registration Successful! Welcome to ${clubName}, ${fullName}!`, 'success');
 
   loadClubs();
 
@@ -1002,10 +1085,31 @@ window.toggleJoinClub = function(clubId) {
   }
 };
 
+window.toggleJoinClub = function(clubId) {
+  let joined = getJoinedClubs();
+  const club = CAMPUS_CLUBS.find(c => c.id === clubId);
+  const clubName = club ? club.name : 'Club';
+
+  if (joined.includes(clubId)) {
+    if (confirm(`Are you sure you want to leave ${clubName}?`)) {
+      joined = joined.filter(id => id !== clubId);
+      saveJoinedClubs(joined);
+      showToast(`You have left ${clubName}.`, 'warning');
+      loadClubs();
+      if (activeModalClubId === clubId) {
+        openClubDetailModal(clubId);
+      }
+    }
+  } else {
+    openClubJoinModal(clubId);
+  }
+};
+
 window.toggleJoinClubFromModal = function() {
   if (activeModalClubId) {
     toggleJoinClub(activeModalClubId);
   }
 };
+
 
 

@@ -579,6 +579,88 @@
     </div>
   </div>
 
+  <!-- Club Registration / Join Modal -->
+  <div class="modal-overlay" id="club-join-modal" style="display:none;" onclick="if(event.target===this) closeClubJoinModal()">
+    <div class="modal-content glass-card" style="max-width: 540px; max-height: 90vh; overflow-y: auto; padding: 28px; position: relative;">
+      <button class="modal-close-btn" onclick="closeClubJoinModal()" style="position: absolute; top: 18px; right: 18px; background: none; border: none; font-size: 1.3rem; color: var(--text-muted); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+      
+      <!-- Modal Header -->
+      <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-glass); padding-bottom: 16px;">
+        <div id="join-modal-club-icon-wrap" style="width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; background: rgba(99,102,241,0.15); color: var(--primary);">
+          <i id="join-modal-club-icon" class="fa-solid fa-users"></i>
+        </div>
+        <div>
+          <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Student Club Membership Application</div>
+          <h2 id="join-modal-club-name" style="margin: 2px 0 0 0; font-size: 1.25rem;">Join Electronics Club</h2>
+        </div>
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0; margin-bottom: 18px; line-height: 1.5;">
+        Please verify your student credentials to register as an official member. You will receive notifications about upcoming hackathons, workshops, and weekly meetups.
+      </p>
+
+      <form id="club-join-form" onsubmit="handleClubJoinSubmit(event)">
+        <input type="hidden" id="join-club-id" value="">
+
+        <!-- Full Name -->
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--text-main);">
+            <i class="fa-solid fa-user" style="color:var(--primary);"></i> Full Name <span style="color:var(--danger);">*</span>
+          </label>
+          <input type="text" id="join-full-name" class="form-control" required placeholder="e.g. Alex Morgan" style="width:100%; padding:10px 14px; font-size:0.9rem;">
+        </div>
+
+        <!-- Register / Roll Number -->
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--text-main);">
+            <i class="fa-solid fa-id-card" style="color:var(--secondary);"></i> Register Number / Roll Number <span style="color:var(--danger);">*</span>
+          </label>
+          <input type="text" id="join-roll-no" class="form-control" required placeholder="e.g. CS2026-042 or 922521104042" style="width:100%; padding:10px 14px; font-size:0.9rem;">
+        </div>
+
+        <!-- Department & Year / Semester -->
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--text-main);">
+            <i class="fa-solid fa-graduation-cap" style="color:var(--success);"></i> Department & Year / Semester <span style="color:var(--danger);">*</span>
+          </label>
+          <input type="text" id="join-dept-year" class="form-control" required placeholder="e.g. CSE, 3rd Year (Semester 5)" style="width:100%; padding:10px 14px; font-size:0.9rem;">
+        </div>
+
+        <!-- Section / Batch (Optional) -->
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--text-main);">
+            <i class="fa-solid fa-layer-group" style="color:var(--warning);"></i> Section / Batch <span style="color:var(--text-muted); font-size:0.75rem; font-weight:normal;">(Optional)</span>
+          </label>
+          <input type="text" id="join-section" class="form-control" placeholder="e.g. Section B / Batch 2023-2027" style="width:100%; padding:10px 14px; font-size:0.9rem;">
+        </div>
+
+        <!-- Email ID & Phone Number in 2 Columns -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--text-main);">
+              <i class="fa-solid fa-envelope" style="color:var(--primary-light);"></i> Email ID <span style="color:var(--danger);">*</span>
+            </label>
+            <input type="email" id="join-email" class="form-control" required placeholder="e.g. alex.morgan@vsb.edu.in" style="width:100%; padding:10px 14px; font-size:0.9rem;">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--text-main);">
+              <i class="fa-solid fa-phone" style="color:var(--success);"></i> Phone Number <span style="color:var(--danger);">*</span>
+            </label>
+            <input type="tel" id="join-phone" class="form-control" required placeholder="e.g. +91 98765 43210" style="width:100%; padding:10px 14px; font-size:0.9rem;">
+          </div>
+        </div>
+
+        <!-- Footer Buttons -->
+        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-glass); padding-top:18px; margin-top:0;">
+          <button type="button" class="btn btn-secondary" onclick="closeClubJoinModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="join-submit-btn">
+            <i class="fa-solid fa-paper-plane"></i> Confirm & Join Club
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/api.js"></script>
   <script src="js/chatbot.js"></script>
