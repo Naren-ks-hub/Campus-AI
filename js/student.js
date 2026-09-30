@@ -65,6 +65,20 @@ function setupTabs() {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       const activePane = document.getElementById(`tab-${tabId}`);
       if (activePane) activePane.classList.add('active');
+
+      if (tabId === 'events') {
+        loadEvents().catch(console.error);
+      } else if (tabId === 'announcements') {
+        loadAnnouncements().catch(console.error);
+      } else if (tabId === 'timetable') {
+        loadTimetable().catch(console.error);
+      } else if (tabId === 'attendance') {
+        loadAttendance().catch(console.error);
+      } else if (tabId === 'assignments') {
+        loadAssignments().catch(console.error);
+      } else if (tabId === 'complaints') {
+        loadComplaints().catch(console.error);
+      }
     });
   });
 }

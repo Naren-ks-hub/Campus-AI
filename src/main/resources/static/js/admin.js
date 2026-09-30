@@ -2,27 +2,33 @@
  * CampusAI - Admin Console Controller
  */
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   const user = AuthState.getUser();
   updateProfileHeader(user);
   setupTabs();
 
-  await loadAdminAnalytics();
-  await loadUserDirectory();
-  await loadAdminComplaints();
-  await loadKnowledgeBaseManager();
-
+  // Setup interactive form listeners immediately (zero wait)
   setupAddUserForm();
   setupAdminAnnouncementForm();
   setupAdminEventForm();
   setupKbForm();
+
+  // Fetch tables and metrics asynchronously
+  loadAdminAnalytics().catch(console.error);
+  loadUserDirectory().catch(console.error);
+  loadAdminComplaints().catch(console.error);
+  loadKnowledgeBaseManager().catch(console.error);
 });
 
 function updateProfileHeader(user) {
   if (!user) return;
-  document.getElementById('admin-name').textContent = user.fullName || 'Dr. Alistair Vance';
-  document.getElementById('admin-role-dept').textContent = 'Principal Administrator • CampusAI';
-  if (user.avatar) document.getElementById('admin-avatar').src = user.avatar;
+  const adminName = document.getElementById('admin-name');
+  const adminRole = document.getElementById('admin-role-dept');
+  const adminAvatar = document.getElementById('admin-avatar');
+
+  if (adminName) adminName.textContent = user.fullName || 'Dr. Alistair Vance';
+  if (adminRole) adminRole.textContent = 'Principal Administrator • CampusAI';
+  if (adminAvatar && user.avatar) adminAvatar.src = user.avatar;
 }
 
 function setupTabs() {
@@ -38,6 +44,11 @@ function setupTabs() {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       const activePane = document.getElementById(`tab-${tabId}`);
       if (activePane) activePane.classList.add('active');
+
+      if (tabId === 'analytics') loadAdminAnalytics().catch(console.error);
+      else if (tabId === 'users') loadUserDirectory().catch(console.error);
+      else if (tabId === 'complaints') loadAdminComplaints().catch(console.error);
+      else if (tabId === 'knowledge-base') loadKnowledgeBaseManager().catch(console.error);
     });
   });
 }
@@ -45,10 +56,14 @@ function setupTabs() {
 async function loadAdminAnalytics() {
   const stats = await apiRequest('/admin/analytics');
   if (stats) {
-    document.getElementById('stat-total-students').textContent = stats.totalStudents || 1420;
-    document.getElementById('stat-total-faculty').textContent = stats.totalFaculty || 85;
-    document.getElementById('stat-pending-grievances').textContent = stats.pendingComplaints || 4;
-    document.getElementById('stat-active-events').textContent = stats.upcomingEvents || 3;
+    const s1 = document.getElementById('stat-total-students');
+    const s2 = document.getElementById('stat-total-faculty');
+    const s3 = document.getElementById('stat-pending-grievances');
+    const s4 = document.getElementById('stat-active-events');
+    if (s1) s1.textContent = stats.totalStudents || 1420;
+    if (s2) s2.textContent = stats.totalFaculty || 85;
+    if (s3) s3.textContent = stats.pendingComplaints || 4;
+    if (s4) s4.textContent = stats.upcomingEvents || 3;
   }
 }
 
@@ -162,6 +177,7 @@ function setupAdminAnnouncementForm() {
     const content = document.getElementById('admin-announce-content').value.trim();
 
     const newAnnouncement = {
+      id: Date.now(),
       title,
       priority,
       targetRole,
@@ -169,10 +185,25 @@ function setupAdminAnnouncementForm() {
       createdAt: new Date().toISOString()
     };
 
-    await apiRequest('/admin/announcements', 'POST', newAnnouncement);
+    // Save directly to localStorage immediately
+    try {
+      let list = JSON.parse(localStorage.getItem('campusai_announcements_data')) || [];
+      list.unshift(newAnnouncement);
+      localStorage.setItem('campusai_announcements_data', JSON.stringify(list));
+    } catch(err) { console.error(err); }
+
+    await apiRequest('/admin/announcements', 'POST', newAnnouncement).catch(console.error);
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      const orig = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Notice Broadcasted!';
+      setTimeout(() => { submitBtn.innerHTML = orig; }, 1800);
+    }
+
     showToast(`Official Notice "${title}" published across all campus portals!`, 'success');
     form.reset();
-    await loadAdminAnalytics();
+    loadAdminAnalytics().catch(console.error);
   });
 }
 
@@ -180,30 +211,73 @@ function setupAdminEventForm() {
   const form = document.getElementById('admin-event-form');
   if (!form) return;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const title = document.getElementById('admin-event-title').value.trim();
-    const category = document.getElementById('admin-event-category').value;
-    const eventDate = document.getElementById('admin-event-date').value;
-    const location = document.getElementById('admin-event-location').value.trim();
-    const description = document.getElementById('admin-event-desc').value.trim();
+  const handleEventSubmit = async (e) => {
+    if (e) e.preventDefault();
+    const titleInput = document.getElementById('admin-event-title');
+    const title = titleInput ? titleInput.value.trim() : '';
+    if (!title) {
+      showToast('Please enter an event name.', 'error');
+      return;
+    }
+    const category = document.getElementById('admin-event-category')?.value || 'Hackathon';
+    const eventDate = document.getElementById('admin-event-date')?.value || new Date().toISOString();
+    const location = document.getElementById('admin-event-location')?.value.trim() || 'Campus Main Auditorium';
+    const description = document.getElementById('admin-event-desc')?.value.trim() || 'Exciting college campus event & fest.';
 
     const newEvent = {
+      id: Date.now(),
       title,
       category,
-      eventDate: eventDate ? new Date(eventDate).toISOString() : new Date().toISOString(),
-      location: location || 'Campus Main Auditorium',
-      description: description || 'Exciting college campus event.',
+      eventDate: eventDate ? (eventDate.includes('T') ? eventDate : new Date(eventDate).toISOString()) : new Date().toISOString(),
+      location: location,
+      description: description,
       organizer: 'Campus Administration',
       bannerUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600',
       registrationLink: '#'
     };
 
-    await apiRequest('/admin/events', 'POST', newEvent);
-    showToast(`Campus Event "${title}" published to student calendar!`, 'success');
+    // 1. Immediately save to localStorage
+    try {
+      let currentEvents = [];
+      const stored = localStorage.getItem('campusai_events_data');
+      if (stored) {
+        currentEvents = JSON.parse(stored);
+      }
+      if (!Array.isArray(currentEvents) || !currentEvents.length) {
+        currentEvents = [
+          { id: 1, title: 'KANAL 2K26 - National Level Technical Symposium', category: 'Symposium', description: 'Flagship National Level Technical Symposium by CSE & IT featuring Paper Presentation, Code Sprint, Bug Hunt, Web Design, and AI Hack Challenge with cash awards.', eventDate: '2026-10-18T09:00:00', location: 'VSB Main Auditorium & CSE Lab 4', organizer: 'Dept of CSE & IT, VSBEC Karur', bannerUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600', registrationLink: 'https://vsbec.edu.in/kanal2k26' },
+          { id: 2, title: 'LIRO 2K26 - Line Follower Robotics Competition', category: 'Robotics', description: 'Inter-college autonomous robotics and IoT line follower navigation challenge testing speed, sensor accuracy, and algorithmic path optimization.', eventDate: '2026-10-13T09:30:00', location: 'Einstein Tech Block & ECE Robotics Lab', organizer: 'Dept of ECE & Robotics Club', bannerUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600', registrationLink: 'https://vsbec.edu.in/liro2k26' },
+          { id: 3, title: 'ILLUMINATE 2026 - E-Cell Entrepreneurship Summit', category: 'Workshop', description: 'Hands-on startup incubation, business modeling, and venture capital pitching workshop organized in association with E-Cell IIT Bombay.', eventDate: '2026-10-14T10:00:00', location: 'VSB Convention Center', organizer: 'Entrepreneurship Development Cell (EDC)', bannerUrl: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600', registrationLink: 'https://vsbec.edu.in/illuminate' },
+          { id: 4, title: 'DIGIVERSE XPOSE 2026 - Annual Project & Cultural Expo', category: 'Cultural & Expo', description: 'Grand annual inter-department innovative engineering project expo, AI demonstrations, and cultural music & dance fiesta.', eventDate: '2026-11-05T08:30:00', location: 'Central Open Air Amphitheatre', organizer: 'Student Affairs Council', bannerUrl: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600', registrationLink: 'https://vsbec.edu.in/digiverse' }
+        ];
+      }
+      currentEvents.unshift(newEvent);
+      localStorage.setItem('campusai_events_data', JSON.stringify(currentEvents));
+    } catch (err) {
+      console.error('LocalStorage write error:', err);
+    }
+
+    // 2. Also send to backend
+    await apiRequest('/admin/events', 'POST', newEvent).catch(console.error);
+
+    // 3. Interactive button animation & confirmation
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      const originalHtml = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Event Added Successfully!';
+      submitBtn.style.background = 'var(--success)';
+      setTimeout(() => {
+        submitBtn.innerHTML = originalHtml;
+        submitBtn.style.background = '';
+      }, 2000);
+    }
+
+    showToast(`🎉 Campus Event "${title}" published to student calendar!`, 'success');
     form.reset();
-    await loadAdminAnalytics();
-  });
+    loadAdminAnalytics().catch(console.error);
+  };
+
+  form.addEventListener('submit', handleEventSubmit);
 }
 
 function setupKbForm() {
