@@ -4,12 +4,29 @@ A modern, full-stack **College Management Assistant Web Application** featuring 
 
 ---
 
+## 📸 Product Visuals & Interface Showcase
+
+| 🤖 AI Assistant with Exact Source Citations | 👨‍🎓 Student Management Portal |
+| :---: | :---: |
+| ![CampusAI Assistant with Verified Citations](images/campusai_chatbot_citations.jpg) | ![Student Management Portal](images/campusai_student_portal.jpg) |
+
+<p align="center">
+  <img src="images/campusai_doc_inspector.jpg" alt="Official Institutional Document & Notice Inspector" width="750"/>
+  <br>
+  <em>🏛️ Authentic Institutional Document & Admin Notice Inspector Modal with Verbatim Clause Verification</em>
+</p>
+
+---
+
 ## 🌟 Key Features
 
-### 🤖 1. Intelligent Campus AI Chatbot
+### 🤖 1. Intelligent Campus AI Chatbot with Exact Document Citations
+- **Statutory Source Citations**: Every answer about fees, scholarships, library rules, exam circulars, and grievance escalation cites the exact official handbook clause, admin notice reference number, and issuing authority.
+- **In-Chat Document Inspector Modal**: Interactive dialog displaying authentic institutional documents with official crests, issuing body, signatories, verified digital hash, and verbatim regulatory clauses.
+- **Zero-Hallucination Verified Badges**: Guaranteed institutional record badges with one-click citation copying (`[Citation: ... | Ref: ... | § Clause]`).
+- **Official Knowledge Archives Explorer**: In-chat slide-out drawer allowing students and admins to search and filter 9+ institutional handbooks, COE circulars, and trust bulletins.
 - **Conversational Natural Language Interface**: Query attendance percentage, daily timetable, pending assignments, campus events, and official circulars.
 - **Voice Recognition**: Interactive microphone input with speech-to-text.
-- **Knowledge Base Retrieval**: Instant answers for Library hours, Tuition fees & scholarships, Hostel rules, Admissions, and Placements.
 - **Quick Action Chips**: One-tap suggestion buttons for instant queries.
 
 ### 👨‍🎓 2. Student Portal

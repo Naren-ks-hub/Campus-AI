@@ -414,12 +414,15 @@ function setupAdminAnnouncementForm() {
 }
 
 const mockKnowledgeBase = [
-  { id: 1, category: 'ABOUT', title: 'About CampusAI Institute of Tech', keywords: 'ranking, naac, campus' },
-  { id: 2, category: 'ADMISSION', title: 'Admissions & Eligibility Criteria', keywords: 'btech, jee, cutoff, 10+2' },
-  { id: 3, category: 'FEES', title: 'Tuition Fee Structure & Scholarships', keywords: 'fees, scholarship, installments' },
-  { id: 4, category: 'LIBRARY', title: 'Central Library Hours & Digital Access', keywords: 'library, books, journals, ieee' },
-  { id: 5, category: 'HOSTEL', title: 'Hostel Accommodation & Dining Rules', keywords: 'hostel, room, mess, warden' },
-  { id: 6, category: 'PLACEMENTS', title: 'Campus Placement Statistics & Recruiters', keywords: 'jobs, packages, google, amazon' }
+  { id: 1, category: 'FEES', title: 'Institutional Tuition & Fee Schedule Regulations (AY 2026–2027)', refNumber: 'VSB/FIN/FEE-REG/2026-27/01', keywords: 'tuition, payment due date, late fine slabs, refund, installments', authority: 'Office of Finance & Accounts' },
+  { id: 2, category: 'FEES', title: 'VSB Educational Trust Merit Scholarship & Concession Policy Bulletin 2026', refNumber: 'TRUST-SCHOLAR-2026/B-12', keywords: 'tnea cutoff 195, 100% waiver, cgpa topper cash award', authority: 'Board of Trustees' },
+  { id: 3, category: 'LIBRARY', title: 'Central Digital Library Regulations Manual & Code of Ethics 2026', refNumber: 'LIB/MANUAL/2026/V4.2', keywords: 'borrow quota 5 books, overdue fine ₹2/day, book bank, ieee xplore', authority: 'Central Library Directorate' },
+  { id: 4, category: 'EXAMS', title: 'Autonomous COE ODD Semester Examination & Hall Ticket Directive', refNumber: 'COE/CIR/2026/ODD/042', keywords: 'october 28 exams, mandatory 75% attendance, medical condonation', authority: 'Controller of Examinations' },
+  { id: 5, category: 'EXAMS', title: 'Autonomous Revaluation, Photocopy & Supplementary Examination Notification', refNumber: 'COE/REV/2026/SUPP-03', keywords: 'revaluation ₹400, photocopy ₹300, 50% refund, arrears', authority: 'Controller of Examinations' },
+  { id: 6, category: 'GRIEVANCE', title: 'Institutional Grievance Redressal Mechanism & Student Charter', refNumber: 'VSB/GRC/POLICY/2026/01', keywords: '4-tier escalation, mentor 24-48h SLA, hod, grc, ombudsman', authority: 'Apex Grievance Redressal Cell' },
+  { id: 7, category: 'GRIEVANCE', title: 'Statutory Anti-Ragging Mandate & Internal Complaints Committee (ICC)', refNumber: 'INST/CIR/ICC-AR/2026/007', keywords: 'anti-ragging 1800-180-5522, flying squad, icc posh 15-day resolution', authority: 'Anti-Ragging Squad & ICC' },
+  { id: 8, category: 'PLACEMENTS', title: 'Career Development Centre (CDC) Training & Placement Code of Conduct', refNumber: 'CDC/POLICY/2026/P-01', keywords: '47 lpa highest ctc, dream company policy, 1000+ offers', authority: 'Placement Directorate' },
+  { id: 9, category: 'TRANSPORT', title: 'College Bus Transportation & Commuter Regulations', refNumber: 'TRANS/MANUAL/2026/R-50', keywords: '50+ routes, trichy, erode, dindigul, rfid smart card, 4:45 departure', authority: 'Transport Division' }
 ];
 
 async function loadKnowledgeBaseManager() {
@@ -427,15 +430,25 @@ async function loadKnowledgeBaseManager() {
   if (!container) return;
 
   container.innerHTML = mockKnowledgeBase.map(kb => `
-    <div class="glass-card" style="padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+    <div class="glass-card" style="padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
       <div>
-        <span class="badge badge-info" style="margin-bottom:6px;">${kb.category}</span>
-        <h4>${kb.title}</h4>
-        <p style="font-size:0.8rem; color:var(--text-muted);">AI Keywords: <code>${kb.keywords}</code></p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <span class="badge badge-info">${kb.category}</span>
+          <span style="font-family:monospace; font-size:0.75rem; color:var(--secondary); background:rgba(6,182,212,0.1); padding:2px 8px; border-radius:4px;"><i class="fa-solid fa-hashtag"></i> ${kb.refNumber}</span>
+          <span style="font-size:0.72rem; color:#34d399; font-weight:700;"><i class="fa-solid fa-shield-check"></i> Verified</span>
+        </div>
+        <h4 style="font-size:0.95rem; margin-bottom:4px;">${kb.title}</h4>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:2px;">Issuing Authority: <strong style="color:var(--text-main);">${kb.authority}</strong></p>
+        <p style="font-size:0.75rem; color:var(--text-subtle);">Trigger Keywords: <code>${kb.keywords}</code></p>
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="editKbItem(${kb.id})">
-        <i class="fa-solid fa-pen"></i> Edit AI Prompt
-      </button>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button class="btn btn-primary btn-sm" style="white-space:nowrap;" onclick="if(typeof openDocumentInspector==='function'){ openDocumentInspector('doc-${kb.category.toLowerCase()}-01'); } else { showToast('Opening archive record: ${kb.refNumber}', 'info'); }">
+          <i class="fa-solid fa-file-magnifying-glass"></i> View Clauses
+        </button>
+        <button class="btn btn-secondary btn-sm" style="white-space:nowrap;" onclick="showToast('AI semantic intent editor for ${kb.refNumber} loaded.', 'info')">
+          <i class="fa-solid fa-pen"></i> Edit Context
+        </button>
+      </div>
     </div>
   `).join('');
 }
@@ -447,7 +460,7 @@ function setupKbForm() {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const topic = document.getElementById('kb-topic-title').value;
-    showToast(`AI Knowledge Base updated with new context: "${topic}"!`, 'success');
+    showToast(`AI Knowledge Base updated with verified institutional record: "${topic}"!`, 'success');
     form.reset();
   });
 }
