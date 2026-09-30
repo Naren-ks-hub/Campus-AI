@@ -241,8 +241,42 @@ function getLocalFallbackData(endpoint, method, data) {
     ];
   }
 
-  if (endpoint.startsWith('/public/events')) {
-    return [
+  if (endpoint.startsWith('/admin/events') && method === 'POST') {
+    let events = [];
+    try {
+      events = JSON.parse(localStorage.getItem('campusai_events_data')) || [];
+    } catch(e) { events = []; }
+    if (!events.length) {
+      events = [
+        { id: 1, title: 'KANAL 2K26 - National Level Technical Symposium', category: 'Symposium', description: 'Flagship National Level Technical Symposium by CSE & IT featuring Paper Presentation, Code Sprint, Bug Hunt, Web Design, and AI Hack Challenge with cash awards.', eventDate: '2026-10-18T09:00:00', location: 'VSB Main Auditorium & CSE Lab 4', organizer: 'Dept of CSE & IT, VSBEC Karur', bannerUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600', registrationLink: 'https://vsbec.edu.in/kanal2k26' },
+        { id: 2, title: 'LIRO 2K26 - Line Follower Robotics Competition', category: 'Robotics', description: 'Inter-college autonomous robotics and IoT line follower navigation challenge testing speed, sensor accuracy, and algorithmic path optimization.', eventDate: '2026-10-13T09:30:00', location: 'Einstein Tech Block & ECE Robotics Lab', organizer: 'Dept of ECE & Robotics Club', bannerUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600', registrationLink: 'https://vsbec.edu.in/liro2k26' },
+        { id: 3, title: 'ILLUMINATE 2026 - E-Cell Entrepreneurship Summit', category: 'Workshop', description: 'Hands-on startup incubation, business modeling, and venture capital pitching workshop organized in association with E-Cell IIT Bombay.', eventDate: '2026-10-14T10:00:00', location: 'VSB Convention Center', organizer: 'Entrepreneurship Development Cell (EDC)', bannerUrl: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600', registrationLink: 'https://vsbec.edu.in/illuminate' },
+        { id: 4, title: 'DIGIVERSE XPOSE 2026 - Annual Project & Cultural Expo', category: 'Cultural & Expo', description: 'Grand annual inter-department innovative engineering project expo, AI demonstrations, and cultural music & dance fiesta.', eventDate: '2026-11-05T08:30:00', location: 'Central Open Air Amphitheatre', organizer: 'Student Affairs Council', bannerUrl: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600', registrationLink: 'https://vsbec.edu.in/digiverse' }
+      ];
+    }
+    const createdEvent = {
+      id: Date.now(),
+      title: body.title || 'New Campus Event',
+      category: body.category || 'Symposium',
+      description: body.description || '',
+      eventDate: body.eventDate || new Date().toISOString(),
+      location: body.location || 'Campus Main Auditorium',
+      organizer: body.organizer || 'Campus Administration',
+      bannerUrl: body.bannerUrl || 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600',
+      registrationLink: body.registrationLink || '#'
+    };
+    events.unshift(createdEvent);
+    localStorage.setItem('campusai_events_data', JSON.stringify(events));
+    return createdEvent;
+  }
+
+  if (endpoint.startsWith('/public/events') || endpoint.startsWith('/admin/events')) {
+    try {
+      const stored = localStorage.getItem('campusai_events_data');
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+
+    const defaultEvents = [
       {
         id: 1,
         title: 'KANAL 2K26 - National Level Technical Symposium',
@@ -288,10 +322,43 @@ function getLocalFallbackData(endpoint, method, data) {
         registrationLink: 'https://vsbec.edu.in/digiverse'
       }
     ];
+    localStorage.setItem('campusai_events_data', JSON.stringify(defaultEvents));
+    return defaultEvents;
   }
 
-  if (endpoint.startsWith('/public/announcements')) {
-    return [
+  if (endpoint.startsWith('/admin/announcements') && method === 'POST') {
+    let list = [];
+    try {
+      list = JSON.parse(localStorage.getItem('campusai_announcements_data')) || [];
+    } catch(e) { list = []; }
+    if (!list.length) {
+      list = [
+        { id: 1, title: 'Autonomous COE End-Semester Examinations Schedule Released', content: 'Controller of Examinations (COE) has released the End-Semester Examination timetable for all 3rd, 5th, and 7th semester B.E/B.Tech students. Exams commence on October 28th. Hall tickets are available on the student portal.', priority: 'URGENT', createdAt: '2026-09-28T09:00:00' },
+        { id: 2, title: 'Campus Placement Drive 2026: Tier-1 IT & Product Companies (Autodesk, Zoho, TCS, Infosys)', content: 'Career Development Center (CDC) announces registration for upcoming on-campus recruitment drives. Highest package offered this season is INR 47 Lakhs. Mandatory pre-placement training starts Monday.', priority: 'HIGH', createdAt: '2026-09-27T14:30:00' },
+        { id: 3, title: 'AICTE - IDEA Lab Hands-On Workshop on Generative AI & IoT', content: 'Department of CSE & AI&DS is organizing a 3-day hands-on workshop on Edge Computing and Large Language Models at the VSB AICTE IDEA Lab.', priority: 'NORMAL', createdAt: '2026-09-26T11:15:00' },
+        { id: 4, title: 'College Bus Transport & Route Timings - Karur, Trichy, Dindigul & Erode', content: 'Updated morning pick-up and evening drop schedules for all 50 college bus routes (covering Karur, Trichy, Dindigul, Erode, and Namakkal) have been posted.', priority: 'NORMAL', createdAt: '2026-09-25T10:00:00' }
+      ];
+    }
+    const newAnnounce = {
+      id: Date.now(),
+      title: body.title || 'Official Campus Bulletin',
+      content: body.content || '',
+      priority: body.priority || 'NORMAL',
+      targetRole: body.targetRole || 'ALL',
+      createdAt: new Date().toISOString()
+    };
+    list.unshift(newAnnounce);
+    localStorage.setItem('campusai_announcements_data', JSON.stringify(list));
+    return newAnnounce;
+  }
+
+  if (endpoint.startsWith('/public/announcements') || endpoint.startsWith('/admin/announcements')) {
+    try {
+      const stored = localStorage.getItem('campusai_announcements_data');
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+
+    const defaultAnnouncements = [
       {
         id: 1,
         title: 'Autonomous COE End-Semester Examinations Schedule Released',
@@ -321,6 +388,8 @@ function getLocalFallbackData(endpoint, method, data) {
         createdAt: '2026-09-25T10:00:00'
       }
     ];
+    localStorage.setItem('campusai_announcements_data', JSON.stringify(defaultAnnouncements));
+    return defaultAnnouncements;
   }
 
   if (endpoint.startsWith('/student/complaints')) {

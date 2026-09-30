@@ -154,11 +154,25 @@ function setupAdminAnnouncementForm() {
   const form = document.getElementById('admin-broadcast-form');
   if (!form) return;
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const title = document.getElementById('admin-announce-title').value;
-    showToast(`Official Notice "${title}" published across all campus portals.`, 'success');
+    const title = document.getElementById('admin-announce-title').value.trim();
+    const priority = document.getElementById('admin-announce-priority').value;
+    const targetRole = document.getElementById('admin-announce-target').value;
+    const content = document.getElementById('admin-announce-content').value.trim();
+
+    const newAnnouncement = {
+      title,
+      priority,
+      targetRole,
+      content,
+      createdAt: new Date().toISOString()
+    };
+
+    await apiRequest('/admin/announcements', 'POST', newAnnouncement);
+    showToast(`Official Notice "${title}" published across all campus portals!`, 'success');
     form.reset();
+    await loadAdminAnalytics();
   });
 }
 
@@ -166,11 +180,29 @@ function setupAdminEventForm() {
   const form = document.getElementById('admin-event-form');
   if (!form) return;
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const title = document.getElementById('admin-event-title').value;
-    showToast(`Campus Event "${title}" published to student calendar.`, 'success');
+    const title = document.getElementById('admin-event-title').value.trim();
+    const category = document.getElementById('admin-event-category').value;
+    const eventDate = document.getElementById('admin-event-date').value;
+    const location = document.getElementById('admin-event-location').value.trim();
+    const description = document.getElementById('admin-event-desc').value.trim();
+
+    const newEvent = {
+      title,
+      category,
+      eventDate: eventDate ? new Date(eventDate).toISOString() : new Date().toISOString(),
+      location: location || 'Campus Main Auditorium',
+      description: description || 'Exciting college campus event.',
+      organizer: 'Campus Administration',
+      bannerUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600',
+      registrationLink: '#'
+    };
+
+    await apiRequest('/admin/events', 'POST', newEvent);
+    showToast(`Campus Event "${title}" published to student calendar!`, 'success');
     form.reset();
+    await loadAdminAnalytics();
   });
 }
 
