@@ -96,6 +96,31 @@ public class AdminController {
         return ResponseEntity.ok(eventRepository.save(event));
     }
 
+    @PutMapping("/events/{id}")
+    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody Event updatedEvent) {
+        return eventRepository.findById(id).map(event -> {
+            event.setTitle(updatedEvent.getTitle());
+            event.setCategory(updatedEvent.getCategory());
+            event.setDescription(updatedEvent.getDescription());
+            event.setEventDate(updatedEvent.getEventDate());
+            event.setLocation(updatedEvent.getLocation());
+            if (updatedEvent.getOrganizer() != null) event.setOrganizer(updatedEvent.getOrganizer());
+            if (updatedEvent.getBannerUrl() != null) event.setBannerUrl(updatedEvent.getBannerUrl());
+            return ResponseEntity.ok(eventRepository.save(event));
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/events/{id}")
+    public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+        if (eventRepository.existsById(id)) {
+            eventRepository.deleteById(id);
+        }
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("success", true);
+        resp.put("message", "Event deleted successfully");
+        return ResponseEntity.ok(resp);
+    }
+
     @GetMapping("/knowledge-base")
     public ResponseEntity<?> getKnowledgeBase() {
         return ResponseEntity.ok(collegeInfoRepository.findAll());

@@ -241,6 +241,34 @@ function getLocalFallbackData(endpoint, method, data) {
     ];
   }
 
+  if (endpoint.startsWith('/admin/events') && method === 'DELETE') {
+    const idMatch = endpoint.match(/\/admin\/events\/(\d+)/);
+    const targetId = idMatch ? parseInt(idMatch[1]) : (body && body.id);
+    let events = [];
+    try {
+      events = JSON.parse(localStorage.getItem('campusai_events_data')) || [];
+    } catch(e) { events = []; }
+    events = events.filter(ev => ev.id != targetId);
+    localStorage.setItem('campusai_events_data', JSON.stringify(events));
+    return { success: true, message: 'Event deleted successfully' };
+  }
+
+  if (endpoint.startsWith('/admin/events') && (method === 'PUT' || method === 'PATCH')) {
+    const idMatch = endpoint.match(/\/admin\/events\/(\d+)/);
+    const targetId = idMatch ? parseInt(idMatch[1]) : (body && body.id);
+    let events = [];
+    try {
+      events = JSON.parse(localStorage.getItem('campusai_events_data')) || [];
+    } catch(e) { events = []; }
+    const idx = events.findIndex(ev => ev.id == targetId);
+    if (idx !== -1) {
+      events[idx] = { ...events[idx], ...body };
+      localStorage.setItem('campusai_events_data', JSON.stringify(events));
+      return events[idx];
+    }
+    return body;
+  }
+
   if (endpoint.startsWith('/admin/events') && method === 'POST') {
     let events = [];
     try {

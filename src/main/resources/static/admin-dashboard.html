@@ -307,47 +307,68 @@
           <div class="section-header">
             <div>
               <h2>Campus Events & Fests Manager</h2>
-              <p style="color:var(--text-muted); font-size:0.9rem;">Publish symposiums, hackathons, and sports tournaments</p>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Publish, edit, and manage symposiums, hackathons, workshops, and sports tournaments</p>
             </div>
           </div>
 
-          <div class="glass-card" style="padding:28px; max-width:640px;">
-            <form id="admin-event-form">
-              <div class="form-group">
-                <label class="form-label" for="admin-event-title">Event Name</label>
-                <input type="text" id="admin-event-title" class="form-control" placeholder="e.g. CampusAI Winter Hackathon 2026" required>
-              </div>
-
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div style="display:grid; grid-template-columns:1fr 1.35fr; gap:24px; align-items:start;">
+            <!-- Left: Create Event Form -->
+            <div class="glass-card" style="padding:26px;">
+              <h3 style="font-size:1.15rem; margin-bottom:18px;"><i class="fa-solid fa-plus-circle gradient-text"></i> Create / Publish Event</h3>
+              <form id="admin-event-form">
                 <div class="form-group">
-                  <label class="form-label" for="admin-event-category">Category</label>
-                  <select id="admin-event-category" class="form-control">
-                    <option value="Hackathon">Hackathon</option>
-                    <option value="Symposium">Symposium</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Cultural">Cultural</option>
-                  </select>
+                  <label class="form-label" for="admin-event-title">Event Name</label>
+                  <input type="text" id="admin-event-title" class="form-control" placeholder="e.g. CampusAI Winter Hackathon 2026" required>
                 </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div class="form-group">
+                    <label class="form-label" for="admin-event-category">Category</label>
+                    <select id="admin-event-category" class="form-control">
+                      <option value="Hackathon">Hackathon</option>
+                      <option value="Symposium">Symposium</option>
+                      <option value="Workshop">Workshop</option>
+                      <option value="Robotics">Robotics</option>
+                      <option value="Sports">Sports</option>
+                      <option value="Cultural & Expo">Cultural & Expo</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="admin-event-date">Date & Time</label>
+                    <input type="datetime-local" id="admin-event-date" class="form-control" value="2026-11-15T09:00" required>
+                  </div>
+                </div>
+
                 <div class="form-group">
-                  <label class="form-label" for="admin-event-date">Date & Time</label>
-                  <input type="datetime-local" id="admin-event-date" class="form-control" value="2026-11-15T09:00" required>
+                  <label class="form-label" for="admin-event-location">Venue / Location</label>
+                  <input type="text" id="admin-event-location" class="form-control" placeholder="Main Auditorium & Tech Hub" required>
                 </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="admin-event-desc">Event Description</label>
+                  <textarea id="admin-event-desc" class="form-control" rows="3" placeholder="Provide event agenda and highlights..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%;" id="admin-event-submit-btn">
+                  <i class="fa-solid fa-calendar-check"></i> Add to Events Calendar
+                </button>
+              </form>
+            </div>
+
+            <!-- Right: Published Events Live List with Edit & Delete -->
+            <div class="glass-card" style="padding:24px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-glass); padding-bottom:12px;">
+                <div>
+                  <h3 style="font-size:1.15rem; margin:0;"><i class="fa-solid fa-calendar-days gradient-text"></i> Published Events</h3>
+                  <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Live events visible on the Student portal</p>
+                </div>
+                <span class="badge badge-primary" id="admin-events-count-badge">Live Calendar</span>
               </div>
 
-              <div class="form-group">
-                <label class="form-label" for="admin-event-location">Venue / Location</label>
-                <input type="text" id="admin-event-location" class="form-control" placeholder="Main Auditorium & Tech Hub" required>
+              <div id="admin-events-list-container" style="display:flex; flex-direction:column; gap:12px; max-height:620px; overflow-y:auto; padding-right:4px;">
+                <!-- Dynamically rendered event items with Edit and Delete actions -->
               </div>
-
-              <div class="form-group">
-                <label class="form-label" for="admin-event-desc">Event Description</label>
-                <textarea id="admin-event-desc" class="form-control" rows="3" placeholder="Provide event agenda and highlights..." required></textarea>
-              </div>
-
-              <button type="submit" class="btn btn-primary" style="width:100%;">
-                <i class="fa-solid fa-calendar-check"></i> Add to Events Calendar
-              </button>
-            </form>
+            </div>
           </div>
         </section>
 
@@ -433,6 +454,62 @@
         <button type="button" class="btn btn-secondary" onclick="closeResolveModal()">Cancel</button>
         <button type="button" class="btn btn-primary" onclick="submitResolveResponse()"><i class="fa-solid fa-check"></i> Submit Resolution</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Edit Event Modal -->
+  <div class="modal-backdrop" id="edit-event-modal">
+    <div class="modal-box" style="max-width: 540px;">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1.25rem;"><i class="fa-solid fa-pen-to-square gradient-text"></i> Edit Campus Event</h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">Update event details for student portal</p>
+        </div>
+        <button class="chat-btn-icon" onclick="closeEditEventModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="edit-event-form">
+        <input type="hidden" id="edit-event-id">
+        <div class="modal-body" style="padding: 20px 24px;">
+          <div class="form-group">
+            <label class="form-label" for="edit-event-title">Event Name</label>
+            <input type="text" id="edit-event-title" class="form-control" required>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="edit-event-category">Category</label>
+              <select id="edit-event-category" class="form-control" required>
+                <option value="Hackathon">Hackathon</option>
+                <option value="Symposium">Symposium</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Robotics">Robotics</option>
+                <option value="Sports">Sports</option>
+                <option value="Cultural & Expo">Cultural & Expo</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="edit-event-date">Date & Time</label>
+              <input type="datetime-local" id="edit-event-date" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-event-location">Venue / Location</label>
+            <input type="text" id="edit-event-location" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-event-desc">Event Description</label>
+            <textarea id="edit-event-desc" class="form-control" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer" style="padding: 16px 24px; display:flex; justify-content:space-between;">
+          <button type="button" class="btn btn-secondary" onclick="closeEditEventModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Save &amp; Update Event
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
