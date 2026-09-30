@@ -792,15 +792,27 @@ async function loadClubs() {
 
   const joinedList = getJoinedClubs();
 
-  // Update badge count
+  // Update badge & counts
   const badgeEl = document.getElementById('my-joined-clubs-badge');
   if (badgeEl) {
-    badgeEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${joinedList.length} Clubs Joined`;
+    badgeEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${joinedList.length} Clubs Enrolled`;
+  }
+  const myClubsCountEl = document.getElementById('my-clubs-count');
+  if (myClubsCountEl) {
+    myClubsCountEl.textContent = joinedList.length;
   }
 
   // Filter dataset
   const filtered = CAMPUS_CLUBS.filter(club => {
-    const matchesCategory = activeClubFilter === 'ALL' || club.category === activeClubFilter;
+    let matchesCategory = false;
+    if (activeClubFilter === 'ALL') {
+      matchesCategory = true;
+    } else if (activeClubFilter === 'JOINED') {
+      matchesCategory = joinedList.includes(club.id);
+    } else {
+      matchesCategory = club.category === activeClubFilter;
+    }
+
     const q = activeClubSearch.trim().toLowerCase();
     if (!q) return matchesCategory;
     const matchesSearch = 
@@ -819,7 +831,7 @@ async function loadClubs() {
         <i class="fa-solid fa-magnifying-glass" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 12px;"></i>
         <h4 style="margin-bottom: 6px;">No clubs found</h4>
         <p style="color: var(--text-muted); font-size: 0.9rem;">Try adjusting your filter or search keywords.</p>
-        <button class="btn btn-secondary btn-sm" style="margin-top: 10px;" onclick="filterClubCategory('ALL')">Reset Filters</button>
+        <button class="btn btn-secondary btn-sm" style="margin-top: 10px;" onclick="filterClubCategory('ALL')">View All Clubs (10)</button>
       </div>
     `;
     return;
@@ -833,7 +845,7 @@ async function loadClubs() {
       club.category === 'LITERARY' ? 'badge-warning' : 'badge-success';
 
     return `
-      <div class="glass-card club-card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid ${club.color}; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+      <div class="glass-card club-card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid ${club.color}; ${isJoined ? 'border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.08);' : ''} position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease;">
         <div>
           <!-- Header -->
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
@@ -846,7 +858,7 @@ async function loadClubs() {
                 <span class="badge ${categoryBadgeClass}" style="font-size: 0.72rem; padding: 2px 8px; margin-top: 4px;">${club.categoryName}</span>
               </div>
             </div>
-            ${isJoined ? `<span class="badge badge-success" style="font-size: 0.72rem;"><i class="fa-solid fa-check"></i> Joined</span>` : ''}
+            ${isJoined ? `<span class="badge badge-success" style="font-size: 0.72rem; padding: 4px 8px;"><i class="fa-solid fa-circle-check"></i> Enrolled</span>` : ''}
           </div>
 
           <!-- Tagline & Description -->
@@ -869,13 +881,25 @@ async function loadClubs() {
         </div>
 
         <!-- Card Footer Actions -->
-        <div style="display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 14px;">
-          <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="openClubDetailModal('${club.id}')">
-            <i class="fa-solid fa-circle-info"></i> View Details
-          </button>
-          <button class="btn ${isJoined ? 'btn-danger' : 'btn-primary'} btn-sm" style="flex: 1;" onclick="toggleJoinClub('${club.id}')">
-            <i class="fa-solid ${isJoined ? 'fa-user-minus' : 'fa-user-plus'}"></i> ${isJoined ? 'Leave' : 'Join Club'}
-          </button>
+        <div style="display: flex; gap: 8px; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 14px; flex-wrap: wrap;">
+          ${isJoined ? `
+            <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="openClubDetailModal('${club.id}')">
+              <i class="fa-solid fa-circle-info"></i> Info
+            </button>
+            <button class="btn btn-primary btn-sm" style="flex: 1.3; background: linear-gradient(135deg, #10b981, #059669); border:none;" onclick="openClubPassModal('${club.id}')">
+              <i class="fa-solid fa-id-card"></i> Member Pass
+            </button>
+            <button class="btn btn-icon btn-secondary btn-sm" style="color: var(--danger);" title="Leave Club" onclick="toggleJoinClub('${club.id}')">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+          ` : `
+            <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="openClubDetailModal('${club.id}')">
+              <i class="fa-solid fa-circle-info"></i> View Details
+            </button>
+            <button class="btn btn-primary btn-sm" style="flex: 1.2;" onclick="openClubJoinModal('${club.id}')">
+              <i class="fa-solid fa-user-plus"></i> Join Club
+            </button>
+          `}
         </div>
       </div>
     `;
@@ -953,8 +977,21 @@ window.openClubDetailModal = function(clubId) {
   }
 
   if (joinBtn) {
-    joinBtn.className = isJoined ? 'btn btn-danger' : 'btn btn-primary';
-    joinBtn.innerHTML = `<i class="fa-solid ${isJoined ? 'fa-user-minus' : 'fa-plus-circle'}"></i> ${isJoined ? 'Leave Club' : 'Join Club'}`;
+    if (isJoined) {
+      joinBtn.className = 'btn btn-secondary';
+      joinBtn.innerHTML = `<i class="fa-solid fa-id-card" style="color:var(--success);"></i> View Digital Member Pass`;
+      joinBtn.onclick = () => {
+        closeClubDetailModal();
+        openClubPassModal(clubId);
+      };
+    } else {
+      joinBtn.className = 'btn btn-primary';
+      joinBtn.innerHTML = `<i class="fa-solid fa-plus-circle"></i> Join Club`;
+      joinBtn.onclick = () => {
+        closeClubDetailModal();
+        openClubJoinModal(clubId);
+      };
+    }
   }
 
   if (activitiesEl) {
@@ -979,11 +1016,35 @@ window.closeClubDetailModal = function() {
   activeModalClubId = null;
 };
 
+window.selectClubRole = function(btn, roleName) {
+  document.querySelectorAll('.club-role-pill').forEach(p => {
+    p.classList.remove('active');
+    p.style.background = 'rgba(255,255,255,0.03)';
+    p.style.borderColor = 'var(--border-glass)';
+    p.style.color = 'var(--text-muted)';
+  });
+
+  btn.classList.add('active');
+  btn.style.background = 'rgba(99,102,241,0.2)';
+  btn.style.borderColor = 'var(--primary)';
+  btn.style.color = 'var(--primary-light)';
+
+  const hiddenInput = document.getElementById('join-selected-role');
+  if (hiddenInput) hiddenInput.value = roleName;
+};
+
 window.openClubJoinModal = function(clubId) {
   const club = CAMPUS_CLUBS.find(c => c.id === clubId);
   if (!club) return;
 
+  activeModalClubId = clubId;
   const user = AuthState.getUser() || {};
+
+  // Show form, hide success
+  const formWrapper = document.getElementById('club-join-form-wrapper');
+  const successWrapper = document.getElementById('club-join-success-wrapper');
+  if (formWrapper) formWrapper.style.display = 'block';
+  if (successWrapper) successWrapper.style.display = 'none';
 
   const clubIdInput = document.getElementById('join-club-id');
   const clubNameEl = document.getElementById('join-modal-club-name');
@@ -1016,6 +1077,60 @@ window.openClubJoinModal = function(clubId) {
   if (emailEl) emailEl.value = user.email || 'alex.morgan@vsb.edu.in';
   if (phoneEl) phoneEl.value = user.phone || '+91 98424 56789';
 
+  const submitBtn = document.getElementById('join-submit-btn');
+  if (submitBtn) {
+    submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Confirm & Join Club`;
+    submitBtn.disabled = false;
+  }
+
+  const modal = document.getElementById('club-join-modal');
+  if (modal) modal.style.display = 'flex';
+};
+
+window.openClubPassModal = function(clubId) {
+  const club = CAMPUS_CLUBS.find(c => c.id === clubId);
+  if (!club) return;
+
+  activeModalClubId = clubId;
+  const user = AuthState.getUser() || {};
+
+  // Retrieve registration record if exists
+  let passId = `VSB-${club.name.replace(/[^A-Z]/gi, '').substring(0, 3).toUpperCase()}-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+  let role = "Core Technical Track";
+  let fullName = user.fullName || "Alex Morgan";
+  let rollNumber = user.rollNumber || "CS2026-042";
+  let deptYear = `${user.department || 'CSE'}, ${user.year || '3rd Year'}`;
+
+  try {
+    const rawRegs = localStorage.getItem('campusai_club_registrations');
+    if (rawRegs) {
+      const regs = JSON.parse(rawRegs);
+      const existing = regs.find(r => r.clubId === clubId);
+      if (existing) {
+        fullName = existing.fullName;
+        rollNumber = existing.rollNumber;
+        deptYear = existing.deptYear;
+        role = existing.role || role;
+        passId = existing.passId || passId;
+      }
+    }
+  } catch (e) {}
+
+  // Populate card
+  document.getElementById('card-club-name').textContent = club.name;
+  document.getElementById('card-student-name').textContent = fullName;
+  document.getElementById('card-roll-no').textContent = rollNumber;
+  document.getElementById('card-dept').textContent = deptYear;
+  document.getElementById('card-pass-id').textContent = passId;
+  document.getElementById('card-role').textContent = role;
+  document.getElementById('success-club-name').textContent = club.name;
+
+  // Switch modal view to card
+  const formWrapper = document.getElementById('club-join-form-wrapper');
+  const successWrapper = document.getElementById('club-join-success-wrapper');
+  if (formWrapper) formWrapper.style.display = 'none';
+  if (successWrapper) successWrapper.style.display = 'block';
+
   const modal = document.getElementById('club-join-modal');
   if (modal) modal.style.display = 'flex';
 };
@@ -1038,51 +1153,91 @@ window.handleClubJoinSubmit = function(e) {
   const section = document.getElementById('join-section').value.trim();
   const email = document.getElementById('join-email').value.trim();
   const phone = document.getElementById('join-phone').value.trim();
+  const role = document.getElementById('join-selected-role')?.value || 'Core Technical Track';
 
   if (!fullName || !rollNumber || !deptYear || !email || !phone) {
     showToast('Please fill in all required fields (*)', 'danger');
     return;
   }
 
-  // Save membership registration record
-  const registrationRecord = {
-    clubId,
-    clubName,
-    fullName,
-    rollNumber,
-    deptYear,
-    section: section || 'N/A',
-    email,
-    phone,
-    registeredAt: new Date().toLocaleString()
-  };
-
-  try {
-    const rawRegs = localStorage.getItem('campusai_club_registrations');
-    let regs = rawRegs ? JSON.parse(rawRegs) : [];
-    regs = regs.filter(r => !(r.clubId === clubId && r.rollNumber === rollNumber));
-    regs.push(registrationRecord);
-    localStorage.setItem('campusai_club_registrations', JSON.stringify(regs));
-  } catch (err) {
-    console.error('Error saving registration', err);
+  const submitBtn = document.getElementById('join-submit-btn');
+  if (submitBtn) {
+    submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Activating Membership...`;
+    submitBtn.disabled = true;
   }
 
-  // Add to joined list
-  let joined = getJoinedClubs();
-  if (!joined.includes(clubId)) {
-    joined.push(clubId);
-    saveJoinedClubs(joined);
-  }
+  setTimeout(() => {
+    const passId = `VSB-${clubName.replace(/[^A-Z]/gi, '').substring(0, 3).toUpperCase()}-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
-  closeClubJoinModal();
-  showToast(`🎉 Registration Successful! Welcome to ${clubName}, ${fullName}!`, 'success');
+    const registrationRecord = {
+      clubId,
+      clubName,
+      fullName,
+      rollNumber,
+      deptYear,
+      section: section || 'N/A',
+      email,
+      phone,
+      role,
+      passId,
+      registeredAt: new Date().toLocaleString()
+    };
 
-  loadClubs();
+    try {
+      const rawRegs = localStorage.getItem('campusai_club_registrations');
+      let regs = rawRegs ? JSON.parse(rawRegs) : [];
+      regs = regs.filter(r => !(r.clubId === clubId && r.rollNumber === rollNumber));
+      regs.push(registrationRecord);
+      localStorage.setItem('campusai_club_registrations', JSON.stringify(regs));
+    } catch (err) {
+      console.error('Error saving registration', err);
+    }
 
-  // If modal is open for this club, update modal UI as well
-  if (activeModalClubId === clubId) {
-    openClubDetailModal(clubId);
-  }
+    // Add to joined list
+    let joined = getJoinedClubs();
+    if (!joined.includes(clubId)) {
+      joined.push(clubId);
+      saveJoinedClubs(joined);
+    }
+
+    // Populate Success Card
+    document.getElementById('card-club-name').textContent = clubName;
+    document.getElementById('card-student-name').textContent = fullName;
+    document.getElementById('card-roll-no').textContent = rollNumber;
+    document.getElementById('card-dept').textContent = deptYear;
+    document.getElementById('card-pass-id').textContent = passId;
+    document.getElementById('card-role').textContent = role;
+    document.getElementById('success-club-name').textContent = clubName;
+
+    // Transition smoothly to success pass
+    const formWrapper = document.getElementById('club-join-form-wrapper');
+    const successWrapper = document.getElementById('club-join-success-wrapper');
+    if (formWrapper) formWrapper.style.display = 'none';
+    if (successWrapper) successWrapper.style.display = 'block';
+
+    showToast(`🎉 Registration Successful! Welcome to ${clubName}!`, 'success');
+    loadClubs();
+  }, 400);
+};
+
+window.downloadMemberCard = function() {
+  const studentName = document.getElementById('card-student-name')?.textContent || 'Student';
+  const clubName = document.getElementById('card-club-name')?.textContent || 'Club';
+  const passId = document.getElementById('card-pass-id')?.textContent || 'PASS-001';
+
+  showToast(`📥 Downloading Digital Membership Pass for ${studentName} (${passId})...`, 'success');
+
+  // Trigger gentle print preview or simulated file download
+  setTimeout(() => {
+    showToast(`✅ Member Pass saved! Show this digital badge during lab entry & meetups.`, 'success');
+  }, 800);
+};
+
+window.addClubToCalendar = function() {
+  const clubId = activeModalClubId;
+  const club = CAMPUS_CLUBS.find(c => c.id === clubId) || { name: 'Club Meetup', timing: 'Weekly' };
+
+  showToast(`📅 Added ${club.name} weekly session (${club.timing}) to your academic calendar!`, 'success');
 };
 
 window.toggleJoinClub = function(clubId) {
@@ -1097,7 +1252,8 @@ window.toggleJoinClub = function(clubId) {
       showToast(`You have left ${clubName}.`, 'warning');
       loadClubs();
       if (activeModalClubId === clubId) {
-        openClubDetailModal(clubId);
+        closeClubDetailModal();
+        closeClubJoinModal();
       }
     }
   } else {
@@ -1105,11 +1261,6 @@ window.toggleJoinClub = function(clubId) {
   }
 };
 
-window.toggleJoinClubFromModal = function() {
-  if (activeModalClubId) {
-    toggleJoinClub(activeModalClubId);
-  }
-};
 
 
 
