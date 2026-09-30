@@ -1007,12 +1007,12 @@ window.openClubDetailModal = function(clubId) {
   }
 
   const modal = document.getElementById('club-detail-modal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) modal.classList.add('active');
 };
 
 window.closeClubDetailModal = function() {
   const modal = document.getElementById('club-detail-modal');
-  if (modal) modal.style.display = 'none';
+  if (modal) modal.classList.remove('active');
   activeModalClubId = null;
 };
 
@@ -1059,7 +1059,19 @@ window.openClubJoinModal = function(clubId) {
   }
   if (clubIconEl) clubIconEl.className = `fa-solid ${club.icon}`;
 
-  // Pre-fill student info
+  // Extract accurate logged in student info
+  const headerName = document.getElementById('user-name')?.textContent?.trim();
+  const welcomeName = document.getElementById('welcome-student-name')?.textContent?.trim();
+  
+  let fullName = user.fullName || user.name || (headerName && headerName !== 'Alex Morgan' ? headerName : '') || (welcomeName && welcomeName !== 'Alex' ? welcomeName : 'Naren K S');
+  let rollNumber = user.rollNumber || user.rollNo || 'AD2024-088';
+  let dept = user.department || 'Artificial Intelligence & Data Science';
+  let yearText = user.year || (user.semester ? `Year ${Math.ceil(user.semester / 2)}` : '3rd Year');
+  let deptYear = `${dept}, ${yearText}`;
+  let section = user.section || user.batch || (user.residenceType ? `${user.residenceType} Batch` : 'Section A');
+  let email = user.email || `${fullName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@campusai.edu`;
+  let phone = user.phone || '+91 98424 56789';
+
   const fullNameEl = document.getElementById('join-full-name');
   const rollNoEl = document.getElementById('join-roll-no');
   const deptYearEl = document.getElementById('join-dept-year');
@@ -1067,15 +1079,12 @@ window.openClubJoinModal = function(clubId) {
   const emailEl = document.getElementById('join-email');
   const phoneEl = document.getElementById('join-phone');
 
-  const deptShort = user.department || 'Computer Science & Engineering';
-  const yearText = user.year || (user.semester ? `Year ${Math.ceil(user.semester / 2)}` : '3rd Year');
-
-  if (fullNameEl) fullNameEl.value = user.fullName || 'Alex Morgan';
-  if (rollNoEl) rollNoEl.value = user.rollNumber || 'CS2026-042';
-  if (deptYearEl) deptYearEl.value = `${deptShort}, ${yearText}`;
-  if (sectionEl) sectionEl.value = user.section || 'Section A';
-  if (emailEl) emailEl.value = user.email || 'alex.morgan@vsb.edu.in';
-  if (phoneEl) phoneEl.value = user.phone || '+91 98424 56789';
+  if (fullNameEl) fullNameEl.value = fullName;
+  if (rollNoEl) rollNoEl.value = rollNumber;
+  if (deptYearEl) deptYearEl.value = deptYear;
+  if (sectionEl) sectionEl.value = section;
+  if (emailEl) emailEl.value = email;
+  if (phoneEl) phoneEl.value = phone;
 
   const submitBtn = document.getElementById('join-submit-btn');
   if (submitBtn) {
@@ -1084,7 +1093,7 @@ window.openClubJoinModal = function(clubId) {
   }
 
   const modal = document.getElementById('club-join-modal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) modal.classList.add('active');
 };
 
 window.openClubPassModal = function(clubId) {
@@ -1093,13 +1102,16 @@ window.openClubPassModal = function(clubId) {
 
   activeModalClubId = clubId;
   const user = AuthState.getUser() || {};
+  const headerName = document.getElementById('user-name')?.textContent?.trim();
 
   // Retrieve registration record if exists
   let passId = `VSB-${club.name.replace(/[^A-Z]/gi, '').substring(0, 3).toUpperCase()}-2026-${Math.floor(1000 + Math.random() * 9000)}`;
   let role = "Core Technical Track";
-  let fullName = user.fullName || "Alex Morgan";
-  let rollNumber = user.rollNumber || "CS2026-042";
-  let deptYear = `${user.department || 'CSE'}, ${user.year || '3rd Year'}`;
+  let fullName = user.fullName || user.name || (headerName && headerName !== 'Alex Morgan' ? headerName : 'Naren K S');
+  let rollNumber = user.rollNumber || "AD2024-088";
+  let dept = user.department || "Artificial Intelligence & Data Science";
+  let year = user.year || "3rd Year";
+  let deptYear = `${dept}, ${year}`;
 
   try {
     const rawRegs = localStorage.getItem('campusai_club_registrations');
@@ -1132,12 +1144,12 @@ window.openClubPassModal = function(clubId) {
   if (successWrapper) successWrapper.style.display = 'block';
 
   const modal = document.getElementById('club-join-modal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) modal.classList.add('active');
 };
 
 window.closeClubJoinModal = function() {
   const modal = document.getElementById('club-join-modal');
-  if (modal) modal.style.display = 'none';
+  if (modal) modal.classList.remove('active');
 };
 
 window.handleClubJoinSubmit = function(e) {
