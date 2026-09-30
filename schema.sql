@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS users (
     department VARCHAR(100),
     roll_number VARCHAR(50) UNIQUE,
     semester INT DEFAULT 1,
+    academic_year VARCHAR(50) DEFAULT '3rd Year',
+    residence_type VARCHAR(50) DEFAULT 'Hostel', -- 'Hostel' or 'Dayscholar'
     phone VARCHAR(20),
     avatar VARCHAR(255) DEFAULT 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
     status ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE',

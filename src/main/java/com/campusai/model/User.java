@@ -33,6 +33,12 @@ public class User {
 
     private Integer semester;
 
+    @Column(name = "academic_year")
+    private String year;
+
+    @Column(name = "residence_type")
+    private String residenceType; // Hostel or Dayscholar
+
     private String phone;
 
     private String avatar;
@@ -91,6 +97,12 @@ public class User {
 
     public Integer getSemester() { return semester; }
     public void setSemester(Integer semester) { this.semester = semester; }
+
+    public String getYear() { return year; }
+    public void setYear(String year) { this.year = year; }
+
+    public String getResidenceType() { return residenceType; }
+    public void setResidenceType(String residenceType) { this.residenceType = residenceType; }
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }

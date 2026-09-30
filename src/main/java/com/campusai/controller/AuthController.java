@@ -34,6 +34,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         Optional<User> userOpt = userRepository.findByUsername(request.getUsername());
+        if (userOpt.isEmpty()) {
+            userOpt = userRepository.findByEmail(request.getUsername());
+        }
         
         if (userOpt.isPresent()) {
             User user = userOpt.get();

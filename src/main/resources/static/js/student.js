@@ -36,12 +36,20 @@ function updateProfileHeader(user) {
   const avatarEl = document.getElementById('user-avatar');
   const welcomeName = document.getElementById('welcome-student-name');
   const rollEl = document.getElementById('student-roll-dept');
+  const topBadge = document.querySelector('.topbar-title .badge');
+
+  const deptShort = (user.department || 'CSE').replace('Computer Science & Engineering', 'CSE').replace('Artificial Intelligence & Data Science', 'AI&DS').replace('Information Technology', 'IT');
+  const yearText = user.year || (user.semester ? `Year ${Math.ceil(user.semester / 2)}` : '3rd Year');
+  const residenceText = user.residenceType || 'Hostel';
 
   if (nameEl) nameEl.textContent = user.fullName;
-  if (roleEl) roleEl.textContent = `${user.department || 'CSE'} • Sem ${user.semester || 5}`;
+  if (roleEl) roleEl.textContent = `${deptShort} • ${yearText} • ${residenceText}`;
   if (avatarEl && user.avatar) avatarEl.src = user.avatar;
   if (welcomeName) welcomeName.textContent = user.fullName;
-  if (rollEl) rollEl.textContent = `Roll No: ${user.rollNumber || 'CS2024-042'} | Semester ${user.semester || 5}`;
+  if (topBadge) topBadge.textContent = `${deptShort} • ${yearText} (${residenceText})`;
+  if (rollEl) {
+    rollEl.textContent = `Roll No: ${user.rollNumber || 'CS2026-042'} | ${user.department || 'Computer Science & Engineering'} • ${yearText} • ${residenceText === 'Dayscholar' ? '🚌 Dayscholar' : '🏨 Hosteler'}`;
+  }
 }
 
 function setupTabs() {

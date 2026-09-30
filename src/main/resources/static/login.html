@@ -8,6 +8,45 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/chatbot.css">
+  <style>
+    .google-acc-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .google-acc-card:hover {
+      background: rgba(99, 102, 241, 0.12);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .residence-opt-card {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-glass);
+      background: rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .residence-opt-card:hover {
+      border-color: var(--primary-light);
+    }
+    .residence-opt-card.active {
+      background: rgba(99, 102, 241, 0.18);
+      border-color: var(--primary);
+      box-shadow: 0 0 14px rgba(99, 102, 241, 0.25);
+    }
+  </style>
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;">
 
@@ -64,8 +103,8 @@
     <!-- Login Form -->
     <form id="login-form">
       <div class="form-group">
-        <label class="form-label" for="login-username"><i class="fa-regular fa-user"></i> Username or Email</label>
-        <input type="text" id="login-username" class="form-control" placeholder="Enter username or email" required autocomplete="username">
+        <label class="form-label" for="login-username"><i class="fa-regular fa-envelope"></i> Email or Username</label>
+        <input type="text" id="login-username" class="form-control" placeholder="Enter your email or username" required autocomplete="username">
       </div>
 
       <div class="form-group">
@@ -89,13 +128,148 @@
     </div>
   </div>
 
-  <!-- Account Registration Modal Form -->
+  <!-- 1. Google Account Selector Modal -->
+  <div class="modal-backdrop" id="google-account-modal">
+    <div class="modal-box" style="max-width: 440px; padding: 0;">
+      <div class="modal-header" style="border-bottom: 1px solid var(--border-glass); padding: 18px 22px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg width="22" height="22" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+            <path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.59.102-1.167.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          </svg>
+          <div>
+            <h3 style="font-size: 1.15rem; margin: 0;">Sign in with Google</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Choose an account to continue to CampusAI</p>
+          </div>
+        </div>
+        <button class="chat-btn-icon" onclick="closeGoogleAccountModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body" style="padding: 18px 22px;">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Account 1 -->
+          <div class="google-acc-card" onclick="selectGoogleAccount('Naren K S', 'narenks.vsb@gmail.com', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120')">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0;">
+              N
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">Naren K S</div>
+              <div style="font-size: 0.82rem; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">narenks.vsb@gmail.com</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: var(--text-subtle); font-size: 0.85rem;"></i>
+          </div>
+
+          <!-- Account 2 -->
+          <div class="google-acc-card" onclick="selectGoogleAccount('Alex Morgan', 'alex.morgan@gmail.com', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150')">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0;">
+              A
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">Alex Morgan</div>
+              <div style="font-size: 0.82rem; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">alex.morgan@gmail.com</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: var(--text-subtle); font-size: 0.85rem;"></i>
+          </div>
+
+          <!-- Custom Email Input Option -->
+          <div style="margin-top: 6px; padding-top: 14px; border-top: 1px solid var(--border-glass);">
+            <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">
+              <i class="fa-regular fa-envelope"></i> Or sign in with another email ID:
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="email" id="custom-google-email" class="form-control" placeholder="Enter email (e.g. name@gmail.com)" style="flex: 1; font-size: 0.88rem; padding: 9px 12px;">
+              <button type="button" class="btn btn-primary" onclick="submitCustomEmailAccount()" style="padding: 9px 16px; font-size: 0.88rem; white-space: nowrap;">
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Student Profile Information Onboarding Modal -->
+  <div class="modal-backdrop" id="student-info-modal">
+    <div class="modal-box" style="max-width: 500px;">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1.25rem;"><i class="fa-solid fa-user-graduate gradient-text"></i> Student Information</h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">
+            Signed in with: <span id="student-modal-email-badge" style="color: var(--primary-light); font-weight: 600;"></span>
+          </p>
+        </div>
+        <button class="chat-btn-icon" onclick="closeStudentInfoModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="student-info-form">
+        <div class="modal-body" style="padding: 20px 24px;">
+          <!-- 1. Student Name -->
+          <div class="form-group">
+            <label class="form-label" for="student-name-input"><i class="fa-regular fa-user"></i> Student Name</label>
+            <input type="text" id="student-name-input" class="form-control" placeholder="Enter student's full name" required>
+          </div>
+
+          <!-- 2. Department -->
+          <div class="form-group">
+            <label class="form-label" for="student-dept-select"><i class="fa-solid fa-building-columns"></i> Department</label>
+            <select id="student-dept-select" class="form-control" required>
+              <option value="Computer Science & Engineering">Computer Science & Engineering (CSE)</option>
+              <option value="Artificial Intelligence & Data Science">Artificial Intelligence & Data Science (AI & DS)</option>
+              <option value="Information Technology">Information Technology (IT)</option>
+              <option value="Electronics & Communication">Electronics & Communication Engineering (ECE)</option>
+              <option value="Electrical & Electronics">Electrical & Electronics Engineering (EEE)</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+            </select>
+          </div>
+
+          <!-- 3. Year -->
+          <div class="form-group">
+            <label class="form-label" for="student-year-select"><i class="fa-solid fa-graduation-cap"></i> Year</label>
+            <select id="student-year-select" class="form-control" required>
+              <option value="1st Year">1st Year (Semester 1 & 2)</option>
+              <option value="2nd Year">2nd Year (Semester 3 & 4)</option>
+              <option value="3rd Year" selected>3rd Year (Semester 5 & 6)</option>
+              <option value="4th Year">4th Year (Semester 7 & 8)</option>
+            </select>
+          </div>
+
+          <!-- 4. Hostel or Dayscholar -->
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="form-label"><i class="fa-solid fa-hotel"></i> Hostel or Dayscholar</label>
+            <input type="hidden" id="student-residence-val" value="Hostel">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px;">
+              <div class="residence-opt-card active" id="residence-hostel-card" onclick="selectResidence('Hostel')">
+                <i class="fa-solid fa-hotel" style="font-size: 1.3rem; color: var(--primary-light);"></i>
+                <div style="font-weight: 600; font-size: 0.95rem;">Hosteler</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">Staying in Campus Hostel</div>
+              </div>
+              <div class="residence-opt-card" id="residence-dayscholar-card" onclick="selectResidence('Dayscholar')">
+                <i class="fa-solid fa-bus-simple" style="font-size: 1.3rem; color: var(--accent);"></i>
+                <div style="font-weight: 600; font-size: 0.95rem;">Dayscholar</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">College Bus / Day Scholar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding: 16px 24px;">
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 600;">
+            <i class="fa-solid fa-arrow-right"></i> Save Information & Enter Dashboard
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Account Registration Modal Form -->
   <div class="modal-backdrop" id="account-register-modal">
     <div class="modal-box" style="max-width: 520px;">
       <div class="modal-header">
         <div>
           <h3 style="font-size: 1.25rem;">Create New Account</h3>
-          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">V.S.B. Engineering College Portal</p>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">CampusAI College Portal</p>
         </div>
         <button class="chat-btn-icon" onclick="closeRegisterModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
@@ -123,7 +297,7 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div class="form-group">
               <label class="form-label" for="acc-email"><i class="fa-regular fa-envelope"></i> Email Address</label>
-              <input type="email" id="acc-email" class="form-control" placeholder="naren@vsbec.edu.in" required>
+              <input type="email" id="acc-email" class="form-control" placeholder="narenks.vsb@gmail.com" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="acc-roll">Roll / Reg Number</label>
@@ -141,6 +315,25 @@
                 <option value="Electronics & Communication">Electronics (ECE)</option>
                 <option value="Electrical & Electronics">Electrical (EEE)</option>
                 <option value="Mechanical Engineering">Mechanical</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="acc-year">Year</label>
+              <select id="acc-year" class="form-control" required>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year" selected>3rd Year</option>
+                <option value="4th Year">4th Year</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="acc-residence">Accommodation</label>
+              <select id="acc-residence" class="form-control" required>
+                <option value="Hostel">Hostel (Hosteler)</option>
+                <option value="Dayscholar">Dayscholar</option>
               </select>
             </div>
             <div class="form-group">
@@ -163,6 +356,7 @@
   <script src="js/chatbot.js"></script>
   <script>
     let selectedRole = 'STUDENT';
+    let pendingAuthUser = null;
 
     // Role selection tabs
     const roleTabs = document.querySelectorAll('.role-tab');
@@ -199,84 +393,178 @@
       }
     });
 
-    // Continue with Google Handler
+    // Google Login button -> Open Google Account Selector Modal
     document.getElementById('google-login-btn').addEventListener('click', () => {
-      showToast('Connecting with Google Workspace...', 'info');
+      openGoogleAccountModal();
+    });
+
+    function openGoogleAccountModal() {
+      document.getElementById('google-account-modal').classList.add('active');
+    }
+
+    function closeGoogleAccountModal() {
+      document.getElementById('google-account-modal').classList.remove('active');
+    }
+
+    function selectGoogleAccount(fullName, email, avatar) {
+      closeGoogleAccountModal();
+      
+      pendingAuthUser = {
+        id: Date.now(),
+        username: email.split('@')[0],
+        fullName: fullName || email.split('@')[0],
+        email: email,
+        role: selectedRole,
+        avatar: avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120'
+      };
+
+      if (selectedRole === 'STUDENT') {
+        // Open Student Info Prompt
+        openStudentInfoModal(pendingAuthUser);
+      } else if (selectedRole === 'FACULTY') {
+        pendingAuthUser.department = 'Computer Science & Engineering';
+        pendingAuthUser.rollNumber = 'FAC-CS-101';
+        finalizeLogin(pendingAuthUser, 'faculty-dashboard.html');
+      } else {
+        pendingAuthUser.department = 'Administration';
+        pendingAuthUser.rollNumber = 'ADM-001';
+        finalizeLogin(pendingAuthUser, 'admin-dashboard.html');
+      }
+    }
+
+    function submitCustomEmailAccount() {
+      const email = document.getElementById('custom-google-email').value.trim();
+      if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email address.', 'error');
+        return;
+      }
+      const inferredName = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      selectGoogleAccount(inferredName, email, 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120');
+    }
+
+    // Student Information Modal Handlers
+    function openStudentInfoModal(user) {
+      document.getElementById('student-modal-email-badge').textContent = user.email;
+      document.getElementById('student-name-input').value = user.fullName || '';
+      document.getElementById('student-info-modal').classList.add('active');
+    }
+
+    function closeStudentInfoModal() {
+      document.getElementById('student-info-modal').classList.remove('active');
+    }
+
+    function selectResidence(type) {
+      document.getElementById('student-residence-val').value = type;
+      const hostelCard = document.getElementById('residence-hostel-card');
+      const dayCard = document.getElementById('residence-dayscholar-card');
+      if (type === 'Hostel') {
+        hostelCard.classList.add('active');
+        dayCard.classList.remove('active');
+      } else {
+        dayCard.classList.add('active');
+        hostelCard.classList.remove('active');
+      }
+    }
+
+    // Student Info Form Submission
+    document.getElementById('student-info-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const studentName = document.getElementById('student-name-input').value.trim();
+      const department = document.getElementById('student-dept-select').value;
+      const year = document.getElementById('student-year-select').value;
+      const residenceType = document.getElementById('student-residence-val').value;
+
+      let semester = 5;
+      if (year.includes('1st')) semester = 1;
+      else if (year.includes('2nd')) semester = 3;
+      else if (year.includes('3rd')) semester = 5;
+      else if (year.includes('4th')) semester = 7;
+
+      if (!pendingAuthUser) {
+        pendingAuthUser = {
+          id: Date.now(),
+          username: studentName.toLowerCase().replace(/\s+/g, '_'),
+          email: 'student@vsbec.edu.in',
+          role: 'STUDENT',
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120'
+        };
+      }
+
+      pendingAuthUser.fullName = studentName;
+      pendingAuthUser.department = department;
+      pendingAuthUser.year = year;
+      pendingAuthUser.semester = semester;
+      pendingAuthUser.residenceType = residenceType;
+      pendingAuthUser.rollNumber = pendingAuthUser.rollNumber || ('CS2026-' + Math.floor(100 + Math.random() * 900));
+
+      closeStudentInfoModal();
+      finalizeLogin(pendingAuthUser, 'student-dashboard.html');
+    });
+
+    function finalizeLogin(user, targetUrl) {
+      AuthState.setUser(user);
+      localStorage.setItem('campusai_token', 'campusai-token-' + Date.now());
 
       setTimeout(() => {
-        let googleUser = {
-          id: 4,
-          username: 'student_google',
-          fullName: 'Google User (Alex Morgan)',
-          email: 'alex.morgan@gmail.com',
-          role: selectedRole,
-          department: 'Computer Science & Engineering',
-          rollNumber: selectedRole === 'STUDENT' ? 'CS2024-042' : (selectedRole === 'FACULTY' ? 'FAC-CS-101' : 'ADM-001'),
-          semester: selectedRole === 'STUDENT' ? 5 : 0,
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'
-        };
-
-        if (selectedRole === 'FACULTY') {
-          googleUser.fullName = 'Prof. Sarah Jenkins (Google)';
-          googleUser.email = 's.jenkins@gmail.com';
-        } else if (selectedRole === 'ADMIN') {
-          googleUser.fullName = 'Dr. Alistair Vance (Google Admin)';
-          googleUser.email = 'admin@campusai.edu';
-        }
-
-        AuthState.setUser(googleUser);
-        localStorage.setItem('campusai_token', 'google-oauth2-token-' + Date.now());
-
-        showToast(`Google Sign-In verified! Welcome, ${googleUser.fullName}!`, 'success');
-
-        setTimeout(() => {
-          if (selectedRole === 'ADMIN') {
-            window.location.href = 'admin-dashboard.html';
-          } else if (selectedRole === 'FACULTY') {
-            window.location.href = 'faculty-dashboard.html';
-          } else {
-            window.location.href = 'student-dashboard.html';
-          }
-        }, 600);
-      }, 700);
-    });
+        window.location.href = targetUrl;
+      }, 500);
+    }
 
     // Email/Password Form Submission
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const username = document.getElementById('login-username').value.trim();
+      const usernameOrEmail = document.getElementById('login-username').value.trim();
       const password = document.getElementById('login-password').value;
 
-      if (!username || !password) {
-        showToast('Please enter both username and password.', 'error');
+      if (!usernameOrEmail || !password) {
+        showToast('Please enter both email/username and password.', 'error');
         return;
       }
 
-      showToast('Authenticating with CampusAI...', 'info');
-
+      // If logging in directly as student, let user verify/input details if desired or auto-login
       const resp = await apiRequest('/auth/login', 'POST', {
-        username,
+        username: usernameOrEmail,
         password,
         role: selectedRole
       });
 
       if (resp && resp.user) {
-        AuthState.setUser(resp.user);
         if (resp.token) localStorage.setItem('campusai_token', resp.token);
-
-        showToast(`Welcome, ${resp.user.fullName}! Redirecting...`, 'success');
-
-        setTimeout(() => {
-          if (resp.user.role === 'ADMIN') {
-            window.location.href = 'admin-dashboard.html';
-          } else if (resp.user.role === 'FACULTY') {
-            window.location.href = 'faculty-dashboard.html';
-          } else {
-            window.location.href = 'student-dashboard.html';
-          }
-        }, 800);
+        
+        if (resp.user.role === 'STUDENT' && (!resp.user.year || !resp.user.residenceType)) {
+          pendingAuthUser = resp.user;
+          openStudentInfoModal(pendingAuthUser);
+        } else {
+          AuthState.setUser(resp.user);
+          setTimeout(() => {
+            if (resp.user.role === 'ADMIN') window.location.href = 'admin-dashboard.html';
+            else if (resp.user.role === 'FACULTY') window.location.href = 'faculty-dashboard.html';
+            else window.location.href = 'student-dashboard.html';
+          }, 500);
+        }
       } else {
-        showToast('Login failed. Please check credentials.', 'error');
+        // Fallback demo login if offline/demo
+        pendingAuthUser = {
+          id: Date.now(),
+          username: usernameOrEmail.split('@')[0],
+          email: usernameOrEmail.includes('@') ? usernameOrEmail : usernameOrEmail + '@campusai.edu',
+          role: selectedRole,
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120'
+        };
+
+        if (selectedRole === 'STUDENT') {
+          openStudentInfoModal(pendingAuthUser);
+        } else if (selectedRole === 'FACULTY') {
+          pendingAuthUser.fullName = 'Faculty Member';
+          pendingAuthUser.department = 'Computer Science & Engineering';
+          pendingAuthUser.rollNumber = 'FAC-101';
+          finalizeLogin(pendingAuthUser, 'faculty-dashboard.html');
+        } else {
+          pendingAuthUser.fullName = 'System Administrator';
+          pendingAuthUser.department = 'Administration';
+          pendingAuthUser.rollNumber = 'ADM-001';
+          finalizeLogin(pendingAuthUser, 'admin-dashboard.html');
+        }
       }
     });
 
@@ -297,7 +585,15 @@
       const email = document.getElementById('acc-email').value.trim();
       const rollNumber = document.getElementById('acc-roll').value.trim();
       const department = document.getElementById('acc-dept').value;
+      const year = document.getElementById('acc-year').value;
+      const residenceType = document.getElementById('acc-residence').value;
       const password = document.getElementById('acc-password').value;
+
+      let semester = 5;
+      if (year.includes('1st')) semester = 1;
+      else if (year.includes('2nd')) semester = 3;
+      else if (year.includes('3rd')) semester = 5;
+      else if (year.includes('4th')) semester = 7;
 
       const newUser = {
         id: Date.now(),
@@ -308,23 +604,23 @@
         role,
         department,
         rollNumber,
-        semester: role === 'STUDENT' ? 5 : 0,
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'
+        year,
+        semester: role === 'STUDENT' ? semester : 0,
+        residenceType,
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120'
       };
 
       AuthState.setUser(newUser);
       localStorage.setItem('campusai_token', 'reg-token-' + Date.now());
 
       closeRegisterModal();
-      showToast(`Account created for ${fullName}! Logging you in...`, 'success');
-
       setTimeout(() => {
         if (role === 'FACULTY') {
           window.location.href = 'faculty-dashboard.html';
         } else {
           window.location.href = 'student-dashboard.html';
         }
-      }, 800);
+      }, 500);
     });
   </script>
 </body>

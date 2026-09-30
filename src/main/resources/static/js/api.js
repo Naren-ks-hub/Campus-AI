@@ -54,7 +54,6 @@ function toggleTheme() {
   const theme = isLight ? 'light' : 'dark';
   localStorage.setItem('campusai_theme', theme);
   updateThemeButtons(theme);
-  showToast(`Switched to ${isLight ? 'Light' : 'Dark'} Mode`, 'info');
 }
 
 function updateThemeButtons(theme) {
