@@ -308,13 +308,23 @@ function setupMaterialUploadForm() {
   if (!form) return;
 
   // Unit Chips Multi-Select Setup
-  const unitChips = document.querySelectorAll('.unit-chip');
+  const unitChips = document.querySelectorAll('#unit-chips-group .unit-chip');
   const unitInput = document.getElementById('mat-unit');
   const unitSummary = document.getElementById('unit-selection-summary');
 
   function updateUnitSelection() {
-    const activeChips = Array.from(document.querySelectorAll('.unit-chip.active'));
+    const activeChips = Array.from(document.querySelectorAll('#unit-chips-group .unit-chip.active'));
     const selectedUnits = activeChips.map(chip => chip.getAttribute('data-unit'));
+
+    // Update icons for all chips in group
+    unitChips.forEach(chip => {
+      const icon = chip.querySelector('.unit-check-icon');
+      if (chip.classList.contains('active')) {
+        if (icon) icon.className = 'fa-solid fa-square-check unit-check-icon';
+      } else {
+        if (icon) icon.className = 'fa-regular fa-square unit-check-icon';
+      }
+    });
 
     if (selectedUnits.length === 0) {
       if (unitInput) unitInput.value = '';
@@ -362,7 +372,7 @@ function setupMaterialUploadForm() {
         unitChips.forEach(c => c.classList.remove('active'));
         if (isNowActive) chip.classList.add('active');
       } else {
-        const allUnitsChip = document.querySelector('.unit-chip[data-unit="All Units"]');
+        const allUnitsChip = document.querySelector('#unit-chips-group .unit-chip[data-unit="All Units"]');
         if (allUnitsChip) allUnitsChip.classList.remove('active');
         chip.classList.toggle('active');
       }
@@ -557,7 +567,11 @@ window.removeAttachedFile = function() {
 };
 
 window.openUploadMaterialModal = function() {
-  document.querySelectorAll('.unit-chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('#unit-chips-group .unit-chip').forEach(c => {
+    c.classList.remove('active');
+    const icon = c.querySelector('.unit-check-icon');
+    if (icon) icon.className = 'fa-regular fa-square unit-check-icon';
+  });
   const unitInput = document.getElementById('mat-unit');
   if (unitInput) unitInput.value = '';
   const unitSummary = document.getElementById('unit-selection-summary');
@@ -796,13 +810,22 @@ function setupEditMaterialForm() {
   const dropzone = document.getElementById('edit-material-dropzone');
   if (!form) return;
 
-  const unitChips = document.querySelectorAll('.edit-unit-chip');
+  const unitChips = document.querySelectorAll('#edit-unit-chips-group .edit-unit-chip');
   const unitInput = document.getElementById('edit-mat-unit');
   const unitSummary = document.getElementById('edit-unit-selection-summary');
 
   function updateEditUnitSelection() {
-    const activeChips = Array.from(document.querySelectorAll('.edit-unit-chip.active'));
+    const activeChips = Array.from(document.querySelectorAll('#edit-unit-chips-group .edit-unit-chip.active'));
     const selectedUnits = activeChips.map(chip => chip.getAttribute('data-unit'));
+
+    unitChips.forEach(chip => {
+      const icon = chip.querySelector('.unit-check-icon');
+      if (chip.classList.contains('active')) {
+        if (icon) icon.className = 'fa-solid fa-square-check unit-check-icon';
+      } else {
+        if (icon) icon.className = 'fa-regular fa-square unit-check-icon';
+      }
+    });
 
     if (selectedUnits.length === 0) {
       if (unitInput) unitInput.value = '';
@@ -848,7 +871,7 @@ function setupEditMaterialForm() {
         unitChips.forEach(c => c.classList.remove('active'));
         if (isNowActive) chip.classList.add('active');
       } else {
-        const allUnitsChip = document.querySelector('.edit-unit-chip[data-unit="All Units"]');
+        const allUnitsChip = document.querySelector('#edit-unit-chips-group .edit-unit-chip[data-unit="All Units"]');
         if (allUnitsChip) allUnitsChip.classList.remove('active');
         chip.classList.toggle('active');
       }
@@ -1009,6 +1032,16 @@ window.openEditMaterialModal = function(id) {
       }
     });
   }
+
+  // Update check icons for edit chips
+  document.querySelectorAll('#edit-unit-chips-group .edit-unit-chip').forEach(chip => {
+    const icon = chip.querySelector('.unit-check-icon');
+    if (chip.classList.contains('active')) {
+      if (icon) icon.className = 'fa-solid fa-square-check unit-check-icon';
+    } else {
+      if (icon) icon.className = 'fa-regular fa-square unit-check-icon';
+    }
+  });
 
   document.getElementById('edit-mat-desc').value = mat.description || '';
 
