@@ -408,10 +408,21 @@ function setupMaterialUploadForm() {
       showToast('Please select at least one Unit for this study material.', 'error');
       return;
     }
-    const format = document.getElementById('mat-format').value;
+    const department = document.getElementById('mat-dept')?.value || currentUser?.department || 'Information Technology';
     const desc = document.getElementById('mat-desc').value.trim();
 
     const currentUser = AuthState.getUser();
+
+    // Auto-detect format from attached file extension
+    let format = 'PDF';
+    if (attachedMaterialFileData?.name) {
+      const ext = attachedMaterialFileData.name.split('.').pop().toLowerCase();
+      if (['pptx', 'ppt'].includes(ext)) format = 'PPTX';
+      else if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) format = 'ZIP';
+      else if (['docx', 'doc'].includes(ext)) format = 'DOCX';
+      else if (['txt', 'py', 'java', 'cpp', 'c', 'sql'].includes(ext)) format = 'TXT';
+      else format = 'PDF';
+    }
 
     // Use attached file metadata if provided, otherwise sensible defaults
     const fileSize = attachedMaterialFileData?.size || `${(Math.random() * 3 + 2).toFixed(1)} MB`;
@@ -424,6 +435,7 @@ function setupMaterialUploadForm() {
       title,
       subjectCode,
       subjectName,
+      department,
       facultyName: currentUser?.fullName || 'Prof. Sarah Jenkins',
       facultyAvatar: currentUser?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
       unit,

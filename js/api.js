@@ -313,6 +313,7 @@ function getLocalFallbackData(endpoint, method, data) {
         subjectName: data.subjectName || 'Deep Learning',
         facultyName: data.facultyName || 'Prof. Sarah Jenkins',
         facultyAvatar: data.facultyAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
+        department: data.department || 'Information Technology',
         unit: data.unit || 'Unit 1',
         format: data.format || 'PDF',
         description: data.description || '',
