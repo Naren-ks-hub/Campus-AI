@@ -37,6 +37,9 @@
         <li class="sidebar-item" data-tab="assignments">
           <a href="#"><i class="fa-solid fa-book-bookmark"></i> <span>Assignments</span></a>
         </li>
+        <li class="sidebar-item" data-tab="materials">
+          <a href="#"><i class="fa-solid fa-book-open-reader"></i> <span>Notes & Materials</span></a>
+        </li>
         <li class="sidebar-item" data-tab="events">
           <a href="#"><i class="fa-solid fa-champagne-glasses"></i> <span>Events & Fests</span></a>
         </li>
@@ -515,12 +518,69 @@
               </form>
             </div>
 
-            <!-- Complaint History -->
-            <div>
-              <h3 style="font-size:1.15rem; margin-bottom:16px;"><i class="fa-solid fa-clock-rotate-left"></i> My Ticket History</h3>
-              <div id="complaints-list"></div>
+        <!-- 9. NOTES & STUDY MATERIALS TAB -->
+        <section id="tab-materials" class="tab-pane">
+          <!-- Hero Banner -->
+          <div class="materials-hero">
+            <div style="max-width: 680px; position: relative; z-index: 2;">
+              <span class="badge badge-primary" style="margin-bottom: 8px;"><i class="fa-solid fa-graduation-cap"></i> AI & DS 5th Semester Repository</span>
+              <h2 style="font-size: 1.6rem; margin-bottom: 6px;">Course Notes & Digital Study Repository</h2>
+              <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.5; margin-bottom: 14px;">
+                Access official lecture slides, handwritten unit summaries, Anna University model question banks, and lab manuals shared directly by your course professors.
+              </p>
+              <div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.82rem; color: var(--text-muted);">
+                <span><i class="fa-solid fa-book" style="color: var(--primary-light);"></i> <strong>6 Active Courses</strong></span>
+                <span><i class="fa-solid fa-file-lines" style="color: var(--warning);"></i> <strong id="student-stat-materials-count">8 Modules</strong> Available</span>
+                <span><i class="fa-solid fa-download" style="color: var(--success);"></i> Instant Free Downloads</span>
+              </div>
+            </div>
+            <div style="position: relative; z-index: 2;">
+              <button class="btn btn-secondary btn-sm" onclick="askAiQuick('Explain the difference between Vanishing Gradient and Exploding Gradient in Deep Learning')">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary-light);"></i> Ask CampusAI Tutor
+              </button>
             </div>
           </div>
+
+          <!-- Filter & Search Toolbar -->
+          <div class="materials-filter-bar">
+            <!-- Search & Bookmarked Toggle Row -->
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+              <div style="position: relative; flex: 1; min-width: 260px;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                <input type="text" id="student-material-search" class="form-control" placeholder="Search by topic (e.g. ResNet, Terraform, RSA, Paxos), unit, or professor..." style="padding-left: 38px;">
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <button type="button" class="format-pill" id="student-filter-bookmarked-btn" onclick="toggleStudentBookmarkFilter()">
+                  <i class="fa-regular fa-star" id="bookmark-filter-icon"></i> <span>Bookmarked</span>
+                  <span class="badge badge-warning" id="student-bookmarked-count" style="padding: 2px 6px; font-size: 0.72rem;">0</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Subject Pills -->
+            <div class="filter-pills-scroll" id="student-subject-pills">
+              <button type="button" class="filter-pill active" data-subject="ALL"><i class="fa-solid fa-layer-group"></i> All Subjects</button>
+              <button type="button" class="filter-pill" data-subject="23ADT501">23ADT501 - Deep Learning</button>
+              <button type="button" class="filter-pill" data-subject="23CSE011">23CSE011 - Cloud Service Mgmt</button>
+              <button type="button" class="filter-pill" data-subject="23CBT502">23CBT502 - Data & Info Security</button>
+              <button type="button" class="filter-pill" data-subject="23CST504">23CST504 - Distributed Computing</button>
+              <button type="button" class="filter-pill" data-subject="23ADT502">23ADT502 - Big Data Analytics</button>
+              <button type="button" class="filter-pill" data-subject="23CSE005">23CSE005 - Business Analytics</button>
+            </div>
+
+            <!-- Format Badges -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="student-format-pills">
+              <button type="button" class="format-pill active" data-format="ALL">All Formats</button>
+              <button type="button" class="format-pill" data-format="PDF"><i class="fa-solid fa-file-pdf" style="color:#f87171;"></i> PDF Notes</button>
+              <button type="button" class="format-pill" data-format="PPTX"><i class="fa-solid fa-file-powerpoint" style="color:#fb923c;"></i> Presentation Slides</button>
+              <button type="button" class="format-pill" data-format="ZIP"><i class="fa-solid fa-file-zipper" style="color:#c084fc;"></i> Lab Manuals & Code</button>
+              <button type="button" class="format-pill" data-format="Q-BANK"><i class="fa-solid fa-file-lines" style="color:#facc15;"></i> Question Banks</button>
+              <button type="button" class="format-pill" data-format="CHEATSHEET"><i class="fa-solid fa-bolt" style="color:#34d399;"></i> Formula Sheets</button>
+            </div>
+          </div>
+
+          <!-- Study Materials Grid -->
+          <div id="student-materials-grid" class="materials-grid"></div>
         </section>
 
       </div>
@@ -1009,6 +1069,41 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Student Study Material Reader & Preview Modal -->
+  <div class="modal-backdrop" id="student-material-preview-modal" onclick="if (event.target === this) closeStudentPreviewModal()">
+    <div class="modal-box reader-modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div id="stu-preview-icon" class="material-format-icon format-pdf">
+            <i class="fa-solid fa-file-pdf"></i>
+          </div>
+          <div>
+            <h3 id="stu-preview-title" style="font-size: 1.15rem; margin: 0;">Document Title</h3>
+            <p id="stu-preview-subtitle" style="font-size: 0.8rem; color: var(--text-muted); margin: 2px 0 0 0;">Course • Unit</p>
+          </div>
+        </div>
+        <button class="chat-btn-icon" onclick="closeStudentPreviewModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="stu-preview-tags" style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;"></div>
+        <div class="reader-document-view" id="stu-preview-document-body"></div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div id="stu-preview-meta-left" style="font-size: 0.82rem; color: var(--text-muted);"></div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button type="button" class="btn btn-secondary btn-sm" id="stu-preview-ask-ai-btn">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary-light);"></i> Ask AI Tutor
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" id="stu-preview-download-btn">
+            <i class="fa-solid fa-download"></i> Download Notes (<span id="stu-preview-filesize">3.5 MB</span>)
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 

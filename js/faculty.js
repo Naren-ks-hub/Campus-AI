@@ -11,9 +11,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadAttendanceClassList();
   await loadFacultyAssignments();
   await loadFacultyTimetable();
+  await loadFacultyMaterials();
 
   setupNewAssignmentForm();
   setupBroadcastForm();
+  setupMaterialUploadForm();
+  setupMaterialFilters();
 });
 
 function updateProfileHeader(user) {
@@ -128,10 +131,335 @@ async function loadFacultyTimetable() {
         <h4>${s.subjectName}</h4>
         <p style="font-size:0.8rem; color:var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${s.roomNumber} (${s.startTime} - ${s.endTime})</p>
       </div>
-      <span class="badge badge-success">CSE Sem 5</span>
+      <span class="badge badge-success">AI&DS Sem 5</span>
     </div>
   `).join('');
 }
+
+// ==========================================
+// Study Notes & Materials Management
+// ==========================================
+let allFacultyMaterials = [];
+
+async function loadFacultyMaterials() {
+  allFacultyMaterials = await apiRequest('/faculty/materials') || getStoredStudyMaterials();
+  updateFacultyMaterialStats(allFacultyMaterials);
+  renderFacultyMaterials(allFacultyMaterials);
+}
+
+function updateFacultyMaterialStats(materials) {
+  const countEl = document.getElementById('stat-faculty-materials-count');
+  const downloadsEl = document.getElementById('stat-faculty-downloads-count');
+  const storageEl = document.getElementById('stat-faculty-storage');
+
+  if (countEl) countEl.textContent = materials.length;
+  if (downloadsEl) {
+    const totalDownloads = materials.reduce((acc, m) => acc + (m.downloads || 0), 0);
+    downloadsEl.textContent = totalDownloads.toLocaleString();
+  }
+  if (storageEl) {
+    storageEl.textContent = `${(materials.length * 5.4).toFixed(1)} MB`;
+  }
+}
+
+function getFormatDetails(format) {
+  switch ((format || '').toUpperCase()) {
+    case 'PDF':
+      return { css: 'format-pdf', icon: 'fa-solid fa-file-pdf', label: 'PDF Document' };
+    case 'PPTX':
+      return { css: 'format-pptx', icon: 'fa-solid fa-file-powerpoint', label: 'Presentation' };
+    case 'ZIP':
+      return { css: 'format-zip', icon: 'fa-solid fa-file-zipper', label: 'Code / Archive' };
+    case 'Q-BANK':
+      return { css: 'format-qbank', icon: 'fa-solid fa-file-lines', label: 'Question Bank' };
+    case 'CHEATSHEET':
+      return { css: 'format-cheatsheet', icon: 'fa-solid fa-bolt', label: 'Formula Sheet' };
+    default:
+      return { css: 'format-docx', icon: 'fa-solid fa-file-word', label: 'Document' };
+  }
+}
+
+function renderFacultyMaterials(materials) {
+  const grid = document.getElementById('faculty-materials-grid');
+  if (!grid) return;
+
+  if (!materials || materials.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1; text-align:center; padding:48px 20px; background:rgba(255,255,255,0.02); border-radius:var(--radius-md); border:1px dashed var(--border-glass);">
+        <i class="fa-solid fa-folder-open" style="font-size:2.8rem; color:var(--text-muted); margin-bottom:12px; display:block;"></i>
+        <h4 style="margin-bottom:6px;">No Study Materials Found</h4>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Upload notes, presentations, or solved question papers for your students.</p>
+        <button class="btn btn-primary btn-sm" onclick="openUploadMaterialModal()"><i class="fa-solid fa-plus"></i> Upload First Document</button>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = materials.map(m => {
+    const fmt = getFormatDetails(m.format);
+    const dateFormatted = new Date(m.uploadDate || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const topicsHtml = (m.topics || []).slice(0, 2).map(t => `<li>${t}</li>`).join('');
+
+    return `
+      <div class="material-card">
+        <div>
+          <div class="material-header">
+            <div class="material-format-icon ${fmt.css}">
+              <i class="${fmt.icon}"></i>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; gap:8px;">
+                <span class="badge badge-primary" style="font-size:0.75rem;">${m.subjectCode} • ${m.unit}</span>
+                <span class="badge badge-warning" style="font-size:0.72rem;">${m.tag || 'Official Notes'}</span>
+              </div>
+              <h3 class="material-title" title="${m.title}">${m.title}</h3>
+            </div>
+          </div>
+
+          <p class="material-desc">${m.description || 'Comprehensive lecture materials and study module notes.'}</p>
+
+          ${topicsHtml ? `
+            <div class="material-topics-preview">
+              <strong style="color:var(--primary-light); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Key Topics:</strong>
+              <ul>${topicsHtml}</ul>
+            </div>
+          ` : ''}
+
+          <div class="material-meta-row">
+            <div class="material-author">
+              <img src="${m.facultyAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150'}" alt="${m.facultyName}">
+              <span style="font-weight:600; color:var(--text-main); font-size:0.8rem;">${m.facultyName}</span>
+            </div>
+            <div style="display:flex; gap:10px; font-size:0.78rem;">
+              <span><i class="fa-solid fa-file"></i> ${m.fileSize || '3.5 MB'}</span>
+              <span><i class="fa-solid fa-download" style="color:var(--success);"></i> ${m.downloads || 0}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="material-actions">
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="previewFacultyMaterial(${m.id})">
+            <i class="fa-solid fa-eye"></i> Read / Preview
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="downloadStudyMaterial(${m.id})" title="Download File">
+            <i class="fa-solid fa-download"></i>
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteFacultyMaterial(${m.id})" title="Delete Document">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function setupMaterialFilters() {
+  const searchInput = document.getElementById('faculty-material-search');
+  const subjectSelect = document.getElementById('faculty-material-filter-subject');
+  const typeSelect = document.getElementById('faculty-material-filter-type');
+
+  function applyFilters() {
+    const query = (searchInput?.value || '').toLowerCase().trim();
+    const subject = subjectSelect?.value || 'ALL';
+    const type = typeSelect?.value || 'ALL';
+
+    const filtered = allFacultyMaterials.filter(m => {
+      const matchesQuery = !query || 
+        (m.title && m.title.toLowerCase().includes(query)) ||
+        (m.description && m.description.toLowerCase().includes(query)) ||
+        (m.subjectCode && m.subjectCode.toLowerCase().includes(query)) ||
+        (m.unit && m.unit.toLowerCase().includes(query));
+
+      const matchesSubject = subject === 'ALL' || m.subjectCode === subject;
+      const matchesType = type === 'ALL' || (m.format && m.format.toUpperCase() === type.toUpperCase());
+
+      return matchesQuery && matchesSubject && matchesType;
+    });
+
+    renderFacultyMaterials(filtered);
+  }
+
+  if (searchInput) searchInput.addEventListener('input', applyFilters);
+  if (subjectSelect) subjectSelect.addEventListener('change', applyFilters);
+  if (typeSelect) typeSelect.addEventListener('change', applyFilters);
+}
+
+function setupMaterialUploadForm() {
+  const form = document.getElementById('faculty-upload-material-form');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('mat-title').value.trim();
+    const [subjectCode, subjectName] = document.getElementById('mat-subject').value.split('|');
+    const unit = document.getElementById('mat-unit').value;
+    const format = document.getElementById('mat-format').value;
+    const tag = document.getElementById('mat-tag').value.trim() || 'Official Course Material';
+    const desc = document.getElementById('mat-desc').value.trim();
+    const topicsRaw = document.getElementById('mat-topics').value.trim();
+    const content = document.getElementById('mat-content').value.trim() || desc;
+
+    const topicsList = topicsRaw ? topicsRaw.split('\n').map(t => t.trim()).filter(Boolean) : [];
+    const currentUser = AuthState.getUser();
+
+    const newMaterial = {
+      id: Date.now(),
+      title,
+      subjectCode,
+      subjectName,
+      facultyName: currentUser?.fullName || 'Prof. Sarah Jenkins',
+      facultyAvatar: currentUser?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
+      unit,
+      format,
+      tag,
+      description: desc,
+      topics: topicsList,
+      contentPreview: content,
+      fileSize: `${(Math.random() * 4 + 2).toFixed(1)} MB`,
+      pages: Math.floor(Math.random() * 30 + 15),
+      downloads: 0,
+      views: 1,
+      uploadDate: new Date().toISOString()
+    };
+
+    const res = await apiRequest('/faculty/materials', 'POST', newMaterial);
+    showToast(`Study Material "${title}" posted successfully! Visible to all students.`, 'success');
+    closeUploadMaterialModal();
+    form.reset();
+    await loadFacultyMaterials();
+  });
+}
+
+window.openUploadMaterialModal = function() {
+  document.getElementById('upload-material-modal')?.classList.add('active');
+};
+
+window.closeUploadMaterialModal = function() {
+  document.getElementById('upload-material-modal')?.classList.remove('active');
+};
+
+window.deleteFacultyMaterial = async function(id) {
+  if (!confirm('Are you sure you want to remove this study material from the student portal?')) return;
+  await apiRequest(`/faculty/materials/${id}`, 'DELETE');
+  showToast('Study Material deleted successfully.', 'info');
+  await loadFacultyMaterials();
+};
+
+window.previewFacultyMaterial = function(id) {
+  const material = allFacultyMaterials.find(m => m.id === id);
+  if (!material) return;
+
+  const modal = document.getElementById('preview-material-modal');
+  const fmt = getFormatDetails(material.format);
+
+  const iconEl = document.getElementById('preview-modal-icon');
+  if (iconEl) {
+    iconEl.className = `material-format-icon ${fmt.css}`;
+    iconEl.innerHTML = `<i class="${fmt.icon}"></i>`;
+  }
+
+  const titleEl = document.getElementById('preview-modal-title');
+  if (titleEl) titleEl.textContent = material.title;
+
+  const subtitleEl = document.getElementById('preview-modal-subtitle');
+  if (subtitleEl) subtitleEl.textContent = `${material.subjectCode} - ${material.subjectName} • ${material.unit}`;
+
+  const tagsEl = document.getElementById('preview-modal-tags');
+  if (tagsEl) {
+    tagsEl.innerHTML = `
+      <span class="badge badge-primary">${material.subjectCode}</span>
+      <span class="badge badge-info">${material.unit}</span>
+      <span class="badge badge-warning">${material.tag || 'Notes'}</span>
+      <span class="badge badge-success"><i class="fa-solid fa-file"></i> ${material.fileSize || '3.5 MB'}</span>
+      <span class="badge badge-secondary"><i class="fa-solid fa-user-tie"></i> ${material.facultyName}</span>
+    `;
+  }
+
+  const bodyEl = document.getElementById('preview-modal-document-body');
+  if (bodyEl) {
+    const formattedContent = (material.contentPreview || material.description || '')
+      .replace(/^### (.*$)/gim, '<h4 class="reader-section-header"><i class="fa-solid fa-bookmark"></i> $1</h4>')
+      .replace(/^#### (.*$)/gim, '<h5 style="color:var(--text-main); margin:12px 0 6px 0;">$1</h5>')
+      .replace(/\`\`\`(\w+)?\n([\s\S]*?)\`\`\`/gim, '<pre class="reader-code-box"><code>$2</code></pre>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+      .replace(/\n\n/g, '<br><br>');
+
+    bodyEl.innerHTML = `
+      <div style="margin-bottom:16px;">
+        <p style="font-size:0.95rem; color:var(--text-muted); line-height:1.6; margin-bottom:14px;">${material.description}</p>
+        ${material.topics && material.topics.length ? `
+          <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:18px;">
+            <strong style="color:var(--primary-light); font-size:0.85rem; display:block; margin-bottom:6px;"><i class="fa-solid fa-list-check"></i> Curriculum Syllabus Coverage:</strong>
+            <ul style="padding-left:18px; margin:0; font-size:0.85rem; color:var(--text-main);">
+              ${material.topics.map(t => `<li>${t}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        <div style="margin-top:16px;">${formattedContent}</div>
+      </div>
+    `;
+  }
+
+  const metaLeftEl = document.getElementById('preview-modal-meta-left');
+  if (metaLeftEl) {
+    metaLeftEl.innerHTML = `<span>Uploaded: ${new Date(material.uploadDate || Date.now()).toLocaleDateString()} • ${material.downloads || 0} Downloads</span>`;
+  }
+
+  const downloadBtn = document.getElementById('preview-modal-download-btn');
+  if (downloadBtn) {
+    downloadBtn.onclick = () => downloadStudyMaterial(material.id);
+  }
+
+  modal?.classList.add('active');
+};
+
+window.closePreviewModal = function() {
+  document.getElementById('preview-material-modal')?.classList.remove('active');
+};
+
+window.downloadStudyMaterial = function(id) {
+  const materials = getStoredStudyMaterials();
+  const mat = materials.find(m => m.id === id);
+  if (!mat) return;
+
+  mat.downloads = (mat.downloads || 0) + 1;
+  saveStoredStudyMaterials(materials);
+
+  // Generate downloadable plain text/markdown file blob
+  const fileContent = `=====================================================
+CampusAI - Official Course Study Material
+Subject: ${mat.subjectCode} - ${mat.subjectName}
+Unit: ${mat.unit}
+Title: ${mat.title}
+Instructor: ${mat.facultyName}
+Published Date: ${new Date(mat.uploadDate).toLocaleString()}
+=====================================================
+
+DESCRIPTION:
+${mat.description}
+
+SYLLABUS TOPICS:
+${(mat.topics || []).map(t => `- ${t}`).join('\n')}
+
+NOTES & FORMULAS:
+${mat.contentPreview || 'Refer to full class lectures.'}
+`;
+
+  const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+  const downloadUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = downloadUrl;
+  a.download = `${mat.subjectCode}_${mat.unit}_${mat.title.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(downloadUrl);
+
+  showToast(`Downloading "${mat.title}" (${mat.fileSize || '3.5 MB'})...`, 'success');
+  loadFacultyMaterials();
+};
 
 function setupNewAssignmentForm() {
   const form = document.getElementById('create-assignment-form');

@@ -34,6 +34,9 @@
         <li class="sidebar-item" data-tab="assignments">
           <a href="#"><i class="fa-solid fa-file-pen"></i> <span>Manage Assignments</span></a>
         </li>
+        <li class="sidebar-item" data-tab="materials">
+          <a href="#"><i class="fa-solid fa-folder-open"></i> <span>Notes & Materials</span></a>
+        </li>
         <li class="sidebar-item" data-tab="timetable">
           <a href="#"><i class="fa-solid fa-calendar-days"></i> <span>Teaching Schedule</span></a>
         </li>
@@ -273,8 +276,191 @@
           </div>
         </section>
 
+        <!-- 6. NOTES & MATERIALS TAB -->
+        <section id="tab-materials" class="tab-pane">
+          <div class="section-header">
+            <div>
+              <h2>Course Notes & Digital Repository Manager</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem;">Publish, manage, and share lecture slides, unit notes, question banks, and lab guides with students</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openUploadMaterialModal()">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Upload Study Material
+            </button>
+          </div>
+
+          <!-- KPI Summary -->
+          <div class="stat-grid" style="margin-bottom:20px;">
+            <div class="glass-card stat-card stat-info">
+              <div class="stat-icon"><i class="fa-solid fa-folder-open"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-faculty-materials-count">8</h3>
+                <p>Published Materials</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-success">
+              <div class="stat-icon"><i class="fa-solid fa-download"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-faculty-downloads-count">1,228</h3>
+                <p>Student Downloads</p>
+              </div>
+            </div>
+
+            <div class="glass-card stat-card stat-warning">
+              <div class="stat-icon"><i class="fa-solid fa-database"></i></div>
+              <div class="stat-info">
+                <h3 id="stat-faculty-storage">52.1 MB</h3>
+                <p>Cloud Storage Used</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Toolbar Search & Filter -->
+          <div class="glass-card" style="padding:16px; margin-bottom:20px; display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+            <div style="flex:1; min-width:240px; position:relative;">
+              <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
+              <input type="text" id="faculty-material-search" class="form-control" placeholder="Search notes by topic, unit, or course..." style="padding-left:38px;">
+            </div>
+
+            <div style="width:230px;">
+              <select id="faculty-material-filter-subject" class="form-control">
+                <option value="ALL">All Subjects</option>
+                <option value="23ADT501">23ADT501 - Deep Learning</option>
+                <option value="23CSE011">23CSE011 - Cloud Service Mgmt</option>
+                <option value="23CBT502">23CBT502 - Data & Info Security</option>
+                <option value="23CST504">23CST504 - Distributed Computing</option>
+                <option value="23ADT502">23ADT502 - Big Data Analytics</option>
+                <option value="23CSE005">23CSE005 - Business Analytics</option>
+              </select>
+            </div>
+
+            <div style="width:170px;">
+              <select id="faculty-material-filter-type" class="form-control">
+                <option value="ALL">All Formats</option>
+                <option value="PDF">PDF Documents</option>
+                <option value="PPTX">PPTX Slides</option>
+                <option value="ZIP">Lab Code / ZIP</option>
+                <option value="Q-Bank">Question Banks</option>
+                <option value="CheatSheet">Cheat Sheets</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Materials Grid -->
+          <div id="faculty-materials-grid" class="materials-grid"></div>
+        </section>
+
       </div>
     </main>
+  </div>
+
+  <!-- Upload Material Modal -->
+  <div class="modal-backdrop" id="upload-material-modal">
+    <div class="modal-box" style="max-width:680px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-cloud-arrow-up" style="color:var(--primary-light);"></i> Upload New Study Material</h3>
+        <button class="chat-btn-icon" onclick="closeUploadMaterialModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="faculty-upload-material-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="mat-title">Document Title / Topic Name</label>
+            <input type="text" id="mat-title" class="form-control" placeholder="e.g. Unit 3: Attention Mechanism & Transformer Math" required>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="form-group">
+              <label class="form-label" for="mat-subject">Course / Subject</label>
+              <select id="mat-subject" class="form-control" required>
+                <option value="23ADT501|Deep Learning">23ADT501 - Deep Learning</option>
+                <option value="23CSE011|Cloud Service Management">23CSE011 - Cloud Service Mgmt</option>
+                <option value="23CBT502|Data and Information Security">23CBT502 - Data & Info Security</option>
+                <option value="23CST504|Distributed Computing">23CST504 - Distributed Computing</option>
+                <option value="23ADT502|Big Data Analytics">23ADT502 - Big Data Analytics</option>
+                <option value="23CSE005|Business Analytics">23CSE005 - Business Analytics</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mat-unit">Unit / Module</label>
+              <select id="mat-unit" class="form-control" required>
+                <option value="Unit 1">Unit 1 - Fundamentals</option>
+                <option value="Unit 2">Unit 2 - Core Architectures</option>
+                <option value="Unit 3">Unit 3 - Advanced Methods</option>
+                <option value="Unit 4">Unit 4 - Specialized Models</option>
+                <option value="Unit 5">Unit 5 - Applications & Case Studies</option>
+                <option value="All Units">All Units (Complete Syllabus)</option>
+                <option value="Lab Manual">Lab Manual / Practical</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="form-group">
+              <label class="form-label" for="mat-format">Material Format</label>
+              <select id="mat-format" class="form-control" required>
+                <option value="PDF">PDF Document (.pdf)</option>
+                <option value="PPTX">Presentation Slides (.pptx)</option>
+                <option value="ZIP">Lab Code Archive (.zip)</option>
+                <option value="Q-Bank">University Question Bank</option>
+                <option value="CheatSheet">Formula / Quick Cheat Sheet</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mat-tag">Highlight Badge / Tag</label>
+              <input type="text" id="mat-tag" class="form-control" placeholder="e.g. ⭐ Exam Essential, 🧪 Lab Guide" value="⭐ Anna Univ High Priority">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="mat-desc">Short Overview Description</label>
+            <textarea id="mat-desc" class="form-control" rows="2" placeholder="Brief summary of what this document covers..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="mat-topics">Key Syllabus Topics Covered (1 per line)</label>
+            <textarea id="mat-topics" class="form-control" rows="3" placeholder="Topic 1: Mathematical Foundations&#10;Topic 2: Layer Architectures & Formulas&#10;Topic 3: Solved University Exam Problems" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="mat-content">In-App Document Preview Content / Notes Excerpt</label>
+            <textarea id="mat-content" class="form-control" rows="4" placeholder="Provide note text, equations, or sample code for in-app reading pane..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeUploadMaterialModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Material</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Note Preview & Reader Modal -->
+  <div class="modal-backdrop" id="preview-material-modal">
+    <div class="modal-box reader-modal-box">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div id="preview-modal-icon" class="material-format-icon format-pdf"><i class="fa-solid fa-file-pdf"></i></div>
+          <div>
+            <h3 id="preview-modal-title" style="font-size:1.1rem; margin:0;">Document Title</h3>
+            <p id="preview-modal-subtitle" style="font-size:0.8rem; color:var(--text-muted); margin:2px 0 0 0;">Course • Unit</p>
+          </div>
+        </div>
+        <button class="chat-btn-icon" onclick="closePreviewModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="preview-modal-tags" style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;"></div>
+        <div class="reader-document-view" id="preview-modal-document-body"></div>
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <div id="preview-modal-meta-left" style="font-size:0.82rem; color:var(--text-muted);"></div>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn btn-secondary" onclick="closePreviewModal()">Close</button>
+          <button type="button" class="btn btn-primary" id="preview-modal-download-btn"><i class="fa-solid fa-download"></i> Download Material</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Grading Review Modal -->

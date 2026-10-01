@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadTimetable();
   await loadAttendance();
   await loadAssignments();
+  await loadStudentMaterials();
   await loadEvents();
   await loadClubs();
   await loadAnnouncements();
@@ -24,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 4. Setup form submissions
   setupComplaintForm();
   setupAssignmentSubmissionForm();
+  setupStudentMaterialFilters();
 });
 
 /**
@@ -1540,6 +1542,378 @@ window.toggleJoinClub = function(clubId) {
     openClubJoinModal(clubId);
   }
 };
+
+// ==========================================
+// Student Notes & Study Materials Controller
+// ==========================================
+let allStudentMaterials = [];
+let studentActiveSubjectFilter = 'ALL';
+let studentActiveFormatFilter = 'ALL';
+let studentBookmarkedOnly = false;
+
+function getBookmarkedMaterialIds() {
+  try {
+    const saved = localStorage.getItem('campusai_bookmarked_materials');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return [1, 2]; // Default demo bookmarks
+}
+
+function saveBookmarkedMaterialIds(ids) {
+  localStorage.setItem('campusai_bookmarked_materials', JSON.stringify(ids));
+}
+
+async function loadStudentMaterials() {
+  allStudentMaterials = await apiRequest('/student/materials') || getStoredStudyMaterials();
+  updateStudentMaterialsUI();
+}
+
+function updateStudentMaterialsUI() {
+  const bookmarks = getBookmarkedMaterialIds();
+  const countBadge = document.getElementById('student-bookmarked-count');
+  if (countBadge) countBadge.textContent = bookmarks.length;
+
+  const statCount = document.getElementById('student-stat-materials-count');
+  if (statCount) statCount.textContent = `${allStudentMaterials.length} Modules`;
+
+  applyStudentMaterialFilters();
+}
+
+function getMaterialFormatDetails(format) {
+  switch ((format || '').toUpperCase()) {
+    case 'PDF':
+      return { css: 'format-pdf', icon: 'fa-solid fa-file-pdf', label: 'PDF Document' };
+    case 'PPTX':
+      return { css: 'format-pptx', icon: 'fa-solid fa-file-powerpoint', label: 'Presentation' };
+    case 'ZIP':
+      return { css: 'format-zip', icon: 'fa-solid fa-file-zipper', label: 'Code Archive' };
+    case 'Q-BANK':
+      return { css: 'format-qbank', icon: 'fa-solid fa-file-lines', label: 'Question Bank' };
+    case 'CHEATSHEET':
+      return { css: 'format-cheatsheet', icon: 'fa-solid fa-bolt', label: 'Formula Sheet' };
+    default:
+      return { css: 'format-docx', icon: 'fa-solid fa-file-word', label: 'Document' };
+  }
+}
+
+function renderStudentMaterials(materials) {
+  const grid = document.getElementById('student-materials-grid');
+  if (!grid) return;
+
+  const bookmarks = getBookmarkedMaterialIds();
+
+  if (!materials || materials.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1; text-align:center; padding:48px 20px; background:rgba(255,255,255,0.02); border-radius:var(--radius-md); border:1px dashed var(--border-glass);">
+        <i class="fa-solid fa-book-open-reader" style="font-size:2.8rem; color:var(--text-muted); margin-bottom:12px; display:block;"></i>
+        <h4 style="margin-bottom:6px;">No Materials Matching Filter</h4>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Try adjusting your search query, subject, or format filters.</p>
+        <button class="btn btn-secondary btn-sm" onclick="resetStudentMaterialFilters()"><i class="fa-solid fa-arrows-rotate"></i> Reset All Filters</button>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = materials.map(m => {
+    const fmt = getMaterialFormatDetails(m.format);
+    const isBookmarked = bookmarks.includes(m.id);
+    const topicsHtml = (m.topics || []).slice(0, 2).map(t => `<li>${t}</li>`).join('');
+
+    return `
+      <div class="material-card">
+        <div>
+          <div class="material-header">
+            <div class="material-format-icon ${fmt.css}">
+              <i class="${fmt.icon}"></i>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; gap:8px;">
+                <span class="badge badge-primary" style="font-size:0.75rem;">${m.subjectCode} • ${m.unit}</span>
+                <span class="badge badge-warning" style="font-size:0.72rem;">${m.tag || 'Official Notes'}</span>
+              </div>
+              <h3 class="material-title" title="${m.title}">${m.title}</h3>
+            </div>
+          </div>
+
+          <p class="material-desc">${m.description || 'Comprehensive lecture materials and study module notes.'}</p>
+
+          ${topicsHtml ? `
+            <div class="material-topics-preview">
+              <strong style="color:var(--primary-light); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Key Concepts:</strong>
+              <ul>${topicsHtml}</ul>
+            </div>
+          ` : ''}
+
+          <div class="material-meta-row">
+            <div class="material-author">
+              <img src="${m.facultyAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150'}" alt="${m.facultyName}">
+              <div>
+                <div style="font-weight:600; color:var(--text-main); font-size:0.8rem;">${m.facultyName}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">${m.subjectName}</div>
+              </div>
+            </div>
+            <div style="text-align:right; font-size:0.78rem;">
+              <div><i class="fa-solid fa-file"></i> ${m.fileSize || '3.5 MB'}</div>
+              <div style="color:var(--success); font-size:0.74rem;"><i class="fa-solid fa-download"></i> ${m.downloads || 0} downloads</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="material-actions">
+          <button class="bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleMaterialBookmark(${m.id})" title="${isBookmarked ? 'Remove Bookmark' : 'Bookmark Material'}">
+            <i class="fa-${isBookmarked ? 'solid' : 'regular'} fa-star"></i>
+          </button>
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="openStudentPreviewModal(${m.id})">
+            <i class="fa-solid fa-book-open"></i> Read Notes
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="downloadStudentStudyMaterial(${m.id})" title="Download File">
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function setupStudentMaterialFilters() {
+  const searchInput = document.getElementById('student-material-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', applyStudentMaterialFilters);
+  }
+
+  // Subject Pills
+  const subjectPills = document.querySelectorAll('#student-subject-pills .filter-pill');
+  subjectPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      subjectPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      studentActiveSubjectFilter = pill.getAttribute('data-subject') || 'ALL';
+      applyStudentMaterialFilters();
+    });
+  });
+
+  // Format Pills
+  const formatPills = document.querySelectorAll('#student-format-pills .format-pill');
+  formatPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      formatPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      studentActiveFormatFilter = pill.getAttribute('data-format') || 'ALL';
+      applyStudentMaterialFilters();
+    });
+  });
+}
+
+function applyStudentMaterialFilters() {
+  const searchInput = document.getElementById('student-material-search');
+  const query = (searchInput?.value || '').toLowerCase().trim();
+  const bookmarks = getBookmarkedMaterialIds();
+
+  const filtered = allStudentMaterials.filter(m => {
+    const matchesQuery = !query ||
+      (m.title && m.title.toLowerCase().includes(query)) ||
+      (m.description && m.description.toLowerCase().includes(query)) ||
+      (m.subjectCode && m.subjectCode.toLowerCase().includes(query)) ||
+      (m.subjectName && m.subjectName.toLowerCase().includes(query)) ||
+      (m.facultyName && m.facultyName.toLowerCase().includes(query)) ||
+      (m.unit && m.unit.toLowerCase().includes(query)) ||
+      (m.topics && m.topics.some(t => t.toLowerCase().includes(query)));
+
+    const matchesSubject = studentActiveSubjectFilter === 'ALL' || m.subjectCode === studentActiveSubjectFilter;
+    const matchesFormat = studentActiveFormatFilter === 'ALL' || (m.format && m.format.toUpperCase() === studentActiveFormatFilter.toUpperCase());
+    const matchesBookmark = !studentBookmarkedOnly || bookmarks.includes(m.id);
+
+    return matchesQuery && matchesSubject && matchesFormat && matchesBookmark;
+  });
+
+  renderStudentMaterials(filtered);
+}
+
+window.toggleStudentBookmarkFilter = function() {
+  studentBookmarkedOnly = !studentBookmarkedOnly;
+  const btn = document.getElementById('student-filter-bookmarked-btn');
+  const icon = document.getElementById('bookmark-filter-icon');
+
+  if (btn) {
+    if (studentBookmarkedOnly) {
+      btn.classList.add('active');
+      if (icon) icon.className = 'fa-solid fa-star';
+    } else {
+      btn.classList.remove('active');
+      if (icon) icon.className = 'fa-regular fa-star';
+    }
+  }
+
+  applyStudentMaterialFilters();
+};
+
+window.toggleMaterialBookmark = function(materialId) {
+  let bookmarks = getBookmarkedMaterialIds();
+  const index = bookmarks.indexOf(materialId);
+
+  if (index >= 0) {
+    bookmarks.splice(index, 1);
+    showToast('Removed from Bookmarks ⭐', 'info');
+  } else {
+    bookmarks.push(materialId);
+    showToast('Saved to My Bookmarks ⭐', 'success');
+  }
+
+  saveBookmarkedMaterialIds(bookmarks);
+  updateStudentMaterialsUI();
+};
+
+window.resetStudentMaterialFilters = function() {
+  const searchInput = document.getElementById('student-material-search');
+  if (searchInput) searchInput.value = '';
+
+  studentActiveSubjectFilter = 'ALL';
+  studentActiveFormatFilter = 'ALL';
+  studentBookmarkedOnly = false;
+
+  document.querySelectorAll('#student-subject-pills .filter-pill').forEach((p, idx) => {
+    if (idx === 0) p.classList.add('active');
+    else p.classList.remove('active');
+  });
+
+  document.querySelectorAll('#student-format-pills .format-pill').forEach((p, idx) => {
+    if (idx === 0) p.classList.add('active');
+    else p.classList.remove('active');
+  });
+
+  const btn = document.getElementById('student-filter-bookmarked-btn');
+  const icon = document.getElementById('bookmark-filter-icon');
+  if (btn) btn.classList.remove('active');
+  if (icon) icon.className = 'fa-regular fa-star';
+
+  applyStudentMaterialFilters();
+};
+
+window.openStudentPreviewModal = function(id) {
+  const material = allStudentMaterials.find(m => m.id === id);
+  if (!material) return;
+
+  const modal = document.getElementById('student-material-preview-modal');
+  const fmt = getMaterialFormatDetails(material.format);
+
+  const iconEl = document.getElementById('stu-preview-icon');
+  if (iconEl) {
+    iconEl.className = `material-format-icon ${fmt.css}`;
+    iconEl.innerHTML = `<i class="${fmt.icon}"></i>`;
+  }
+
+  const titleEl = document.getElementById('stu-preview-title');
+  if (titleEl) titleEl.textContent = material.title;
+
+  const subtitleEl = document.getElementById('stu-preview-subtitle');
+  if (subtitleEl) subtitleEl.textContent = `${material.subjectCode} - ${material.subjectName} • ${material.unit} • By ${material.facultyName}`;
+
+  const tagsEl = document.getElementById('stu-preview-tags');
+  if (tagsEl) {
+    tagsEl.innerHTML = `
+      <span class="badge badge-primary">${material.subjectCode}</span>
+      <span class="badge badge-info">${material.unit}</span>
+      <span class="badge badge-warning">${material.tag || 'Course Material'}</span>
+      <span class="badge badge-success"><i class="fa-solid fa-file"></i> ${material.fileSize || '3.5 MB'}</span>
+      <span class="badge badge-secondary"><i class="fa-solid fa-user-tie"></i> ${material.facultyName}</span>
+    `;
+  }
+
+  const bodyEl = document.getElementById('stu-preview-document-body');
+  if (bodyEl) {
+    const formattedContent = (material.contentPreview || material.description || '')
+      .replace(/^### (.*$)/gim, '<h4 class="reader-section-header"><i class="fa-solid fa-bookmark"></i> $1</h4>')
+      .replace(/^#### (.*$)/gim, '<h5 style="color:var(--text-main); margin:12px 0 6px 0;">$1</h5>')
+      .replace(/\`\`\`(\w+)?\n([\s\S]*?)\`\`\`/gim, '<pre class="reader-code-box"><code>$2</code></pre>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+      .replace(/\n\n/g, '<br><br>');
+
+    bodyEl.innerHTML = `
+      <div style="margin-bottom:16px;">
+        <p style="font-size:0.95rem; color:var(--text-muted); line-height:1.6; margin-bottom:14px;">${material.description}</p>
+        ${material.topics && material.topics.length ? `
+          <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:18px;">
+            <strong style="color:var(--primary-light); font-size:0.85rem; display:block; margin-bottom:6px;"><i class="fa-solid fa-list-check"></i> Curriculum Syllabus Coverage:</strong>
+            <ul style="padding-left:18px; margin:0; font-size:0.85rem; color:var(--text-main);">
+              ${material.topics.map(t => `<li>${t}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        <div style="margin-top:16px;">${formattedContent}</div>
+      </div>
+    `;
+  }
+
+  const metaLeftEl = document.getElementById('stu-preview-meta-left');
+  if (metaLeftEl) {
+    metaLeftEl.innerHTML = `<span>Uploaded: ${new Date(material.uploadDate || Date.now()).toLocaleDateString()} • ${material.downloads || 0} Downloads</span>`;
+  }
+
+  const filesizeSpan = document.getElementById('stu-preview-filesize');
+  if (filesizeSpan) filesizeSpan.textContent = material.fileSize || '3.5 MB';
+
+  const downloadBtn = document.getElementById('stu-preview-download-btn');
+  if (downloadBtn) {
+    downloadBtn.onclick = () => downloadStudentStudyMaterial(material.id);
+  }
+
+  const askAiBtn = document.getElementById('stu-preview-ask-ai-btn');
+  if (askAiBtn) {
+    askAiBtn.onclick = () => {
+      closeStudentPreviewModal();
+      askAiQuick(`Explain the key concepts and formulas from "${material.title}" for ${material.subjectName} (${material.subjectCode}).`);
+    };
+  }
+
+  modal?.classList.add('active');
+};
+
+window.closeStudentPreviewModal = function() {
+  document.getElementById('student-material-preview-modal')?.classList.remove('active');
+};
+
+window.downloadStudentStudyMaterial = function(id) {
+  const materials = getStoredStudyMaterials();
+  const mat = materials.find(m => m.id === id);
+  if (!mat) return;
+
+  mat.downloads = (mat.downloads || 0) + 1;
+  saveStoredStudyMaterials(materials);
+
+  const fileContent = `=====================================================
+CampusAI - Official Course Study Material
+Subject: ${mat.subjectCode} - ${mat.subjectName}
+Unit: ${mat.unit}
+Title: ${mat.title}
+Instructor: ${mat.facultyName}
+Published Date: ${new Date(mat.uploadDate).toLocaleString()}
+=====================================================
+
+DESCRIPTION:
+${mat.description}
+
+SYLLABUS TOPICS:
+${(mat.topics || []).map(t => `- ${t}`).join('\n')}
+
+NOTES & EXCERPTS:
+${mat.contentPreview || 'Refer to full class lectures.'}
+`;
+
+  const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+  const downloadUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = downloadUrl;
+  a.download = `${mat.subjectCode}_${mat.unit}_${mat.title.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(downloadUrl);
+
+  showToast(`Downloading "${mat.title}" (${mat.fileSize || '3.5 MB'})...`, 'success');
+  loadStudentMaterials();
+};
+
 
 
 
