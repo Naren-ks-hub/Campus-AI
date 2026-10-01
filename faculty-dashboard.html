@@ -403,6 +403,22 @@
             </div>
           </div>
 
+          <!-- Material Format / Category Selector -->
+          <div class="form-group">
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Material Type / Category</span>
+              <span id="format-selection-summary" style="font-size:0.78rem; color:var(--primary-light); font-weight:600;">PDF Notes</span>
+            </label>
+            <div class="unit-chips-container" id="upload-format-chips-group">
+              <button type="button" class="format-chip active" data-format="PDF"><i class="fa-solid fa-file-pdf" style="color:#f87171;"></i> PDF Notes</button>
+              <button type="button" class="format-chip" data-format="PPTX"><i class="fa-solid fa-file-powerpoint" style="color:#fb923c;"></i> Presentation Slides</button>
+              <button type="button" class="format-chip" data-format="ZIP"><i class="fa-solid fa-file-zipper" style="color:#c084fc;"></i> Lab Manuals & Code</button>
+              <button type="button" class="format-chip" data-format="Q-BANK"><i class="fa-solid fa-file-lines" style="color:#facc15;"></i> Question Banks</button>
+              <button type="button" class="format-chip" data-format="CHEATSHEET"><i class="fa-solid fa-bolt" style="color:#34d399;"></i> Formula Sheets</button>
+            </div>
+            <input type="hidden" id="mat-format" name="format" value="PDF" required>
+          </div>
+
           <!-- Unit Multi-Choice Selector -->
           <div class="form-group">
             <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
@@ -519,6 +535,22 @@
                 <option value="Mechanical Engineering">Mechanical Engineering</option>
               </select>
             </div>
+          </div>
+
+          <!-- Material Format / Category Selector for Edit -->
+          <div class="form-group">
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Material Type / Category</span>
+              <span id="edit-format-selection-summary" style="font-size:0.78rem; color:var(--primary-light); font-weight:600;">PDF Notes</span>
+            </label>
+            <div class="unit-chips-container" id="edit-format-chips-group">
+              <button type="button" class="format-chip edit-format-chip active" data-format="PDF"><i class="fa-solid fa-file-pdf" style="color:#f87171;"></i> PDF Notes</button>
+              <button type="button" class="format-chip edit-format-chip" data-format="PPTX"><i class="fa-solid fa-file-powerpoint" style="color:#fb923c;"></i> Presentation Slides</button>
+              <button type="button" class="format-chip edit-format-chip" data-format="ZIP"><i class="fa-solid fa-file-zipper" style="color:#c084fc;"></i> Lab Manuals & Code</button>
+              <button type="button" class="format-chip edit-format-chip" data-format="Q-BANK"><i class="fa-solid fa-file-lines" style="color:#facc15;"></i> Question Banks</button>
+              <button type="button" class="format-chip edit-format-chip" data-format="CHEATSHEET"><i class="fa-solid fa-bolt" style="color:#34d399;"></i> Formula Sheets</button>
+            </div>
+            <input type="hidden" id="edit-mat-format" name="format" value="PDF" required>
           </div>
 
           <!-- Unit Multi-Choice Selector for Edit -->

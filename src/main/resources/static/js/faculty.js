@@ -370,6 +370,22 @@ function setupMaterialUploadForm() {
     });
   });
 
+  // Material Format Chips Setup
+  const formatChips = document.querySelectorAll('#upload-format-chips-group .format-chip');
+  const formatInput = document.getElementById('mat-format');
+  const formatSummary = document.getElementById('format-selection-summary');
+
+  formatChips.forEach(chip => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
+      formatChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const fmtVal = chip.getAttribute('data-format') || 'PDF';
+      if (formatInput) formatInput.value = fmtVal;
+      if (formatSummary) formatSummary.textContent = chip.textContent.trim();
+    });
+  });
+
   // Drag and Drop Listeners
   if (dropzone) {
     ['dragenter', 'dragover'].forEach(eventName => {
@@ -413,20 +429,8 @@ function setupMaterialUploadForm() {
       return;
     }
     const department = document.getElementById('mat-dept')?.value || currentUser?.department || 'Information Technology';
+    const format = document.getElementById('mat-format')?.value || 'PDF';
     const desc = document.getElementById('mat-desc').value.trim();
-
-    const currentUser = AuthState.getUser();
-
-    // Auto-detect format from attached file extension
-    let format = 'PDF';
-    if (attachedMaterialFileData?.name) {
-      const ext = attachedMaterialFileData.name.split('.').pop().toLowerCase();
-      if (['pptx', 'ppt'].includes(ext)) format = 'PPTX';
-      else if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) format = 'ZIP';
-      else if (['docx', 'doc'].includes(ext)) format = 'DOCX';
-      else if (['txt', 'py', 'java', 'cpp', 'c', 'sql'].includes(ext)) format = 'TXT';
-      else format = 'PDF';
-    }
 
     // Use attached file metadata if provided, otherwise sensible defaults
     const fileSize = attachedMaterialFileData?.size || `${(Math.random() * 3 + 2).toFixed(1)} MB`;
@@ -558,6 +562,16 @@ window.openUploadMaterialModal = function() {
   if (unitInput) unitInput.value = '';
   const unitSummary = document.getElementById('unit-selection-summary');
   if (unitSummary) unitSummary.textContent = '';
+
+  document.querySelectorAll('#upload-format-chips-group .format-chip').forEach(c => {
+    c.classList.remove('active');
+    if (c.getAttribute('data-format') === 'PDF') c.classList.add('active');
+  });
+  const formatInput = document.getElementById('mat-format');
+  if (formatInput) formatInput.value = 'PDF';
+  const formatSummary = document.getElementById('format-selection-summary');
+  if (formatSummary) formatSummary.textContent = 'PDF Notes';
+
   document.getElementById('upload-material-modal')?.classList.add('active');
 };
 
@@ -842,6 +856,22 @@ function setupEditMaterialForm() {
     });
   });
 
+  // Edit Material Format Chips Setup
+  const editFormatChips = document.querySelectorAll('#edit-format-chips-group .edit-format-chip');
+  const editFormatInput = document.getElementById('edit-mat-format');
+  const editFormatSummary = document.getElementById('edit-format-selection-summary');
+
+  editFormatChips.forEach(chip => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
+      editFormatChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const fmtVal = chip.getAttribute('data-format') || 'PDF';
+      if (editFormatInput) editFormatInput.value = fmtVal;
+      if (editFormatSummary) editFormatSummary.textContent = chip.textContent.trim();
+    });
+  });
+
   // Drag and Drop Listeners for Edit Dropzone
   if (dropzone) {
     ['dragenter', 'dragover'].forEach(eventName => {
@@ -882,6 +912,7 @@ function setupEditMaterialForm() {
     const subjectVal = document.getElementById('edit-mat-subject').value;
     const [subjectCode, subjectName] = subjectVal.split('|');
     const department = document.getElementById('edit-mat-dept').value;
+    const format = document.getElementById('edit-mat-format')?.value || existing.format || 'PDF';
     const unit = (document.getElementById('edit-mat-unit')?.value || '').trim();
     if (!unit) {
       showToast('Please select at least one Unit.', 'error');
@@ -889,7 +920,6 @@ function setupEditMaterialForm() {
     }
     const desc = document.getElementById('edit-mat-desc').value.trim();
 
-    let format = existing.format || 'PDF';
     let fileName = existing.fileName;
     let fileSize = existing.fileSize;
     let contentPreview = existing.contentPreview;
@@ -898,12 +928,6 @@ function setupEditMaterialForm() {
       fileSize = editAttachedMaterialFileData.size;
       fileName = editAttachedMaterialFileData.name;
       contentPreview = editAttachedMaterialFileData.contentPreview || desc;
-      const ext = editAttachedMaterialFileData.name.split('.').pop().toLowerCase();
-      if (['pptx', 'ppt'].includes(ext)) format = 'PPTX';
-      else if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) format = 'ZIP';
-      else if (['docx', 'doc'].includes(ext)) format = 'DOCX';
-      else if (['txt', 'py', 'java', 'cpp', 'c', 'sql'].includes(ext)) format = 'TXT';
-      else format = 'PDF';
     }
 
     const updatedData = {
@@ -951,6 +975,20 @@ window.openEditMaterialModal = function(id) {
   if (deptSelect && mat.department) {
     deptSelect.value = mat.department;
   }
+
+  // Set Format Chips
+  const fmt = (mat.format || 'PDF').toUpperCase();
+  const editFormatInput = document.getElementById('edit-mat-format');
+  if (editFormatInput) editFormatInput.value = fmt;
+  const editFormatSummary = document.getElementById('edit-format-selection-summary');
+
+  document.querySelectorAll('#edit-format-chips-group .edit-format-chip').forEach(c => {
+    c.classList.remove('active');
+    if (c.getAttribute('data-format') === fmt) {
+      c.classList.add('active');
+      if (editFormatSummary) editFormatSummary.textContent = c.textContent.trim();
+    }
+  });
 
   // Set Unit chips
   document.querySelectorAll('.edit-unit-chip').forEach(c => c.classList.remove('active'));

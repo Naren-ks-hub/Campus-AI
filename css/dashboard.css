@@ -190,6 +190,39 @@
   transform: translateY(-1px);
 }
 
+/* Material Format Choice Chips */
+.format-chip {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  user-select: none;
+}
+
+.format-chip:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.format-chip.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  border-color: #8b5cf6 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+}
+
 .sidebar-footer {
   padding: 18px 16px;
   border-top: 1px solid var(--border-glass);
