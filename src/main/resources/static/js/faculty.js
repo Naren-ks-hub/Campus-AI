@@ -219,7 +219,6 @@ function renderFacultyMaterials(materials) {
   grid.innerHTML = materials.map(m => {
     const fmt = getFormatDetails(m.format);
     const dateFormatted = new Date(m.uploadDate || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const topicsHtml = (m.topics || []).slice(0, 2).map(t => `<li>${t}</li>`).join('');
 
     return `
       <div class="material-card">
@@ -238,13 +237,6 @@ function renderFacultyMaterials(materials) {
           </div>
 
           <p class="material-desc">${m.description || 'Comprehensive lecture materials and study module notes.'}</p>
-
-          ${topicsHtml ? `
-            <div class="material-topics-preview">
-              <strong style="color:var(--primary-light); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Key Topics:</strong>
-              <ul>${topicsHtml}</ul>
-            </div>
-          ` : ''}
 
           <div class="material-meta-row">
             <div class="material-author">
