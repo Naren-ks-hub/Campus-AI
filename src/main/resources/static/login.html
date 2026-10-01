@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/chatbot.css">
+  <!-- Google Identity Services (GIS) SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     .google-acc-card {
       display: flex;
@@ -138,7 +140,7 @@
     </div>
   </div>
 
-  <!-- 1. Google Account Selector Modal -->
+  <!-- 1. Google Account Selector / Real Google Identity Modal -->
   <div class="modal-backdrop" id="google-account-modal">
     <div class="modal-box" style="max-width: 440px; padding: 0;">
       <div class="modal-header" style="border-bottom: 1px solid var(--border-glass); padding: 18px 22px;">
@@ -151,49 +153,30 @@
           </svg>
           <div>
             <h3 style="font-size: 1.15rem; margin: 0;">Sign in with Google</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Choose an account to continue to CampusAI</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Sign in using your device Google Account</p>
           </div>
         </div>
         <button class="chat-btn-icon" onclick="closeGoogleAccountModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <div class="modal-body" style="padding: 18px 22px;">
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <!-- Account 1 -->
-          <div class="google-acc-card" onclick="selectGoogleAccount('Naren K S', 'narenks.vsb@gmail.com', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120')">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0;">
-              N
-            </div>
-            <div style="flex: 1; min-width: 0;">
-              <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">Naren K S</div>
-              <div style="font-size: 0.82rem; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">narenks.vsb@gmail.com</div>
-            </div>
-            <i class="fa-solid fa-chevron-right" style="color: var(--text-subtle); font-size: 0.85rem;"></i>
-          </div>
+      <div class="modal-body" style="padding: 24px 22px; text-align: center;">
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">
+          Select your verified Google account from your browser or device to authenticate into CampusAI:
+        </p>
 
-          <!-- Account 2 -->
-          <div class="google-acc-card" onclick="selectGoogleAccount('Alex Morgan', 'alex.morgan@gmail.com', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150')">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0;">
-              A
-            </div>
-            <div style="flex: 1; min-width: 0;">
-              <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">Alex Morgan</div>
-              <div style="font-size: 0.82rem; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">alex.morgan@gmail.com</div>
-            </div>
-            <i class="fa-solid fa-chevron-right" style="color: var(--text-subtle); font-size: 0.85rem;"></i>
-          </div>
+        <!-- Official Google Sign In Button Container -->
+        <div id="g_id_signin_modal_container" style="display: flex; justify-content: center; min-height: 46px; margin-bottom: 20px;"></div>
 
-          <!-- Custom Email Input Option -->
-          <div style="margin-top: 6px; padding-top: 14px; border-top: 1px solid var(--border-glass);">
-            <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">
-              <i class="fa-regular fa-envelope"></i> Or sign in with another email ID:
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <input type="email" id="custom-google-email" class="form-control" placeholder="Enter email (e.g. name@gmail.com)" style="flex: 1; font-size: 0.88rem; padding: 9px 12px;">
-              <button type="button" class="btn btn-primary" onclick="submitCustomEmailAccount()" style="padding: 9px 16px; font-size: 0.88rem; white-space: nowrap;">
-                Continue
-              </button>
-            </div>
+        <!-- Custom / Direct Email Input Option -->
+        <div style="margin-top: 14px; padding-top: 18px; border-top: 1px solid var(--border-glass); text-align: left;">
+          <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">
+            <i class="fa-regular fa-envelope"></i> Or sign in with another email address:
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <input type="email" id="custom-google-email" class="form-control" placeholder="Enter email (e.g. name@gmail.com)" style="flex: 1; font-size: 0.88rem; padding: 9px 12px;">
+            <button type="button" class="btn btn-primary" onclick="submitCustomEmailAccount()" style="padding: 9px 16px; font-size: 0.88rem; white-space: nowrap;">
+              Continue
+            </button>
           </div>
         </div>
       </div>
@@ -400,35 +383,122 @@
       }
     });
 
-    // Google Login button -> Open Google Account Selector Modal
+    // Google Identity Services (GIS) Configuration
+    const GOOGLE_CLIENT_ID = window.CAMPUS_GOOGLE_CLIENT_ID || '1048293847291-campusai.apps.googleusercontent.com';
+
+    // Helper to decode Google JWT token securely
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        console.error('Error decoding Google JWT credential:', e);
+        return null;
+      }
+    }
+
+    // Official Google OAuth callback handler
+    window.handleGoogleCredentialResponse = function(response) {
+      if (!response || !response.credential) {
+        showToast('Google authentication failed. Please try again.', 'error');
+        return;
+      }
+
+      const payload = parseJwt(response.credential);
+      if (!payload || !payload.email) {
+        showToast('Could not retrieve Google profile details.', 'error');
+        return;
+      }
+
+      const email = payload.email.toLowerCase();
+      const fullName = payload.name || email.split('@')[0];
+      const avatar = payload.picture || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120';
+
+      // Auto-detect role or use selected role
+      let userRole = selectedRole;
+      if (email.includes('admin') || email.startsWith('adm.')) {
+        userRole = 'ADMIN';
+      } else if (email.includes('faculty') || email.includes('prof') || email.includes('staff')) {
+        userRole = 'FACULTY';
+      }
+
+      selectGoogleAccount(fullName, email, avatar, userRole);
+    };
+
+    function initGoogleIdentityServices() {
+      if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+        try {
+          google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: window.handleGoogleCredentialResponse,
+            auto_select: true
+          });
+
+          const modalContainer = document.getElementById('g_id_signin_modal_container');
+          if (modalContainer) {
+            google.accounts.id.renderButton(modalContainer, {
+              type: 'standard',
+              theme: 'outline',
+              size: 'large',
+              text: 'sign_in_with',
+              shape: 'rectangular',
+              logo_alignment: 'left',
+              width: 320
+            });
+          }
+        } catch (err) {
+          console.warn('Google Identity initialization notice:', err);
+        }
+      }
+    }
+
+    // Initialize GIS on page load
+    window.addEventListener('load', () => {
+      setTimeout(initGoogleIdentityServices, 500);
+    });
+
+    // Google Login button -> Open Google Account Selector Modal & trigger GIS prompt
     document.getElementById('google-login-btn').addEventListener('click', () => {
       openGoogleAccountModal();
+      if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+        try {
+          google.accounts.id.prompt();
+        } catch (e) {
+          console.warn('Google prompt notice:', e);
+        }
+      }
     });
 
     function openGoogleAccountModal() {
       document.getElementById('google-account-modal').classList.add('active');
+      initGoogleIdentityServices();
     }
 
     function closeGoogleAccountModal() {
       document.getElementById('google-account-modal').classList.remove('active');
     }
 
-    function selectGoogleAccount(fullName, email, avatar) {
+    function selectGoogleAccount(fullName, email, avatar, roleOverride) {
       closeGoogleAccountModal();
+      const targetRole = roleOverride || selectedRole;
       
       pendingAuthUser = {
         id: Date.now(),
         username: email.split('@')[0],
         fullName: fullName || email.split('@')[0],
         email: email,
-        role: selectedRole,
+        role: targetRole,
         avatar: avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120'
       };
 
-      if (selectedRole === 'STUDENT') {
+      if (targetRole === 'STUDENT') {
         // Open Student Info Prompt
         openStudentInfoModal(pendingAuthUser);
-      } else if (selectedRole === 'FACULTY') {
+      } else if (targetRole === 'FACULTY') {
         pendingAuthUser.department = 'Computer Science & Engineering';
         pendingAuthUser.rollNumber = 'FAC-CS-101';
         finalizeLogin(pendingAuthUser, 'faculty-dashboard.html');
