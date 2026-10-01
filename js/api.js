@@ -297,8 +297,8 @@ function getLocalFallbackData(endpoint, method, data) {
     ];
   }
 
-  if (endpoint.startsWith('/student/materials') || endpoint.startsWith('/faculty/materials')) {
-    const materials = getStoredStudyMaterials();
+  if (endpoint.startsWith('/faculty/materials')) {
+    let facultyMaterials = getStoredFacultyUploadedMaterials();
 
     if (method === 'POST' && data) {
       const newMaterial = {
@@ -306,12 +306,13 @@ function getLocalFallbackData(endpoint, method, data) {
         title: data.title || 'Untitled Study Material',
         subjectCode: data.subjectCode || '23ADT501',
         subjectName: data.subjectName || 'Deep Learning',
-        facultyName: data.facultyName || 'Dr. R. Murugesan [RM]',
+        facultyName: data.facultyName || 'Prof. Sarah Jenkins',
         facultyAvatar: data.facultyAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
         unit: data.unit || 'Unit 1',
         format: data.format || 'PDF',
         tag: data.tag || 'Official Course Material',
         description: data.description || '',
+        fileName: data.fileName || `${data.subjectCode || 'Course'}_Notes.pdf`,
         topics: Array.isArray(data.topics) ? data.topics : (data.topics ? data.topics.split('\n').filter(Boolean) : []),
         contentPreview: data.contentPreview || 'Lecture notes, architectural diagrams, derivations, and practice problem sets.',
         fileSize: data.fileSize || '3.5 MB',
@@ -320,23 +321,39 @@ function getLocalFallbackData(endpoint, method, data) {
         views: 1,
         uploadDate: new Date().toISOString()
       };
-      materials.unshift(newMaterial);
-      saveStoredStudyMaterials(materials);
+      // Save to faculty uploaded list
+      facultyMaterials.unshift(newMaterial);
+      saveStoredFacultyUploadedMaterials(facultyMaterials);
+
+      // Also publish to student study repository
+      const allMaterials = getStoredStudyMaterials();
+      allMaterials.unshift(newMaterial);
+      saveStoredStudyMaterials(allMaterials);
+
       if (typeof UnreadTracker !== 'undefined') {
         UnreadTracker.notifyNewUpdate('materials');
       }
-      return { success: true, material: newMaterial, message: 'Material uploaded successfully!' };
+      return { success: true, material: newMaterial, message: 'Material uploaded and published to students successfully!' };
     }
 
     if (method === 'DELETE') {
       const urlParts = endpoint.split('/');
       const delId = parseInt(urlParts[urlParts.length - 1]);
-      const filtered = materials.filter(m => m.id !== delId);
-      saveStoredStudyMaterials(filtered);
+      facultyMaterials = facultyMaterials.filter(m => m.id !== delId);
+      saveStoredFacultyUploadedMaterials(facultyMaterials);
+
+      // Also remove from student repository
+      const allMaterials = getStoredStudyMaterials().filter(m => m.id !== delId);
+      saveStoredStudyMaterials(allMaterials);
+
       return { success: true, message: 'Material removed successfully.' };
     }
 
-    return materials;
+    return facultyMaterials;
+  }
+
+  if (endpoint.startsWith('/student/materials')) {
+    return getStoredStudyMaterials();
   }
 
   if (endpoint.startsWith('/admin/events') && method === 'DELETE') {
@@ -1204,6 +1221,23 @@ $$PE_{(pos, 2i+1)} = \\cos\\left(\\frac{pos}{10000^{2i/d_{model}}}\\right)$$`,
 
 function saveStoredStudyMaterials(list) {
   localStorage.setItem('campusai_study_materials', JSON.stringify(list));
+}
+
+function getStoredFacultyUploadedMaterials() {
+  try {
+    const stored = localStorage.getItem('campusai_faculty_uploaded_materials');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.error('Error loading stored faculty uploaded materials:', e);
+  }
+  return []; // Starts empty so faculty dashboard shows empty until faculty uploads materials
+}
+
+function saveStoredFacultyUploadedMaterials(list) {
+  localStorage.setItem('campusai_faculty_uploaded_materials', JSON.stringify(list));
 }
 
 function showToast(message, type = 'info') {

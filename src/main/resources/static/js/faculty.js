@@ -155,7 +155,8 @@ async function loadFacultyTimetable() {
 let allFacultyMaterials = [];
 
 async function loadFacultyMaterials() {
-  allFacultyMaterials = await apiRequest('/faculty/materials') || getStoredStudyMaterials();
+  const result = await apiRequest('/faculty/materials');
+  allFacultyMaterials = Array.isArray(result) ? result : (typeof getStoredFacultyUploadedMaterials === 'function' ? getStoredFacultyUploadedMaterials() : []);
   updateFacultyMaterialStats(allFacultyMaterials);
   renderFacultyMaterials(allFacultyMaterials);
 }
@@ -165,13 +166,14 @@ function updateFacultyMaterialStats(materials) {
   const downloadsEl = document.getElementById('stat-faculty-downloads-count');
   const storageEl = document.getElementById('stat-faculty-storage');
 
-  if (countEl) countEl.textContent = materials.length;
+  const count = materials.length;
+  if (countEl) countEl.textContent = count;
   if (downloadsEl) {
     const totalDownloads = materials.reduce((acc, m) => acc + (m.downloads || 0), 0);
     downloadsEl.textContent = totalDownloads.toLocaleString();
   }
   if (storageEl) {
-    storageEl.textContent = `${(materials.length * 5.4).toFixed(1)} MB`;
+    storageEl.textContent = `${(count * 4.2).toFixed(1)} MB`;
   }
 }
 
@@ -198,11 +200,17 @@ function renderFacultyMaterials(materials) {
 
   if (!materials || materials.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column:1/-1; text-align:center; padding:48px 20px; background:rgba(255,255,255,0.02); border-radius:var(--radius-md); border:1px dashed var(--border-glass);">
-        <i class="fa-solid fa-folder-open" style="font-size:2.8rem; color:var(--text-muted); margin-bottom:12px; display:block;"></i>
-        <h4 style="margin-bottom:6px;">No Study Materials Found</h4>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Upload notes, presentations, or solved question papers for your students.</p>
-        <button class="btn btn-primary btn-sm" onclick="openUploadMaterialModal()"><i class="fa-solid fa-plus"></i> Upload First Document</button>
+      <div class="glass-card" style="grid-column: 1/-1; text-align: center; padding: 60px 24px; border: 1px dashed rgba(99, 102, 241, 0.4); border-radius: 16px;">
+        <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(99, 102, 241, 0.12); color: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 16px auto;">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 8px;">No Notes or Study Materials Posted Yet</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 520px; margin: 0 auto 24px auto; line-height: 1.6;">
+          You haven't uploaded any study materials for your students yet. Click below to publish your first lecture notes, question banks, or presentation slides.
+        </p>
+        <button class="btn btn-primary" onclick="openUploadMaterialModal()">
+          <i class="fa-solid fa-plus"></i> Upload Study Material Now
+        </button>
       </div>
     `;
     return;
