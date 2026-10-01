@@ -2105,7 +2105,8 @@ function saveBookmarkedMaterialIds(ids) {
 }
 
 async function loadStudentMaterials() {
-  allStudentMaterials = await apiRequest('/student/materials') || getStoredStudyMaterials();
+  const res = await apiRequest('/student/materials');
+  allStudentMaterials = Array.isArray(res) ? res : (typeof getStoredStudyMaterials === 'function' ? getStoredStudyMaterials() : []);
   updateStudentMaterialsUI();
 }
 

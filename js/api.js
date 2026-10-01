@@ -564,6 +564,54 @@ function getLocalFallbackData(endpoint, method, data) {
     ];
   }
 
+  if (endpoint.startsWith('/student/materials')) {
+    return getStoredStudyMaterials();
+  }
+
+  if (endpoint.startsWith('/faculty/materials')) {
+    if (method === 'POST') {
+      const studentMaterials = getStoredStudyMaterials();
+      const facultyMaterials = getStoredFacultyUploadedMaterials();
+
+      const newMat = {
+        ...body,
+        id: body.id || Date.now(),
+        uploadDate: body.uploadDate || new Date().toISOString()
+      };
+
+      // Add to student repository
+      studentMaterials.unshift(newMat);
+      saveStoredStudyMaterials(studentMaterials);
+
+      // Add to faculty uploaded console list
+      facultyMaterials.unshift(newMat);
+      saveStoredFacultyUploadedMaterials(facultyMaterials);
+
+      if (typeof UnreadTracker !== 'undefined') {
+        UnreadTracker.notifyNewUpdate('materials');
+      }
+
+      return newMat;
+    }
+
+    if (method === 'DELETE') {
+      const urlParts = endpoint.split('/');
+      const delId = Number(urlParts[urlParts.length - 1]);
+
+      let studentMaterials = getStoredStudyMaterials();
+      studentMaterials = studentMaterials.filter(m => m.id !== delId);
+      saveStoredStudyMaterials(studentMaterials);
+
+      let facultyMaterials = getStoredFacultyUploadedMaterials();
+      facultyMaterials = facultyMaterials.filter(m => m.id !== delId);
+      saveStoredFacultyUploadedMaterials(facultyMaterials);
+
+      return { success: true, message: 'Material deleted successfully' };
+    }
+
+    return getStoredFacultyUploadedMaterials();
+  }
+
   if (endpoint.startsWith('/admin/analytics')) {
     const students = getStoredStudentsList();
     const activeCount = students.filter(s => s.status === 'Active').length;
