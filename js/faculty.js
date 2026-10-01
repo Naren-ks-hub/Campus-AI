@@ -166,10 +166,10 @@ function updateFacultyMaterialStats(materials) {
   const downloadsEl = document.getElementById('stat-faculty-downloads-count');
   const storageEl = document.getElementById('stat-faculty-storage');
 
-  const count = materials.length;
+  const count = (materials || []).length;
   if (countEl) countEl.textContent = count;
   if (downloadsEl) {
-    const totalDownloads = materials.reduce((acc, m) => acc + (m.downloads || 0), 0);
+    const totalDownloads = (materials || []).reduce((acc, m) => acc + (Number(m.downloads) || 0), 0);
     downloadsEl.textContent = totalDownloads.toLocaleString();
   }
   if (storageEl) {
@@ -552,25 +552,44 @@ window.closePreviewModal = function() {
 };
 
 window.downloadStudyMaterial = function(id) {
-  const materials = getStoredStudyMaterials();
-  const mat = materials.find(m => m.id === id);
-  if (!mat) return;
+  const targetId = Number(id) || id;
 
-  mat.downloads = (mat.downloads || 0) + 1;
-  saveStoredStudyMaterials(materials);
+  if (typeof incrementMaterialDownload === 'function') {
+    incrementMaterialDownload(targetId);
+  } else {
+    try {
+      let materials = typeof getStoredStudyMaterials === 'function' ? getStoredStudyMaterials() : [];
+      materials = materials.map(m => (Number(m.id) === Number(id) || String(m.id) === String(id)) ? { ...m, downloads: (m.downloads || 0) + 1 } : m);
+      if (typeof saveStoredStudyMaterials === 'function') saveStoredStudyMaterials(materials);
+
+      let facultyMaterials = typeof getStoredFacultyUploadedMaterials === 'function' ? getStoredFacultyUploadedMaterials() : [];
+      facultyMaterials = facultyMaterials.map(m => (Number(m.id) === Number(id) || String(m.id) === String(id)) ? { ...m, downloads: (m.downloads || 0) + 1 } : m);
+      if (typeof saveStoredFacultyUploadedMaterials === 'function') saveStoredFacultyUploadedMaterials(facultyMaterials);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const materials = typeof getStoredFacultyUploadedMaterials === 'function' ? getStoredFacultyUploadedMaterials() : (typeof getStoredStudyMaterials === 'function' ? getStoredStudyMaterials() : []);
+  const mat = materials.find(m => Number(m.id) === Number(id) || String(m.id) === String(id)) || (typeof getStoredStudyMaterials === 'function' ? getStoredStudyMaterials().find(m => Number(m.id) === Number(id) || String(m.id) === String(id)) : null);
+  if (!mat) {
+    showToast('Download started...', 'info');
+    loadFacultyMaterials();
+    return;
+  }
 
   // Generate downloadable plain text/markdown file blob
   const fileContent = `=====================================================
 CampusAI - Official Course Study Material
-Subject: ${mat.subjectCode} - ${mat.subjectName}
-Unit: ${mat.unit}
+Subject: ${mat.subjectCode || 'Course'} - ${mat.subjectName || 'Study Material'}
+Unit: ${mat.unit || 'General'}
 Title: ${mat.title}
-Instructor: ${mat.facultyName}
-Published Date: ${new Date(mat.uploadDate).toLocaleString()}
+Instructor: ${mat.facultyName || 'Faculty'}
+Published Date: ${new Date(mat.uploadDate || Date.now()).toLocaleString()}
 =====================================================
 
 DESCRIPTION:
-${mat.description}
+${mat.description || 'Lecture notes, practice problems, and study guides.'}
 
 SYLLABUS TOPICS:
 ${(mat.topics || []).map(t => `- ${t}`).join('\n')}
@@ -583,7 +602,7 @@ ${mat.contentPreview || 'Refer to full class lectures.'}
   const downloadUrl = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = downloadUrl;
-  a.download = `${mat.subjectCode}_${mat.unit}_${mat.title.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+  a.download = `${(mat.subjectCode || 'Material')}_${(mat.unit || 'Unit')}_${(mat.title || 'Notes').replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -592,6 +611,21 @@ ${mat.contentPreview || 'Refer to full class lectures.'}
   showToast(`Downloading "${mat.title}" (${mat.fileSize || '3.5 MB'})...`, 'success');
   loadFacultyMaterials();
 };
+
+// Listen for cross-tab download synchronization
+window.addEventListener('storage', (e) => {
+  if (e.key === 'campusai_faculty_uploaded_materials' || e.key === 'campusai_study_materials') {
+    if (typeof loadFacultyMaterials === 'function') {
+      loadFacultyMaterials();
+    }
+  }
+});
+
+window.addEventListener('campusai_material_downloaded', () => {
+  if (typeof loadFacultyMaterials === 'function') {
+    loadFacultyMaterials();
+  }
+});
 
 function setupNewAssignmentForm() {
   const form = document.getElementById('create-assignment-form');

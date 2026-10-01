@@ -2408,24 +2408,43 @@ window.closeStudentPreviewModal = function() {
 };
 
 window.downloadStudentStudyMaterial = function(id) {
-  const materials = getStoredStudyMaterials();
-  const mat = materials.find(m => m.id === id);
-  if (!mat) return;
+  const targetId = Number(id) || id;
+  
+  if (typeof incrementMaterialDownload === 'function') {
+    incrementMaterialDownload(targetId);
+  } else {
+    try {
+      let materials = typeof getStoredStudyMaterials === 'function' ? getStoredStudyMaterials() : [];
+      materials = materials.map(m => (Number(m.id) === Number(id) || String(m.id) === String(id)) ? { ...m, downloads: (m.downloads || 0) + 1 } : m);
+      if (typeof saveStoredStudyMaterials === 'function') saveStoredStudyMaterials(materials);
 
-  mat.downloads = (mat.downloads || 0) + 1;
-  saveStoredStudyMaterials(materials);
+      let facultyMaterials = typeof getStoredFacultyUploadedMaterials === 'function' ? getStoredFacultyUploadedMaterials() : [];
+      facultyMaterials = facultyMaterials.map(m => (Number(m.id) === Number(id) || String(m.id) === String(id)) ? { ...m, downloads: (m.downloads || 0) + 1 } : m);
+      if (typeof saveStoredFacultyUploadedMaterials === 'function') saveStoredFacultyUploadedMaterials(facultyMaterials);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const materials = typeof getStoredStudyMaterials === 'function' ? getStoredStudyMaterials() : [];
+  const mat = materials.find(m => Number(m.id) === Number(id) || String(m.id) === String(id));
+  if (!mat) {
+    showToast('Download started...', 'info');
+    loadStudentMaterials();
+    return;
+  }
 
   const fileContent = `=====================================================
 CampusAI - Official Course Study Material
-Subject: ${mat.subjectCode} - ${mat.subjectName}
-Unit: ${mat.unit}
+Subject: ${mat.subjectCode || 'Course'} - ${mat.subjectName || 'Study Material'}
+Unit: ${mat.unit || 'General'}
 Title: ${mat.title}
-Instructor: ${mat.facultyName}
-Published Date: ${new Date(mat.uploadDate).toLocaleString()}
+Instructor: ${mat.facultyName || 'Faculty'}
+Published Date: ${new Date(mat.uploadDate || Date.now()).toLocaleString()}
 =====================================================
 
 DESCRIPTION:
-${mat.description}
+${mat.description || 'Lecture notes, practice problems, and study guides.'}
 
 SYLLABUS TOPICS:
 ${(mat.topics || []).map(t => `- ${t}`).join('\n')}
@@ -2438,7 +2457,7 @@ ${mat.contentPreview || 'Refer to full class lectures.'}
   const downloadUrl = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = downloadUrl;
-  a.download = `${mat.subjectCode}_${mat.unit}_${mat.title.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+  a.download = `${(mat.subjectCode || 'Material')}_${(mat.unit || 'Unit')}_${(mat.title || 'Notes').replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -2447,6 +2466,21 @@ ${mat.contentPreview || 'Refer to full class lectures.'}
   showToast(`Downloading "${mat.title}" (${mat.fileSize || '3.5 MB'})...`, 'success');
   loadStudentMaterials();
 };
+
+// Listen for cross-tab download synchronization
+window.addEventListener('storage', (e) => {
+  if (e.key === 'campusai_study_materials' || e.key === 'campusai_faculty_uploaded_materials') {
+    if (typeof loadStudentMaterials === 'function') {
+      loadStudentMaterials();
+    }
+  }
+});
+
+window.addEventListener('campusai_material_downloaded', () => {
+  if (typeof loadStudentMaterials === 'function') {
+    loadStudentMaterials();
+  }
+});
 
 
 

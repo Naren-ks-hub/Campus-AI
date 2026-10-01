@@ -300,6 +300,11 @@ function getLocalFallbackData(endpoint, method, data) {
   if (endpoint.startsWith('/faculty/materials')) {
     let facultyMaterials = getStoredFacultyUploadedMaterials();
 
+    if (method === 'POST' && endpoint.includes('/download')) {
+      const targetId = (data && data.id) || parseInt(endpoint.split('/').pop());
+      return incrementMaterialDownload(targetId);
+    }
+
     if (method === 'POST' && data) {
       const newMaterial = {
         id: data.id || Date.now(),
@@ -353,6 +358,10 @@ function getLocalFallbackData(endpoint, method, data) {
   }
 
   if (endpoint.startsWith('/student/materials')) {
+    if (method === 'POST' && endpoint.includes('/download')) {
+      const targetId = (data && data.id) || parseInt(endpoint.split('/').pop());
+      return incrementMaterialDownload(targetId);
+    }
     return getStoredStudyMaterials();
   }
 
@@ -1287,6 +1296,65 @@ function getStoredFacultyUploadedMaterials() {
 function saveStoredFacultyUploadedMaterials(list) {
   localStorage.setItem('campusai_faculty_uploaded_materials', JSON.stringify(list));
 }
+
+function incrementMaterialDownload(materialId) {
+  if (materialId === undefined || materialId === null) return { success: false };
+  const mId = Number(materialId);
+  let updatedMaterial = null;
+
+  // 1. Update campusai_study_materials (Student repository)
+  try {
+    let studentMaterials = getStoredStudyMaterials();
+    let updatedStudent = false;
+    studentMaterials = studentMaterials.map(m => {
+      if (Number(m.id) === mId || String(m.id) === String(materialId)) {
+        const downloads = (Number(m.downloads) || 0) + 1;
+        updatedMaterial = { ...m, downloads };
+        updatedStudent = true;
+        return updatedMaterial;
+      }
+      return m;
+    });
+    if (updatedStudent) {
+      saveStoredStudyMaterials(studentMaterials);
+    }
+  } catch (e) {
+    console.error('Error updating student study materials download count:', e);
+  }
+
+  // 2. Update campusai_faculty_uploaded_materials (Faculty uploaded items)
+  try {
+    let facultyMaterials = getStoredFacultyUploadedMaterials();
+    let updatedFaculty = false;
+    facultyMaterials = facultyMaterials.map(m => {
+      if (Number(m.id) === mId || String(m.id) === String(materialId)) {
+        const downloads = (Number(m.downloads) || 0) + 1;
+        if (!updatedMaterial) updatedMaterial = { ...m, downloads };
+        updatedFaculty = true;
+        return { ...m, downloads };
+      }
+      return m;
+    });
+    if (updatedFaculty) {
+      saveStoredFacultyUploadedMaterials(facultyMaterials);
+    }
+  } catch (e) {
+    console.error('Error updating faculty uploaded materials download count:', e);
+  }
+
+  // 3. Broadcast custom event for immediate in-tab synchronization
+  try {
+    window.dispatchEvent(new CustomEvent('campusai_material_downloaded', { detail: { id: materialId, material: updatedMaterial } }));
+  } catch (e) {}
+
+  return { success: true, material: updatedMaterial };
+}
+
+window.incrementMaterialDownload = incrementMaterialDownload;
+window.getStoredStudyMaterials = getStoredStudyMaterials;
+window.saveStoredStudyMaterials = saveStoredStudyMaterials;
+window.getStoredFacultyUploadedMaterials = getStoredFacultyUploadedMaterials;
+window.saveStoredFacultyUploadedMaterials = saveStoredFacultyUploadedMaterials;
 
 function showToast(message, type = 'info') {
   let container = document.querySelector('.toast-container');
