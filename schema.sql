@@ -247,28 +247,29 @@ INSERT INTO timetable (department, semester, day_of_week, period_number, start_t
 
 -- Attendance Seed Data (For Student Alex Morgan - id: 4)
 INSERT INTO attendance (student_id, subject_code, subject_name, attendance_date, status, marked_by, remarks) VALUES
-(4, 'CS501', 'Artificial Intelligence & Neural Nets', '2026-09-01', 'PRESENT', 2, 'Active participation'),
-(4, 'CS501', 'Artificial Intelligence & Neural Nets', '2026-09-08', 'PRESENT', 2, 'On time'),
-(4, 'CS501', 'Artificial Intelligence & Neural Nets', '2026-09-15', 'PRESENT', 2, 'On time'),
-(4, 'CS501', 'Artificial Intelligence & Neural Nets', '2026-09-22', 'ABSENT', 2, 'Medical leave'),
-(4, 'CS502', 'Database Management Systems', '2026-09-02', 'PRESENT', 3, 'Lab completed'),
-(4, 'CS502', 'Database Management Systems', '2026-09-09', 'PRESENT', 3, 'On time'),
-(4, 'CS502', 'Database Management Systems', '2026-09-16', 'PRESENT', 3, 'On time'),
-(4, 'CS502', 'Database Management Systems', '2026-09-23', 'PRESENT', 3, 'On time'),
-(4, 'CS503', 'Operating Systems & Concurrency', '2026-09-03', 'PRESENT', 2, 'On time'),
-(4, 'CS503', 'Operating Systems & Concurrency', '2026-09-10', 'ABSENT', 2, 'Unexcused'),
-(4, 'CS503', 'Operating Systems & Concurrency', '2026-09-17', 'PRESENT', 2, 'On time'),
-(4, 'CS503', 'Operating Systems & Concurrency', '2026-09-24', 'PRESENT', 2, 'On time'),
-(4, 'CS504', 'Cloud Computing Architecture', '2026-09-04', 'PRESENT', 3, 'On time'),
-(4, 'CS504', 'Cloud Computing Architecture', '2026-09-11', 'PRESENT', 3, 'On time'),
-(4, 'CS504', 'Cloud Computing Architecture', '2026-09-18', 'PRESENT', 3, 'On time'),
-(4, 'CS505', 'Software Engineering & Agile', '2026-09-05', 'PRESENT', 2, 'Sprint demo done');
+(4, '23ADT501', 'Deep Learning', '2026-09-01', 'PRESENT', 2, 'Active participation'),
+(4, '23ADT501', 'Deep Learning', '2026-09-08', 'PRESENT', 2, 'On time'),
+(4, '23ADT501', 'Deep Learning', '2026-09-15', 'PRESENT', 2, 'On time'),
+(4, '23ADT501', 'Deep Learning', '2026-09-22', 'ABSENT', 2, 'Medical leave'),
+(4, '23CSE011', 'Cloud Service Management', '2026-09-02', 'PRESENT', 3, 'Lab completed'),
+(4, '23CSE011', 'Cloud Service Management', '2026-09-09', 'PRESENT', 3, 'On time'),
+(4, '23CSE011', 'Cloud Service Management', '2026-09-16', 'PRESENT', 3, 'On time'),
+(4, '23CSE011', 'Cloud Service Management', '2026-09-23', 'PRESENT', 3, 'On time'),
+(4, '23CBT502', 'Data and Information Security', '2026-09-03', 'PRESENT', 2, 'On time'),
+(4, '23CBT502', 'Data and Information Security', '2026-09-10', 'ABSENT', 2, 'Unexcused'),
+(4, '23CBT502', 'Data and Information Security', '2026-09-17', 'PRESENT', 2, 'On time'),
+(4, '23CBT502', 'Data and Information Security', '2026-09-24', 'PRESENT', 2, 'On time'),
+(4, '23CST504', 'Distributed Computing', '2026-09-04', 'PRESENT', 3, 'On time'),
+(4, '23CST504', 'Distributed Computing', '2026-09-11', 'PRESENT', 3, 'On time'),
+(4, '23ADT502', 'Big Data Analytics', '2026-09-18', 'PRESENT', 3, 'On time'),
+(4, '23CSE005', 'Business Analytics', '2026-09-19', 'PRESENT', 2, 'Case study presentation');
 
 -- Assignments Seed Data
 INSERT INTO assignments (id, faculty_id, department, semester, subject_code, subject_name, title, description, max_marks, due_date) VALUES
-(1, 2, 'Computer Science & Engineering', 5, 'CS501', 'Artificial Intelligence & Neural Nets', 'Neural Network Backpropagation Implementation', 'Implement a 3-layer neural network from scratch using Java/Python and train it on the MNIST handwritten digits dataset. Submit code and performance report.', 100, '2026-10-05 23:59:00'),
-(2, 3, 'Computer Science & Engineering', 5, 'CS502', 'Database Management Systems', 'E-Commerce Schema & Complex SQL Queries', 'Design an optimized relational schema in 3NF for an enterprise e-commerce system with 15 SQL reporting queries including indexing analysis.', 50, '2026-10-10 23:59:00'),
-(3, 2, 'Computer Science & Engineering', 5, 'CS503', 'Operating Systems & Concurrency', 'Multithreaded Producer-Consumer with Semaphores', 'Write a multithreaded simulation in Java demonstrating bounded-buffer problem resolution using Mutex and Counting Semaphores.', 50, '2026-10-18 23:59:00');
+(1, 2, 'Artificial Intelligence & Data Science', 5, '23ADT501', 'Deep Learning', 'Deep Learning Convolutional & ResNet Architecture Implementation', 'Implement a ResNet-style convolutional neural network from scratch using PyTorch/TensorFlow and train on CIFAR-10 dataset.', 100, '2026-10-05 23:59:00'),
+(2, 3, 'Artificial Intelligence & Data Science', 5, '23CSE011', 'Cloud Service Management', 'Cloud Infrastructure Provisioning with Terraform & Kubernetes', 'Design and deploy a containerized microservices cluster with automated horizontal pod autoscaling on AWS/GCP.', 50, '2026-10-10 23:59:00'),
+(3, 2, 'Artificial Intelligence & Data Science', 5, '23CBT502', 'Data and Information Security', 'Elliptic Curve Cryptography & Multi-Factor Auth Protocol', 'Build a secure handshake simulation with AES-256 GCM encryption and digital signature verification.', 50, '2026-10-18 23:59:00'),
+(4, 3, 'Artificial Intelligence & Data Science', 5, '23ADT502', 'Big Data Analytics', 'Distributed Log Analytics with Apache PySpark & Hadoop HDFS', 'Process 10GB streaming clickstream logs and generate real-time metrics with Spark SQL and sliding window aggregations.', 50, '2026-10-24 23:59:00');
 
 -- Assignment Submissions Seed Data
 INSERT INTO assignment_submissions (assignment_id, student_id, submission_text, status, marks_obtained, feedback, submitted_at) VALUES

@@ -162,14 +162,16 @@ function getLocalFallbackData(endpoint, method, data) {
 
   if (endpoint.startsWith('/student/attendance')) {
     return [
-      { subjectCode: 'CS501', subjectName: 'Artificial Intelligence & Neural Nets', attendanceDate: '2026-09-22', status: 'PRESENT', remarks: 'Active engagement' },
-      { subjectCode: 'CS501', subjectName: 'Artificial Intelligence & Neural Nets', attendanceDate: '2026-09-15', status: 'PRESENT', remarks: 'On time' },
-      { subjectCode: 'CS501', subjectName: 'Artificial Intelligence & Neural Nets', attendanceDate: '2026-09-08', status: 'ABSENT', remarks: 'Medical leave' },
-      { subjectCode: 'CS502', subjectName: 'Database Management Systems', attendanceDate: '2026-09-23', status: 'PRESENT', remarks: 'Lab complete' },
-      { subjectCode: 'CS502', subjectName: 'Database Management Systems', attendanceDate: '2026-09-16', status: 'PRESENT', remarks: 'On time' },
-      { subjectCode: 'CS503', subjectName: 'Operating Systems & Concurrency', attendanceDate: '2026-09-24', status: 'PRESENT', remarks: 'On time' },
-      { subjectCode: 'CS503', subjectName: 'Operating Systems & Concurrency', attendanceDate: '2026-09-10', status: 'ABSENT', remarks: 'Unexcused' },
-      { subjectCode: 'CS504', subjectName: 'Cloud Computing Architecture', attendanceDate: '2026-09-25', status: 'PRESENT', remarks: 'On time' }
+      { subjectCode: '23ADT501', subjectName: 'Deep Learning', attendanceDate: '2026-09-22', status: 'PRESENT', remarks: 'Active engagement' },
+      { subjectCode: '23ADT501', subjectName: 'Deep Learning', attendanceDate: '2026-09-15', status: 'PRESENT', remarks: 'On time' },
+      { subjectCode: '23ADT501', subjectName: 'Deep Learning', attendanceDate: '2026-09-08', status: 'ABSENT', remarks: 'Medical leave' },
+      { subjectCode: '23CSE011', subjectName: 'Cloud Service Management', attendanceDate: '2026-09-23', status: 'PRESENT', remarks: 'Lab complete' },
+      { subjectCode: '23CSE011', subjectName: 'Cloud Service Management', attendanceDate: '2026-09-16', status: 'PRESENT', remarks: 'On time' },
+      { subjectCode: '23CBT502', subjectName: 'Data and Information Security', attendanceDate: '2026-09-24', status: 'PRESENT', remarks: 'On time' },
+      { subjectCode: '23CBT502', subjectName: 'Data and Information Security', attendanceDate: '2026-09-10', status: 'ABSENT', remarks: 'Unexcused' },
+      { subjectCode: '23CST504', subjectName: 'Distributed Computing', attendanceDate: '2026-09-25', status: 'PRESENT', remarks: 'On time' },
+      { subjectCode: '23ADT502', subjectName: 'Big Data Analytics', attendanceDate: '2026-09-26', status: 'PRESENT', remarks: 'On time' },
+      { subjectCode: '23CSE005', subjectName: 'Business Analytics', attendanceDate: '2026-09-27', status: 'PRESENT', remarks: 'Active in case study' }
     ];
   }
 
@@ -242,10 +244,10 @@ function getLocalFallbackData(endpoint, method, data) {
       {
         assignment: {
           id: 1,
-          title: 'Neural Network Backpropagation Implementation',
-          subjectCode: 'CS501',
-          subjectName: 'Artificial Intelligence & Neural Nets',
-          description: 'Implement a 3-layer neural network from scratch in Java or Python and train on MNIST dataset. Submit code and accuracy chart.',
+          title: 'Deep Learning Convolutional & ResNet Architecture Implementation',
+          subjectCode: '23ADT501',
+          subjectName: 'Deep Learning',
+          description: 'Implement a ResNet-style convolutional neural network from scratch and train on CIFAR-10 dataset. Submit code and accuracy chart.',
           maxMarks: 100,
           dueDate: '2026-10-05T23:59:00'
         },
@@ -259,10 +261,10 @@ function getLocalFallbackData(endpoint, method, data) {
       {
         assignment: {
           id: 2,
-          title: 'Enterprise E-Commerce Relational Schema & Queries',
-          subjectCode: 'CS502',
-          subjectName: 'Database Management Systems',
-          description: 'Design normalized schema in 3NF and write 15 complex analytical queries with indexing performance benchmarks.',
+          title: 'Cloud Infrastructure Provisioning with Terraform & Kubernetes',
+          subjectCode: '23CSE011',
+          subjectName: 'Cloud Service Management',
+          description: 'Design and deploy a containerized microservices cluster with automated horizontal pod autoscaling on AWS/GCP.',
           maxMarks: 50,
           dueDate: '2026-10-10T23:59:00'
         },
@@ -271,12 +273,24 @@ function getLocalFallbackData(endpoint, method, data) {
       {
         assignment: {
           id: 3,
-          title: 'Multithreaded Producer-Consumer Simulator',
-          subjectCode: 'CS503',
-          subjectName: 'Operating Systems & Concurrency',
-          description: 'Build a concurrent buffer simulation with mutex locks, semaphores, and starvation prevention.',
+          title: 'Elliptic Curve Cryptography & Multi-Factor Auth Protocol',
+          subjectCode: '23CBT502',
+          subjectName: 'Data and Information Security',
+          description: 'Build a secure handshake simulation with AES-256 GCM encryption and digital signature verification.',
           maxMarks: 50,
           dueDate: '2026-10-18T23:59:00'
+        },
+        submission: null
+      },
+      {
+        assignment: {
+          id: 4,
+          title: 'Distributed Log Analytics with Apache PySpark & Hadoop HDFS',
+          subjectCode: '23ADT502',
+          subjectName: 'Big Data Analytics',
+          description: 'Process 10GB streaming clickstream logs and generate real-time metrics with Spark SQL and sliding window aggregations.',
+          maxMarks: 50,
+          dueDate: '2026-10-24T23:59:00'
         },
         submission: null
       }
