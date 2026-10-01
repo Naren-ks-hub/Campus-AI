@@ -315,7 +315,6 @@ function getLocalFallbackData(endpoint, method, data) {
         facultyAvatar: data.facultyAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
         unit: data.unit || 'Unit 1',
         format: data.format || 'PDF',
-        tag: data.tag || 'Official Course Material',
         description: data.description || '',
         fileName: data.fileName || `${data.subjectCode || 'Course'}_Notes.pdf`,
         topics: Array.isArray(data.topics) ? data.topics : (data.topics ? data.topics.split('\n').filter(Boolean) : []),

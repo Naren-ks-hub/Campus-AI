@@ -230,7 +230,6 @@ function renderFacultyMaterials(materials) {
             <div style="flex:1; min-width:0;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; gap:8px;">
                 <span class="badge badge-primary" style="font-size:0.75rem;">${m.subjectCode} • ${m.unit}</span>
-                <span class="badge badge-warning" style="font-size:0.72rem;">${m.tag || 'Official Notes'}</span>
               </div>
               <h3 class="material-title" title="${m.title}">${m.title}</h3>
             </div>
@@ -338,7 +337,6 @@ function setupMaterialUploadForm() {
     const [subjectCode, subjectName] = document.getElementById('mat-subject').value.split('|');
     const unit = document.getElementById('mat-unit').value;
     const format = document.getElementById('mat-format').value;
-    const tag = document.getElementById('mat-tag').value.trim() || 'Official Course Material';
     const desc = document.getElementById('mat-desc').value.trim();
 
     const currentUser = AuthState.getUser();
@@ -357,7 +355,6 @@ function setupMaterialUploadForm() {
       facultyAvatar: currentUser?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
       unit,
       format,
-      tag,
       description: desc,
       fileName,
       topics: [

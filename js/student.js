@@ -2185,7 +2185,6 @@ function renderStudentMaterials(materials) {
             <div style="flex:1; min-width:0;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; gap:8px;">
                 <span class="badge badge-primary" style="font-size:0.75rem;">${m.subjectCode} • ${m.unit}</span>
-                <span class="badge badge-warning" style="font-size:0.72rem;">${m.tag || 'Official Notes'}</span>
               </div>
               <h3 class="material-title" title="${m.title}">${m.title}</h3>
             </div>

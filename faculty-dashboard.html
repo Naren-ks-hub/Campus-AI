@@ -372,6 +372,7 @@
             <div class="form-group">
               <label class="form-label" for="mat-subject">Course / Subject</label>
               <select id="mat-subject" class="form-control" required>
+                <option value="" disabled selected>Choose Subject</option>
                 <option value="23ADT501|Deep Learning">23ADT501 - Deep Learning</option>
                 <option value="23CSE011|Cloud Service Management">23CSE011 - Cloud Service Mgmt</option>
                 <option value="23CBT502|Data and Information Security">23CBT502 - Data & Info Security</option>
@@ -382,35 +383,29 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="mat-unit">Unit / Module</label>
+              <label class="form-label" for="mat-unit">Unit</label>
               <select id="mat-unit" class="form-control" required>
-                <option value="Unit 1">Unit 1 - Fundamentals</option>
-                <option value="Unit 2">Unit 2 - Core Architectures</option>
-                <option value="Unit 3">Unit 3 - Advanced Methods</option>
-                <option value="Unit 4">Unit 4 - Specialized Models</option>
-                <option value="Unit 5">Unit 5 - Applications & Case Studies</option>
-                <option value="All Units">All Units (Complete Syllabus)</option>
-                <option value="Lab Manual">Lab Manual / Practical</option>
+                <option value="" disabled selected>Choose Unit</option>
+                <option value="Unit 1">Unit 1</option>
+                <option value="Unit 2">Unit 2</option>
+                <option value="Unit 3">Unit 3</option>
+                <option value="Unit 4">Unit 4</option>
+                <option value="Unit 5">Unit 5</option>
+                <option value="All Units">All Units</option>
+                <option value="Lab Manual">Lab Manual</option>
               </select>
             </div>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
-            <div class="form-group">
-              <label class="form-label" for="mat-format">Material Format</label>
-              <select id="mat-format" class="form-control" required>
-                <option value="PDF">PDF Document (.pdf)</option>
-                <option value="PPTX">Presentation Slides (.pptx)</option>
-                <option value="ZIP">Lab Code Archive (.zip)</option>
-                <option value="Q-Bank">University Question Bank</option>
-                <option value="CheatSheet">Formula / Quick Cheat Sheet</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="mat-tag">Highlight Badge / Tag</label>
-              <input type="text" id="mat-tag" class="form-control" placeholder="e.g. ⭐ Exam Essential, 🧪 Lab Guide" value="⭐ Anna Univ High Priority">
-            </div>
+          <div class="form-group">
+            <label class="form-label" for="mat-format">Material Format</label>
+            <select id="mat-format" class="form-control" required>
+              <option value="PDF">PDF Document (.pdf)</option>
+              <option value="PPTX">Presentation Slides (.pptx)</option>
+              <option value="ZIP">Lab Code Archive (.zip)</option>
+              <option value="Q-Bank">University Question Bank</option>
+              <option value="CheatSheet">Formula / Quick Cheat Sheet</option>
+            </select>
           </div>
 
           <div class="form-group">
