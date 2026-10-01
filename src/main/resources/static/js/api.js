@@ -925,376 +925,56 @@ function registerNewStudentEntry(student) {
   return studentObj;
 }
 
-// Study Materials Data Storage Helpers
-function getStoredStudyMaterials() {
-  try {
-    const stored = localStorage.getItem('campusai_study_materials');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.error('Error loading stored study materials:', e);
-  }
-
-  const defaultMaterials = [
-    {
-      id: 1,
-      title: 'Unit 2: Convolutional Neural Networks, Pooling & ResNet Architectures',
-      subjectCode: '23ADT501',
-      subjectName: 'Deep Learning',
-      facultyName: 'Dr. R. Murugesan [RM]',
-      facultyAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-      unit: 'Unit 2',
-      format: 'PDF',
-      tag: '⭐ Anna Univ High Priority',
-      description: 'Complete lecture notes on 2D Convolutions, Stride, Padding, Pooling, LeNet, AlexNet, VGG-16, ResNet skip connections, and Batch Normalization.',
-      topics: [
-        'Convolution Mathematical Operation & Kernel Filters',
-        'Feature Map Output Dimension Formula: floor((W - K + 2P)/S) + 1',
-        'Vanishing Gradient Problem in Deep Networks & Residual Skip Connections',
-        'Batch Normalization vs Layer Normalization internal covariance shift',
-        'PyTorch Conv2d and ResidualBlock implementation code snippets'
-      ],
-      contentPreview: `### 1. Fundamentals of Convolutional Layers
-In Deep Learning, Convolutional layers preserve spatial locality in grid-structured inputs (e.g., images). Unlike dense layers with $M \\times N$ weights, a CNN utilizes shared kernel weights $K \\in \\mathbb{R}^{k \\times k}$.
-
-#### Output Dimensions Formula:
-$$W_{out} = \\left\\lfloor \\frac{W_{in} - K + 2P}{S} \\right\\rfloor + 1$$
-Where:
-- $W_{in}$: Input spatial width
-- $K$: Kernel filter size
-- $P$: Padding pixels added on each border
-- $S$: Stride step size
-
-### 2. Residual Learning Framework (ResNet)
-To solve the degradation and vanishing gradient problem in networks exceeding 20+ layers, He et al. introduced identity shortcut connections:
-$$\\mathcal{H}(x) = \\mathcal{F}(x, \\{W_i\\}) + x$$
-The objective is for the stacked layers to fit a residual mapping $\\mathcal{F}(x) := \\mathcal{H}(x) - x$ rather than the original unreferenced mapping.
-
-\`\`\`python
-import torch
-import torch.nn as nn
-
-class ResidualBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, stride=1):
-        super(ResidualBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(out_channels)
-        self.relu = nn.ReLU(inplace=True)
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm2d(out_channels)
-        
-        self.shortcut = nn.Sequential()
-        if stride != 1 or in_channels != out_channels:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(out_channels)
-            )
-
-    def forward(self, x):
-        residual = self.shortcut(x)
-        out = self.relu(self.bn1(self.conv1(x)))
-        out = self.bn2(self.conv2(out))
-        out += residual
-        return self.relu(out)
-\`\`\`
-
-### 3. Key University Exam Review Points
-- **Q1:** Differentiate between Valid Padding vs Same Padding with mathematical formulas.
-- **Q2:** Why 1x1 convolutions are utilized in Inception modules and ResNet Bottlenecks? (Answer: Channel dimensionality reduction).`,
-      fileSize: '4.2 MB',
-      pages: 48,
-      downloads: 142,
-      views: 310,
-      uploadDate: '2026-09-24T10:30:00'
-    },
-    {
-      id: 2,
-      title: 'Unit 1 to 5: University Model Question Bank with Solved 16-Mark Answers',
-      subjectCode: '23ADT501',
-      subjectName: 'Deep Learning',
-      facultyName: 'Dr. R. Murugesan [RM]',
-      facultyAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-      unit: 'All Units',
-      format: 'Q-Bank',
-      tag: '🔥 Exam Essential',
-      description: 'Comprehensive 2-mark and 16-mark solved questions covering Perceptrons, Backpropagation, CNNs, RNNs, LSTMs, Transformers, and GANs.',
-      topics: [
-        'Part A: 50 Two-Mark Questions with Concise Answers',
-        'Part B: Derivation of Backpropagation with Gradient Descent',
-        'Part C: Design Problem on Autoencoders & Transfer Learning'
-      ],
-      contentPreview: `### Part A: Two-Mark Essential Questions
-1. **Define the Vanishing Gradient problem.**
-   *Answer:* When backpropagating through deep networks with saturating activations like Sigmoid or Tanh, gradients diminish exponentially as they approach initial layers because $\\sigma'(z) \\le 0.25$, preventing weights from updating.
-
-2. **Why is cross-entropy loss preferred over MSE for classification?**
-   *Answer:* Cross-entropy penalizes confident wrong predictions much harsher and yields non-saturating steeper gradients when paired with Softmax.
-
-### Part B: 16-Mark Comprehensive Solutions
-- Detailed mathematical step-by-step chain rule derivation for Backpropagation across multi-layer perceptrons.
-- Complete comparison matrix between RNN, LSTM, and GRU gating mechanisms.`,
-      fileSize: '6.8 MB',
-      pages: 82,
-      downloads: 218,
-      views: 540,
-      uploadDate: '2026-09-22T14:15:00'
-    },
-    {
-      id: 3,
-      title: 'Unit 3: Cloud Infrastructure Provisioning with Terraform & AWS IAM',
-      subjectCode: '23CSE011',
-      subjectName: 'Cloud Service Management',
-      facultyName: 'Dr. K. Manivannan [KM]',
-      facultyAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-      unit: 'Unit 3',
-      format: 'PPTX',
-      tag: 'Hands-On Lab Notes',
-      description: 'Presentation slides on Infrastructure as Code (IaC), declarative syntax, State files in Terraform, AWS EC2/VPC automation, and RBAC security policies.',
-      topics: [
-        'Infrastructure as Code Core Principles & Declarative Paradigms',
-        'Terraform Plan, Apply, State Lock & Remote Backend on S3/DynamoDB',
-        'Multi-tier AWS VPC Architecture with Public/Private Subnets & NAT Gateway',
-        'IAM Least Privilege Role-Based Access Control Policies'
-      ],
-      contentPreview: `### 1. Terraform Declarative Syntax & Execution Lifecycle
-Terraform operates on a three-phase state workflow:
-1. \`terraform init\`: Downloads required provider plugins (e.g., hashicorp/aws).
-2. \`terraform plan\`: Calculates execution graph diff between declared state and cloud state.
-3. \`terraform apply\`: Provisions API mutations against Cloud Controller.
-
-\`\`\`hcl
-# AWS VPC Architecture Definition
-resource "aws_vpc" "campus_vpc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  tags = {
-    Name = "CampusAI-Production-VPC"
-  }
-}
-
-resource "aws_subnet" "public_subnet" {
-  vpc_id                  = aws_vpc.campus_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  map_public_ip_on_launch = true
-  availability_zone       = "ap-south-1a"
-}
-\`\`\``,
-      fileSize: '11.5 MB',
-      pages: 56,
-      downloads: 89,
-      views: 195,
-      uploadDate: '2026-09-20T09:00:00'
-    },
-    {
-      id: 4,
-      title: 'Unit 1: Classical Ciphers, AES-256 & Public-Key Cryptography (RSA/ECC)',
-      subjectCode: '23CBT502',
-      subjectName: 'Data and Information Security',
-      facultyName: 'Mrs. M. Sivagami [MS]',
-      facultyAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
-      unit: 'Unit 1',
-      format: 'PDF',
-      tag: '⭐ Core Theory Guide',
-      description: 'Detailed step-by-step mathematical guide on symmetric vs asymmetric encryption, Substitution-Permutation networks, AES S-Box, and RSA modular arithmetic.',
-      topics: [
-        'Symmetric vs Asymmetric Encryption Comparison Matrix',
-        'AES 4-Step Round Transformation: SubBytes, ShiftRows, MixColumns, AddRoundKey',
-        'RSA Key Generation & Euler\'s Totient Function phi(n)',
-        'Diffie-Hellman Key Exchange Mathematical Proof & MITM Defense'
-      ],
-      contentPreview: `### 1. Advanced Encryption Standard (AES) Structure
-AES is a symmetric block cipher processing 128-bit blocks with key lengths of 128, 192, or 256 bits.
-Each round consists of 4 algebraic transformations over Galois Field $GF(2^8)$:
-1. **SubBytes**: Non-linear byte substitution via the Rijndael S-box (Inversion + Affine transformation).
-2. **ShiftRows**: Cyclic byte shifting (Row 0: 0 shifts, Row 1: 1 shift, Row 2: 2 shifts, Row 3: 3 shifts).
-3. **MixColumns**: Matrix multiplication of each column polynomial against fixed matrix $c(x) = 03x^3 + 01x^2 + 01x + 02 \\pmod{x^4+1}$.
-4. **AddRoundKey**: Bitwise XOR with round subkeys generated via Key Expansion.
-
-### 2. RSA Cryptosystem Algorithm
-1. Choose two distinct large prime numbers $p$ and $q$.
-2. Calculate modulus $n = p \\cdot q$.
-3. Compute Euler totient $\\phi(n) = (p-1)(q-1)$.
-4. Choose public exponent $e$ such that $1 < e < \\phi(n)$ and $\\gcd(e, \\phi(n)) = 1$.
-5. Compute private decryption key $d \\equiv e^{-1} \\pmod{\\phi(n)}$ using Extended Euclidean Algorithm.`,
-      fileSize: '5.1 MB',
-      pages: 64,
-      downloads: 164,
-      views: 380,
-      uploadDate: '2026-09-18T16:20:00'
-    },
-    {
-      id: 5,
-      title: 'Unit 4: Consensus Protocols (Paxos & Raft) and CAP Theorem Deep Dive',
-      subjectCode: '23CST504',
-      subjectName: 'Distributed Computing',
-      facultyName: 'Ms. S. Muthulakshmi [SM]',
-      facultyAvatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150',
-      unit: 'Unit 4',
-      format: 'PDF',
-      tag: 'System Design Notes',
-      description: 'In-depth notes on distributed synchronization, logical clocks (Lamport & Vector), Byzantine Fault Tolerance, Raft Leader Election, and Log Replication.',
-      topics: [
-        'Lamport Timestamps vs Vector Clocks Causality',
-        'CAP Theorem: Trade-offs in Distributed Systems',
-        'Raft Consensus: Leader Election, Heartbeats, Log Matching',
-        'Distributed Deadlock Detection & Chandy-Misra Algorithm'
-      ],
-      contentPreview: `### 1. The CAP Theorem Proof
-In any asynchronous distributed network with message drops:
-- **Consistency (C):** Every read receives the most recent write or an error.
-- **Availability (A):** Every non-failing node returns a non-error response without guarantee of latest write.
-- **Partition Tolerance (P):** System continues to operate despite arbitrary message drops/network splits.
-*Theorem:* In the presence of a network partition (P), a distributed system must choose between Consistency (CP) or Availability (AP).
-
-### 2. Raft Consensus Algorithm Breakdown
-Raft divides consensus into 3 distinct subproblems:
-1. **Leader Election:** When heartbeat times out, node transitions to Candidate and requests votes. Quorum of $\\lfloor N/2 \\rfloor + 1$ required.
-2. **Log Replication:** Leader accepts commands from clients and replicates to Followers via \`AppendEntries\` RPCs.
-3. **Safety Guarantee:** A Candidate only wins election if its log is at least as up-to-date as any other node.`,
-      fileSize: '3.8 MB',
-      pages: 42,
-      downloads: 112,
-      views: 260,
-      uploadDate: '2026-09-16T11:45:00'
-    },
-    {
-      id: 6,
-      title: 'Big Data Analytics Laboratory Manual & PySpark Practical Scripts',
-      subjectCode: '23ADT502',
-      subjectName: 'Big Data Analytics',
-      facultyName: 'Mr. D. Baskar [DB]',
-      facultyAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
-      unit: 'Lab Manual',
-      format: 'ZIP',
-      tag: '🧪 Practical Lab Guide',
-      description: 'Complete laboratory exercise guide with 10 PySpark & Hadoop MapReduce experiments, sample datasets, execution logs, and viva questions.',
-      topics: [
-        'Exp 1-3: Hadoop HDFS Commands & WordCount MapReduce',
-        'Exp 4-6: PySpark DataFrame Transformations & Actions',
-        'Exp 7-8: Spark Streaming with Kafka Consumer',
-        'Exp 9-10: MLlib Recommendation Engine & Linear Regression'
-      ],
-      contentPreview: `### Laboratory Experiment 4: PySpark DataFrame Operations
-\`\`\`python
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, avg, count, when
-
-# Initialize Spark Session
-spark = SparkSession.builder \\
-    .appName("CampusAI_LogAnalytics") \\
-    .config("spark.executor.memory", "4g") \\
-    .getOrCreate()
-
-# Load Dataset from HDFS
-df = spark.read.csv("hdfs://namenode:9000/datasets/student_grades.csv", header=True, inferSchema=True)
-
-# Data Cleaning & Analytical Aggregations
-analysis = df.groupBy("department") \\
-    .agg(
-        avg("attendance_rate").alias("mean_attendance"),
-        count("student_id").alias("total_enrolled")
-    ) \\
-    .orderBy(col("mean_attendance").desc())
-
-analysis.show(10)
-\`\`\``,
-      fileSize: '14.2 MB',
-      pages: 35,
-      downloads: 198,
-      views: 410,
-      uploadDate: '2026-09-14T15:30:00'
-    },
-    {
-      id: 7,
-      title: 'Unit 1 & 2: Predictive Modeling, Decision Trees & Time Series Forecasting',
-      subjectCode: '23CSE005',
-      subjectName: 'Business Analytics',
-      facultyName: 'Mr. M. Ramesh [MR]',
-      facultyAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
-      unit: 'Unit 2',
-      format: 'PDF',
-      tag: 'Case Study Notes',
-      description: 'Business analytical frameworks, KPI metric design, ARIMA time series modeling, Customer Lifetime Value (CLV) regression, and Tableau dashboard recipes.',
-      topics: [
-        'Descriptive vs Predictive vs Prescriptive Analytics',
-        'ARIMA Modeling: Stationarity, ACF & PACF Plots',
-        'Customer Churn Prediction with Logistic Regression',
-        'Executive Business KPI Dashboards in Tableau'
-      ],
-      contentPreview: `### 1. Predictive Analytics Framework
-Predictive analytics leverages historical data patterns to forecast future probabilities using classification and regression estimators.
-
-### 2. Time Series ARIMA(p, d, q) Components
-- $p$: Order of Auto-Regressive lag terms (observed via PACF cutoff)
-- $d$: Degree of differencing required for weak stationarity (Augmented Dickey-Fuller test)
-- $q$: Order of Moving-Average error lag terms (observed via ACF cutoff)`,
-      fileSize: '4.5 MB',
-      pages: 50,
-      downloads: 95,
-      views: 210,
-      uploadDate: '2026-09-12T13:00:00'
-    },
-    {
-      id: 8,
-      title: 'Quick Formula & Architecture Cheat Sheet (Transformer & Attention Mechanism)',
-      subjectCode: '23ADT501',
-      subjectName: 'Deep Learning',
-      facultyName: 'Dr. R. Murugesan [RM]',
-      facultyAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-      unit: 'Unit 4',
-      format: 'CheatSheet',
-      tag: '⚡ Quick Revision',
-      description: 'Condensed 4-page reference card with Self-Attention equations, Scaled Dot-Product Attention, Multi-Head projection math, Positional Encoding, and Optimizer equations.',
-      topics: [
-        'Scaled Dot-Product Attention: Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) * V',
-        'Multi-Head Attention Dimension Projections',
-        'Adam vs AdamW Optimizer Weight Decay Update Rule',
-        'Cosine Annealing Learning Rate Schedule Equation'
-      ],
-      contentPreview: `### Self-Attention Equation Reference
-$$\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V$$
-Where:
-- $Q \\in \\mathbb{R}^{N \\times d_k}$ (Query matrix)
-- $K \\in \\mathbb{R}^{N \\times d_k}$ (Key matrix)
-- $V \\in \\mathbb{R}^{N \\times d_v}$ (Value matrix)
-- $\\sqrt{d_k}$: Scaling factor preventing softmax saturation for large dimensions
-
-### Positional Encoding Equations
-$$PE_{(pos, 2i)} = \\sin\\left(\\frac{pos}{10000^{2i/d_{model}}}\\right)$$
-$$PE_{(pos, 2i+1)} = \\cos\\left(\\frac{pos}{10000^{2i/d_{model}}}\\right)$$`,
-      fileSize: '1.8 MB',
-      pages: 4,
-      downloads: 310,
-      views: 690,
-      uploadDate: '2026-09-10T10:00:00'
-    }
-  ];
-
-  localStorage.setItem('campusai_study_materials', JSON.stringify(defaultMaterials));
-  return defaultMaterials;
-}
-
-function saveStoredStudyMaterials(list) {
-  localStorage.setItem('campusai_study_materials', JSON.stringify(list));
-}
-
+// Study Materials Data Storage Helpers (Faculty Uploaded Materials Only)
 function getStoredFacultyUploadedMaterials() {
   try {
     const stored = localStorage.getItem('campusai_faculty_uploaded_materials');
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) {
+        return parsed.filter(m => m && (typeof m.id === 'string' || m.id > 1000 || m.isUploaded));
+      }
     }
   } catch (e) {
     console.error('Error loading stored faculty uploaded materials:', e);
   }
-  return []; // Starts empty so faculty dashboard shows empty until faculty uploads materials
+  return [];
 }
 
 function saveStoredFacultyUploadedMaterials(list) {
   localStorage.setItem('campusai_faculty_uploaded_materials', JSON.stringify(list));
+}
+
+function getStoredStudyMaterials() {
+  try {
+    const facultyList = getStoredFacultyUploadedMaterials();
+    if (facultyList && facultyList.length > 0) {
+      saveStoredStudyMaterials(facultyList);
+      return facultyList;
+    }
+
+    const stored = localStorage.getItem('campusai_study_materials');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        const facultyOnly = parsed.filter(m => m && (typeof m.id === 'string' || m.id > 1000 || m.isUploaded));
+        if (facultyOnly.length > 0) {
+          saveStoredFacultyUploadedMaterials(facultyOnly);
+          saveStoredStudyMaterials(facultyOnly);
+          return facultyOnly;
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Error loading stored study materials:', e);
+  }
+
+  // Returns empty array if no faculty has uploaded materials yet
+  return [];
+}
+
+function saveStoredStudyMaterials(list) {
+  localStorage.setItem('campusai_study_materials', JSON.stringify(list));
 }
 
 function incrementMaterialDownload(materialId) {

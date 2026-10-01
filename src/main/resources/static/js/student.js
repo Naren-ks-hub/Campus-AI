@@ -2145,14 +2145,29 @@ function renderStudentMaterials(materials) {
   const bookmarks = getBookmarkedMaterialIds();
 
   if (!materials || materials.length === 0) {
-    grid.innerHTML = `
-      <div style="grid-column:1/-1; text-align:center; padding:48px 20px; background:rgba(255,255,255,0.02); border-radius:var(--radius-md); border:1px dashed var(--border-glass);">
-        <i class="fa-solid fa-book-open-reader" style="font-size:2.8rem; color:var(--text-muted); margin-bottom:12px; display:block;"></i>
-        <h4 style="margin-bottom:6px;">No Materials Matching Filter</h4>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Try adjusting your search query, subject, or format filters.</p>
-        <button class="btn btn-secondary btn-sm" onclick="resetStudentMaterialFilters()"><i class="fa-solid fa-arrows-rotate"></i> Reset All Filters</button>
-      </div>
-    `;
+    const hasAnyMaterials = (allStudentMaterials || []).length > 0;
+    if (hasAnyMaterials) {
+      grid.innerHTML = `
+        <div style="grid-column:1/-1; text-align:center; padding:48px 20px; background:rgba(255,255,255,0.02); border-radius:var(--radius-md); border:1px dashed var(--border-glass);">
+          <i class="fa-solid fa-filter-circle-xmark" style="font-size:2.8rem; color:var(--text-muted); margin-bottom:12px; display:block;"></i>
+          <h4 style="margin-bottom:6px;">No Materials Matching Filter</h4>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Try adjusting your search query, subject, or format filters.</p>
+          <button class="btn btn-secondary btn-sm" onclick="resetStudentMaterialFilters()"><i class="fa-solid fa-arrows-rotate"></i> Reset All Filters</button>
+        </div>
+      `;
+    } else {
+      grid.innerHTML = `
+        <div class="glass-card" style="grid-column: 1/-1; text-align: center; padding: 60px 24px; border: 1px dashed rgba(99, 102, 241, 0.4); border-radius: 16px;">
+          <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(99, 102, 241, 0.12); color: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 16px auto;">
+            <i class="fa-solid fa-folder-open"></i>
+          </div>
+          <h3 style="font-size: 1.3rem; margin-bottom: 8px;">No Study Materials Available Yet</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 520px; margin: 0 auto; line-height: 1.6;">
+            Your professors have not published any lecture notes or digital study materials yet. They will appear here as soon as faculty uploads them.
+          </p>
+        </div>
+      `;
+    }
     return;
   }
 
