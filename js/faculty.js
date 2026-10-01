@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupBroadcastForm();
   setupMaterialUploadForm();
   setupMaterialFilters();
+
+  // Initialize Unread Notification Tracker
+  if (typeof UnreadTracker !== 'undefined') {
+    UnreadTracker.init('FACULTY');
+  }
 });
 
 function updateProfileHeader(user) {
@@ -43,6 +48,11 @@ function setupTabs() {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       const activePane = document.getElementById(`tab-${tabId}`);
       if (activePane) activePane.classList.add('active');
+
+      // Clear unread blue dot when faculty opens this tab
+      if (typeof UnreadTracker !== 'undefined') {
+        UnreadTracker.markAsSeen('FACULTY', tabId);
+      }
     });
   });
 }
@@ -91,6 +101,9 @@ async function loadAttendanceClassList() {
     const subject = document.getElementById('attendance-subject-select').value;
     const date = document.getElementById('attendance-date-input').value;
     showToast(`Attendance saved successfully for ${subject} (${date})!`, 'success');
+    if (typeof UnreadTracker !== 'undefined') {
+      UnreadTracker.notifyNewUpdate('attendance');
+    }
   });
 }
 
@@ -325,6 +338,9 @@ function setupMaterialUploadForm() {
 
     const res = await apiRequest('/faculty/materials', 'POST', newMaterial);
     showToast(`Study Material "${title}" posted successfully! Visible to all students.`, 'success');
+    if (typeof UnreadTracker !== 'undefined') {
+      UnreadTracker.notifyNewUpdate('materials');
+    }
     closeUploadMaterialModal();
     form.reset();
     await loadFacultyMaterials();
@@ -474,6 +490,9 @@ function setupNewAssignmentForm() {
     const desc = document.getElementById('new-assign-desc').value;
 
     showToast(`Assignment "${title}" published for ${subject}!`, 'success');
+    if (typeof UnreadTracker !== 'undefined') {
+      UnreadTracker.notifyNewUpdate('assignments');
+    }
     form.reset();
   });
 }
@@ -486,6 +505,9 @@ function setupBroadcastForm() {
     e.preventDefault();
     const title = document.getElementById('announce-title').value;
     showToast(`Circular "${title}" broadcasted to students.`, 'success');
+    if (typeof UnreadTracker !== 'undefined') {
+      UnreadTracker.notifyNewUpdate('announcements');
+    }
     form.reset();
   });
 }

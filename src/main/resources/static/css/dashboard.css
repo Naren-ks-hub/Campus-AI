@@ -50,6 +50,7 @@
   font-size: 0.95rem;
   border-radius: var(--radius-sm);
   transition: var(--transition);
+  position: relative;
 }
 
 .sidebar-item a:hover {
@@ -63,6 +64,50 @@
   color: var(--primary-light);
   border-left: 3px solid var(--primary);
   font-weight: 600;
+}
+
+/* Luminous Blue Notification Dot */
+.unread-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #93c5fd 0%, #3b82f6 60%, #1d4ed8 100%);
+  box-shadow: 0 0 8px #3b82f6, 0 0 16px rgba(59, 130, 246, 0.6), 0 0 2px #fff;
+  margin-left: auto;
+  display: inline-block;
+  flex-shrink: 0;
+  animation: blueDotGlowPulse 2s infinite ease-in-out;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.unread-dot::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.9;
+  filter: blur(0.2px);
+}
+
+@keyframes blueDotGlowPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 6px #3b82f6, 0 0 14px rgba(59, 130, 246, 0.6);
+  }
+  50% {
+    transform: scale(1.22);
+    box-shadow: 0 0 10px #60a5fa, 0 0 20px rgba(59, 130, 246, 0.9), 0 0 2px #fff;
+  }
+}
+
+.unread-dot.fade-out {
+  opacity: 0;
+  transform: scale(0);
 }
 
 .sidebar-footer {

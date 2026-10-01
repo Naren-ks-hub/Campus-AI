@@ -322,6 +322,9 @@ function getLocalFallbackData(endpoint, method, data) {
       };
       materials.unshift(newMaterial);
       saveStoredStudyMaterials(materials);
+      if (typeof UnreadTracker !== 'undefined') {
+        UnreadTracker.notifyNewUpdate('materials');
+      }
       return { success: true, material: newMaterial, message: 'Material uploaded successfully!' };
     }
 
@@ -390,6 +393,9 @@ function getLocalFallbackData(endpoint, method, data) {
     };
     events.unshift(createdEvent);
     localStorage.setItem('campusai_events_data', JSON.stringify(events));
+    if (typeof UnreadTracker !== 'undefined') {
+      UnreadTracker.notifyNewUpdate('events');
+    }
     return createdEvent;
   }
 
@@ -472,6 +478,9 @@ function getLocalFallbackData(endpoint, method, data) {
     };
     list.unshift(newAnnounce);
     localStorage.setItem('campusai_announcements_data', JSON.stringify(list));
+    if (typeof UnreadTracker !== 'undefined') {
+      UnreadTracker.notifyNewUpdate('announcements');
+    }
     return newAnnounce;
   }
 
@@ -1218,3 +1227,117 @@ function showToast(message, type = 'info') {
     setTimeout(() => toast.remove(), 300);
   }, 3500);
 }
+
+// ==========================================
+// Dynamic Unread Notification Dot Tracker
+// ==========================================
+const UnreadTracker = {
+  getUpdatesMeta() {
+    try {
+      const stored = localStorage.getItem('campusai_updates_meta');
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    // Seed initial updates so new user sees live indicator on active tabs
+    const initialMeta = {
+      materials: Date.now(),
+      assignments: Date.now() - 1000 * 60 * 30,
+      announcements: Date.now() - 1000 * 60 * 45,
+      events: Date.now() - 1000 * 60 * 60,
+      attendance: Date.now() - 1000 * 60 * 90
+    };
+    localStorage.setItem('campusai_updates_meta', JSON.stringify(initialMeta));
+    return initialMeta;
+  },
+
+  setUpdatesMeta(meta) {
+    localStorage.setItem('campusai_updates_meta', JSON.stringify(meta));
+  },
+
+  notifyNewUpdate(tabKey) {
+    if (!tabKey) return;
+    const meta = this.getUpdatesMeta();
+    meta[tabKey] = Date.now();
+    this.setUpdatesMeta(meta);
+    window.dispatchEvent(new CustomEvent('campusai:update', { detail: { tabKey } }));
+  },
+
+  getSeenMeta(role = 'STUDENT') {
+    const key = `campusai_seen_${role.toLowerCase()}`;
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return {};
+  },
+
+  markAsSeen(role = 'STUDENT', tabKey) {
+    if (!tabKey) return;
+    const key = `campusai_seen_${role.toLowerCase()}`;
+    const seen = this.getSeenMeta(role);
+    seen[tabKey] = Date.now();
+    localStorage.setItem(key, JSON.stringify(seen));
+
+    const activeItem = document.querySelector(`.sidebar-item[data-tab="${tabKey}"]`);
+    if (activeItem) {
+      const dot = activeItem.querySelector('.unread-dot');
+      if (dot) {
+        dot.classList.add('fade-out');
+        setTimeout(() => dot.remove(), 300);
+      }
+    }
+  },
+
+  hasUnread(role = 'STUDENT', tabKey) {
+    const updates = this.getUpdatesMeta();
+    const seen = this.getSeenMeta(role);
+    const lastUpdate = updates[tabKey] || 0;
+    const lastSeen = seen[tabKey] || 0;
+    return lastUpdate > lastSeen;
+  },
+
+  renderDots(role = 'STUDENT') {
+    const navItems = document.querySelectorAll('.sidebar-item[data-tab]');
+    navItems.forEach(item => {
+      const tabKey = item.getAttribute('data-tab');
+      const a = item.querySelector('a');
+      if (!a) return;
+
+      const isCurrentActive = item.classList.contains('active');
+      const hasUnread = this.hasUnread(role, tabKey);
+
+      let dot = a.querySelector('.unread-dot');
+
+      if (hasUnread && !isCurrentActive) {
+        if (!dot) {
+          dot = document.createElement('span');
+          dot.className = 'unread-dot';
+          dot.setAttribute('title', 'New updates available');
+          a.appendChild(dot);
+        }
+      } else {
+        if (dot) {
+          dot.remove();
+        }
+        if (isCurrentActive) {
+          this.markAsSeen(role, tabKey);
+        }
+      }
+    });
+  },
+
+  init(role = 'STUDENT') {
+    this.renderDots(role);
+
+    // Synchronize across tabs and storage events
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'campusai_updates_meta' || (e.key && e.key.startsWith('campusai_seen_'))) {
+        this.renderDots(role);
+      }
+    });
+
+    window.addEventListener('campusai:update', () => {
+      this.renderDots(role);
+    });
+  }
+};
+

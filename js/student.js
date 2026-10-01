@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupComplaintForm();
   setupAssignmentSubmissionForm();
   setupStudentMaterialFilters();
+
+  // 5. Initialize Unread Notification Tracker
+  UnreadTracker.init('STUDENT');
 });
 
 /**
@@ -251,6 +254,11 @@ function setupTabs() {
       const activePane = document.getElementById(`tab-${tabId}`);
       if (activePane) activePane.classList.add('active');
 
+      // Clear unread blue dot when student navigates to this tab
+      if (typeof UnreadTracker !== 'undefined') {
+        UnreadTracker.markAsSeen('STUDENT', tabId);
+      }
+
       if (tabId === 'events') {
         loadEvents().catch(console.error);
       } else if (tabId === 'clubs') {
@@ -263,6 +271,8 @@ function setupTabs() {
         loadAttendance().catch(console.error);
       } else if (tabId === 'assignments') {
         loadAssignments().catch(console.error);
+      } else if (tabId === 'materials') {
+        loadStudentMaterials().catch(console.error);
       } else if (tabId === 'complaints') {
         loadComplaints().catch(console.error);
       }
