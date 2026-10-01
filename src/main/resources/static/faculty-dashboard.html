@@ -383,29 +383,33 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="mat-unit">Unit</label>
-              <select id="mat-unit" class="form-control" required>
-                <option value="" disabled selected>Choose Unit</option>
-                <option value="Unit 1">Unit 1</option>
-                <option value="Unit 2">Unit 2</option>
-                <option value="Unit 3">Unit 3</option>
-                <option value="Unit 4">Unit 4</option>
-                <option value="Unit 5">Unit 5</option>
-                <option value="All Units">All Units</option>
-                <option value="Lab Manual">Lab Manual</option>
+              <label class="form-label" for="mat-format">Material Format</label>
+              <select id="mat-format" class="form-control" required>
+                <option value="PDF">PDF Document (.pdf)</option>
+                <option value="PPTX">Presentation Slides (.pptx)</option>
+                <option value="ZIP">Lab Code Archive (.zip)</option>
+                <option value="Q-Bank">University Question Bank</option>
+                <option value="CheatSheet">Formula / Quick Cheat Sheet</option>
               </select>
             </div>
           </div>
 
+          <!-- Unit Multi-Choice Selector -->
           <div class="form-group">
-            <label class="form-label" for="mat-format">Material Format</label>
-            <select id="mat-format" class="form-control" required>
-              <option value="PDF">PDF Document (.pdf)</option>
-              <option value="PPTX">Presentation Slides (.pptx)</option>
-              <option value="ZIP">Lab Code Archive (.zip)</option>
-              <option value="Q-Bank">University Question Bank</option>
-              <option value="CheatSheet">Formula / Quick Cheat Sheet</option>
-            </select>
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Unit <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Click to choose one or multiple units)</span></span>
+              <span id="unit-selection-summary" style="font-size:0.78rem; color:var(--primary-light); font-weight:600;"></span>
+            </label>
+            <div class="unit-chips-container" id="unit-chips-group">
+              <button type="button" class="unit-chip" data-unit="Unit 1">Unit 1</button>
+              <button type="button" class="unit-chip" data-unit="Unit 2">Unit 2</button>
+              <button type="button" class="unit-chip" data-unit="Unit 3">Unit 3</button>
+              <button type="button" class="unit-chip" data-unit="Unit 4">Unit 4</button>
+              <button type="button" class="unit-chip" data-unit="Unit 5">Unit 5</button>
+              <button type="button" class="unit-chip" data-unit="All Units">All Units</button>
+              <button type="button" class="unit-chip" data-unit="Lab Manual">Lab Manual</button>
+            </div>
+            <input type="hidden" id="mat-unit" name="unit" value="" required>
           </div>
 
           <div class="form-group">

@@ -303,6 +303,69 @@ function setupMaterialUploadForm() {
   const dropzone = document.getElementById('material-dropzone');
   if (!form) return;
 
+  // Unit Chips Multi-Select Setup
+  const unitChips = document.querySelectorAll('.unit-chip');
+  const unitInput = document.getElementById('mat-unit');
+  const unitSummary = document.getElementById('unit-selection-summary');
+
+  function updateUnitSelection() {
+    const activeChips = Array.from(document.querySelectorAll('.unit-chip.active'));
+    const selectedUnits = activeChips.map(chip => chip.getAttribute('data-unit'));
+
+    if (selectedUnits.length === 0) {
+      if (unitInput) unitInput.value = '';
+      if (unitSummary) unitSummary.textContent = '';
+      return;
+    }
+
+    // If "All Units" is selected
+    if (selectedUnits.includes('All Units')) {
+      if (unitInput) unitInput.value = 'All Units';
+      if (unitSummary) unitSummary.textContent = 'All Units';
+      return;
+    }
+
+    // If numerical units e.g. ["Unit 1", "Unit 4", "Unit 5"]
+    const unitNums = selectedUnits
+      .filter(u => u && u.startsWith('Unit '))
+      .map(u => u.replace('Unit ', ''))
+      .sort((a, b) => Number(a) - Number(b));
+    
+    const others = selectedUnits.filter(u => u && !u.startsWith('Unit '));
+
+    let displayString = '';
+    if (unitNums.length > 0) {
+      if (unitNums.length === 1) {
+        displayString = `Unit ${unitNums[0]}`;
+      } else {
+        displayString = `Units ${unitNums.join(', ')}`;
+      }
+    }
+    if (others.length > 0) {
+      displayString = displayString ? `${displayString}, ${others.join(', ')}` : others.join(', ');
+    }
+
+    if (unitInput) unitInput.value = displayString;
+    if (unitSummary) unitSummary.textContent = displayString;
+  }
+
+  unitChips.forEach(chip => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
+      const unitVal = chip.getAttribute('data-unit');
+      if (unitVal === 'All Units') {
+        const isNowActive = !chip.classList.contains('active');
+        unitChips.forEach(c => c.classList.remove('active'));
+        if (isNowActive) chip.classList.add('active');
+      } else {
+        const allUnitsChip = document.querySelector('.unit-chip[data-unit="All Units"]');
+        if (allUnitsChip) allUnitsChip.classList.remove('active');
+        chip.classList.toggle('active');
+      }
+      updateUnitSelection();
+    });
+  });
+
   // Drag and Drop Listeners
   if (dropzone) {
     ['dragenter', 'dragover'].forEach(eventName => {
@@ -334,8 +397,17 @@ function setupMaterialUploadForm() {
     e.preventDefault();
 
     const title = document.getElementById('mat-title').value.trim();
-    const [subjectCode, subjectName] = document.getElementById('mat-subject').value.split('|');
-    const unit = document.getElementById('mat-unit').value;
+    const subjectVal = document.getElementById('mat-subject').value;
+    if (!subjectVal) {
+      showToast('Please choose a Course / Subject.', 'error');
+      return;
+    }
+    const [subjectCode, subjectName] = subjectVal.split('|');
+    const unit = (document.getElementById('mat-unit')?.value || '').trim();
+    if (!unit) {
+      showToast('Please select at least one Unit for this study material.', 'error');
+      return;
+    }
     const format = document.getElementById('mat-format').value;
     const desc = document.getElementById('mat-desc').value.trim();
 
@@ -343,7 +415,8 @@ function setupMaterialUploadForm() {
 
     // Use attached file metadata if provided, otherwise sensible defaults
     const fileSize = attachedMaterialFileData?.size || `${(Math.random() * 3 + 2).toFixed(1)} MB`;
-    const fileName = attachedMaterialFileData?.name || `${subjectCode}_${unit}_Notes.pdf`;
+    const cleanUnitFileName = unit.replace(/[^a-zA-Z0-9]/g, '_');
+    const fileName = attachedMaterialFileData?.name || `${subjectCode}_${cleanUnitFileName}_Notes.pdf`;
     const content = attachedMaterialFileData?.contentPreview || desc;
 
     const newMaterial = {
@@ -371,13 +444,16 @@ function setupMaterialUploadForm() {
     };
 
     const res = await apiRequest('/faculty/materials', 'POST', newMaterial);
-    showToast(`Study Material "${title}" with file "${fileName}" posted successfully!`, 'success');
+    showToast(`Study Material "${title}" for ${unit} posted successfully!`, 'success');
     if (typeof UnreadTracker !== 'undefined') {
       UnreadTracker.notifyNewUpdate('materials');
     }
     removeAttachedFile();
     closeUploadMaterialModal();
     form.reset();
+    document.querySelectorAll('.unit-chip').forEach(c => c.classList.remove('active'));
+    if (unitInput) unitInput.value = '';
+    if (unitSummary) unitSummary.textContent = '';
     await loadFacultyMaterials();
   });
 }
@@ -461,6 +537,11 @@ window.removeAttachedFile = function() {
 };
 
 window.openUploadMaterialModal = function() {
+  document.querySelectorAll('.unit-chip').forEach(c => c.classList.remove('active'));
+  const unitInput = document.getElementById('mat-unit');
+  if (unitInput) unitInput.value = '';
+  const unitSummary = document.getElementById('unit-selection-summary');
+  if (unitSummary) unitSummary.textContent = '';
   document.getElementById('upload-material-modal')?.classList.add('active');
 };
 
