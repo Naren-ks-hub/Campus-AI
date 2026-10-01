@@ -2,20 +2,16 @@
  * CampusAI - Student Dashboard Controller
  */
 
+let currentProfileAvatarBase64 = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
-  const user = AuthState.getUser();
-  if (!user || user.role !== 'STUDENT') {
-    // If not logged in or different role, allow browsing but set defaults
-    document.getElementById('student-name-display')?.setTextContent?.(user ? user.fullName : 'Alex Morgan');
-  }
+  // 1. Load & apply user profile (from localStorage or AuthState)
+  loadUserProfile();
 
-  // Populate user profile info in topbar and sidebar
-  updateProfileHeader(user);
-
-  // Tab switching
+  // 2. Tab switching
   setupTabs();
 
-  // Load dashboard data
+  // 3. Load dashboard data
   await loadDashboardOverview();
   await loadTimetable();
   await loadAttendance();
@@ -25,33 +21,204 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadAnnouncements();
   await loadComplaints();
 
-  // Setup form submissions
+  // 4. Setup form submissions
   setupComplaintForm();
   setupAssignmentSubmissionForm();
 });
 
-function updateProfileHeader(user) {
-  if (!user) return;
+/**
+ * Loads user profile from localStorage ('campusai_user_profile') or AuthState
+ */
+function loadUserProfile() {
+  const savedProfile = localStorage.getItem('campusai_user_profile');
+  let profile = null;
+  if (savedProfile) {
+    try {
+      profile = JSON.parse(savedProfile);
+    } catch (e) {
+      console.warn('Failed to parse saved profile:', e);
+    }
+  }
+
+  if (!profile) {
+    const authUser = AuthState.getUser();
+    profile = {
+      fullName: authUser?.fullName || 'Naren KS',
+      department: authUser?.department || 'Computer Science & Engineering',
+      year: authUser?.year || '3rd Year',
+      residenceType: authUser?.residenceType || 'Hostel',
+      avatar: authUser?.avatar || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
+      rollNumber: authUser?.rollNumber || 'CS2026-042'
+    };
+  }
+
+  applyUserProfileToUI(profile);
+  return profile;
+}
+
+/**
+ * Updates all profile visual elements across the dashboard in real time
+ */
+function applyUserProfileToUI(profile) {
+  if (!profile) return;
+
   const nameEl = document.getElementById('user-name');
   const roleEl = document.getElementById('user-role');
   const avatarEl = document.getElementById('user-avatar');
   const welcomeName = document.getElementById('welcome-student-name');
   const rollEl = document.getElementById('student-roll-dept');
-  const topBadge = document.querySelector('.topbar-title .badge');
+  const topBadge = document.getElementById('student-topbar-badge') || document.querySelector('.topbar-title .badge');
 
-  const deptShort = (user.department || 'CSE').replace('Computer Science & Engineering', 'CSE').replace('Artificial Intelligence & Data Science', 'AI&DS').replace('Information Technology', 'IT');
-  const yearText = user.year || (user.semester ? `Year ${Math.ceil(user.semester / 2)}` : '3rd Year');
-  const residenceText = user.residenceType || 'Hostel';
+  const deptShort = (profile.department || 'CSE')
+    .replace('Computer Science & Engineering', 'CSE')
+    .replace('Artificial Intelligence & Data Science', 'AI&DS')
+    .replace('Information Technology', 'IT')
+    .replace('Electronics & Communication', 'ECE')
+    .replace('Electrical & Electronics', 'EEE')
+    .replace('Mechanical Engineering', 'MECH')
+    .replace('Civil Engineering', 'CIVIL');
 
-  if (nameEl) nameEl.textContent = user.fullName;
+  const yearText = profile.year || '3rd Year';
+  const residenceText = profile.residenceType || 'Hostel';
+
+  if (nameEl) nameEl.textContent = profile.fullName;
   if (roleEl) roleEl.textContent = `${deptShort} • ${yearText} • ${residenceText}`;
-  if (avatarEl && user.avatar) avatarEl.src = user.avatar;
-  if (welcomeName) welcomeName.textContent = user.fullName;
-  if (topBadge) topBadge.textContent = `${deptShort} • ${yearText} (${residenceText})`;
+  if (avatarEl && profile.avatar) avatarEl.src = profile.avatar;
+  if (welcomeName) welcomeName.textContent = profile.fullName;
+  if (topBadge) topBadge.textContent = `${deptShort} • ${yearText} • ${residenceText === 'Hostel' ? 'Hosteler' : 'Day Scholar'}`;
   if (rollEl) {
-    rollEl.textContent = `Roll No: ${user.rollNumber || 'CS2026-042'} | ${user.department || 'Computer Science & Engineering'} • ${yearText} • ${residenceText === 'Dayscholar' ? '🚌 Dayscholar' : '🏨 Hosteler'}`;
+    rollEl.textContent = `Roll No: ${profile.rollNumber || 'CS2026-042'} | ${profile.department || 'Computer Science & Engineering'} • ${yearText} • ${residenceText === 'Day Scholar' ? '🚌 Day Scholar' : '🏨 Hosteler'}`;
   }
+
+  // Update card preview names if present
+  const cardStudentName = document.getElementById('card-student-name');
+  if (cardStudentName) cardStudentName.textContent = profile.fullName;
 }
+
+/**
+ * Opens the Edit Profile Modal populated with active data
+ */
+window.openEditProfileModal = function() {
+  const profile = loadUserProfile();
+  
+  const nameInput = document.getElementById('edit-profile-name');
+  if (nameInput) nameInput.value = profile.fullName || '';
+
+  const deptSelect = document.getElementById('edit-profile-dept');
+  if (deptSelect) {
+    for (let opt of deptSelect.options) {
+      if (opt.value === profile.department || opt.text.includes(profile.department)) {
+        opt.selected = true;
+        break;
+      }
+    }
+  }
+
+  const yearSelect = document.getElementById('edit-profile-year');
+  if (yearSelect) {
+    for (let opt of yearSelect.options) {
+      if (opt.value === profile.year || opt.value.includes(profile.year)) {
+        opt.selected = true;
+        break;
+      }
+    }
+  }
+
+  const residenceSelect = document.getElementById('edit-profile-residence');
+  if (residenceSelect) {
+    residenceSelect.value = (profile.residenceType === 'Dayscholar' || profile.residenceType === 'Day Scholar') ? 'Day Scholar' : 'Hostel';
+  }
+
+  const previewAvatar = document.getElementById('edit-profile-avatar-preview');
+  if (previewAvatar) {
+    previewAvatar.src = profile.avatar || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150';
+    currentProfileAvatarBase64 = profile.avatar;
+  }
+
+  document.getElementById('edit-profile-modal')?.classList.add('active');
+};
+
+/**
+ * Closes the Edit Profile Modal
+ */
+window.closeEditProfileModal = function() {
+  document.getElementById('edit-profile-modal')?.classList.remove('active');
+};
+
+/**
+ * Handles profile photo upload via FileReader to base64
+ */
+window.handleProfilePhotoUpload = function(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    showToast('Please select a valid image file.', 'error');
+    return;
+  }
+
+  // Max 5MB check
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Image size should be less than 5MB.', 'warning');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    currentProfileAvatarBase64 = e.target.result;
+    const previewAvatar = document.getElementById('edit-profile-avatar-preview');
+    if (previewAvatar) previewAvatar.src = currentProfileAvatarBase64;
+    showToast('Photo loaded! Click Save to apply.', 'info');
+  };
+  reader.readAsDataURL(file);
+};
+
+/**
+ * Saves updated profile into localStorage and AuthState and updates UI instantly
+ */
+window.saveUserProfile = function(event) {
+  if (event) event.preventDefault();
+
+  const fullName = (document.getElementById('edit-profile-name')?.value || '').trim();
+  const department = document.getElementById('edit-profile-dept')?.value || 'Computer Science & Engineering';
+  const year = document.getElementById('edit-profile-year')?.value || '3rd Year';
+  const residenceType = document.getElementById('edit-profile-residence')?.value || 'Hostel';
+
+  if (!fullName) {
+    showToast('Please enter your full name.', 'error');
+    return;
+  }
+
+  const existingProfile = loadUserProfile();
+  const updatedProfile = {
+    ...existingProfile,
+    fullName: fullName,
+    department: department,
+    year: year,
+    residenceType: residenceType,
+    avatar: currentProfileAvatarBase64 || existingProfile.avatar
+  };
+
+  // Persist in localStorage
+  localStorage.setItem('campusai_user_profile', JSON.stringify(updatedProfile));
+
+  // Sync with AuthState
+  const authUser = AuthState.getUser() || {};
+  const updatedUser = {
+    ...authUser,
+    fullName: updatedProfile.fullName,
+    department: updatedProfile.department,
+    year: updatedProfile.year,
+    residenceType: updatedProfile.residenceType,
+    avatar: updatedProfile.avatar
+  };
+  AuthState.setUser(updatedUser);
+
+  // Instant real-time UI refresh
+  applyUserProfileToUI(updatedProfile);
+  closeEditProfileModal();
+  showToast('Profile updated successfully!', 'success');
+};
 
 function setupTabs() {
   const navItems = document.querySelectorAll('.sidebar-item[data-tab]');

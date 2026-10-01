@@ -75,24 +75,138 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+}
+
+.user-profile-summary:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
+  transform: translateY(-1px);
+}
+
+.avatar-container {
+  position: relative;
+  flex-shrink: 0;
 }
 
 .avatar {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--primary);
+  transition: all 0.25s ease;
+}
+
+.avatar-edit-icon {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #0f172a;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.user-profile-summary:hover .avatar-edit-icon {
+  transform: scale(1.18);
+  background: var(--primary-light);
+}
+
+.user-profile-summary:hover .avatar {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
 }
 
 .user-meta h4 {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   margin-bottom: 2px;
+  font-weight: 700;
+  transition: color 0.2s ease;
+}
+
+.user-profile-summary:hover .user-meta h4 {
+  color: var(--primary-light);
 }
 
 .user-meta p {
   font-size: 0.75rem;
   color: var(--text-muted);
+}
+
+/* Modal Avatar Upload Styles */
+.profile-upload-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  position: relative;
+  margin: 0 auto 10px auto;
+  cursor: pointer;
+}
+
+.profile-upload-circle img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary);
+  box-shadow: 0 4px 18px rgba(99, 102, 241, 0.3);
+  transition: all 0.25s ease;
+}
+
+.profile-upload-circle:hover img {
+  filter: brightness(0.75);
+  border-color: var(--primary-light);
+}
+
+.profile-upload-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  font-size: 0.75rem;
+  font-weight: 600;
+  gap: 4px;
+}
+
+.profile-upload-circle:hover .profile-upload-overlay {
+  opacity: 1;
+}
+
+.profile-upload-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #1e293b;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* Main Content Area */

@@ -52,13 +52,16 @@
       </ul>
 
       <div class="sidebar-footer">
-        <div class="user-profile-summary">
-          <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150" alt="Avatar" class="avatar" id="user-avatar">
-          <div class="user-meta" style="flex:1; min-width:0;">
-            <h4 id="user-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Alex Morgan</h4>
-            <p id="user-role">Student</p>
+        <div class="user-profile-summary" onclick="openEditProfileModal()" title="Click to Edit Profile">
+          <div class="avatar-container">
+            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150" alt="Avatar" class="avatar" id="user-avatar">
+            <div class="avatar-edit-icon" title="Edit Profile"><i class="fa-solid fa-pen"></i></div>
           </div>
-          <button onclick="AuthState.logout()" class="btn-icon btn-secondary" style="border:none; cursor:pointer;" title="Logout">
+          <div class="user-meta" style="flex:1; min-width:0;">
+            <h4 id="user-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Naren KS</h4>
+            <p id="user-role" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">CSE • 3rd Year • Hostel</p>
+          </div>
+          <button onclick="event.stopPropagation(); AuthState.logout()" class="btn-icon btn-secondary" style="border:none; cursor:pointer;" title="Logout">
             <i class="fa-solid fa-power-off" style="color:var(--danger);"></i>
           </button>
         </div>
@@ -758,6 +761,92 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal-backdrop" id="edit-profile-modal">
+    <div class="modal-box" style="max-width: 480px; padding: 0;">
+      <div class="modal-header" style="border-bottom: 1px solid var(--border-glass); padding: 18px 24px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; color: var(--primary-light);">
+            <i class="fa-solid fa-user-pen" style="font-size: 1.1rem;"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 1.2rem; margin: 0;">Edit Profile</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Update your student credentials and photo</p>
+          </div>
+        </div>
+        <button class="chat-btn-icon" onclick="closeEditProfileModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="edit-profile-form" onsubmit="saveUserProfile(event)">
+        <div class="modal-body" style="padding: 22px 24px;">
+          <!-- 1. Profile Picture Upload & Live Preview -->
+          <div style="text-align: center; margin-bottom: 18px;">
+            <div class="profile-upload-circle" onclick="document.getElementById('edit-profile-photo-input').click()" title="Click to upload new photo">
+              <img id="edit-profile-avatar-preview" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150" alt="Profile Preview">
+              <div class="profile-upload-overlay">
+                <i class="fa-solid fa-camera" style="font-size: 1.2rem;"></i>
+                <span>Change</span>
+              </div>
+              <div class="profile-upload-badge">
+                <i class="fa-solid fa-camera"></i>
+              </div>
+            </div>
+            <input type="file" id="edit-profile-photo-input" accept="image/*" style="display: none;" onchange="handleProfilePhotoUpload(event)">
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">Click avatar to upload new image (JPG, PNG, WebP)</p>
+          </div>
+
+          <!-- 2. Full Name -->
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label" for="edit-profile-name"><i class="fa-regular fa-user"></i> Full Name</label>
+            <input type="text" id="edit-profile-name" class="form-control" placeholder="e.g. Naren KS" required>
+          </div>
+
+          <!-- 3. Department / Course -->
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label" for="edit-profile-dept"><i class="fa-solid fa-building-columns"></i> Department / Course</label>
+            <select id="edit-profile-dept" class="form-control" required>
+              <option value="Computer Science & Engineering">Computer Science & Engineering (CSE)</option>
+              <option value="Artificial Intelligence & Data Science">Artificial Intelligence & Data Science (AI & DS)</option>
+              <option value="Information Technology">Information Technology (IT)</option>
+              <option value="Electronics & Communication">Electronics & Communication (ECE)</option>
+              <option value="Electrical & Electronics">Electrical & Electronics (EEE)</option>
+              <option value="Mechanical Engineering">Mechanical Engineering (MECH)</option>
+              <option value="Civil Engineering">Civil Engineering (CIVIL)</option>
+            </select>
+          </div>
+
+          <!-- 4. Academic Year & Residence Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 8px;">
+            <div class="form-group">
+              <label class="form-label" for="edit-profile-year"><i class="fa-solid fa-graduation-cap"></i> Academic Year</label>
+              <select id="edit-profile-year" class="form-control" required>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year" selected>3rd Year</option>
+                <option value="4th Year">4th Year</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="edit-profile-residence"><i class="fa-solid fa-hotel"></i> Residence</label>
+              <select id="edit-profile-residence" class="form-control" required>
+                <option value="Hostel" selected>Hostel</option>
+                <option value="Day Scholar">Day Scholar</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding: 16px 24px; border-top: 1px solid var(--border-glass); display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="padding: 9px 20px;">
+            <i class="fa-solid fa-check"></i> Save Changes
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
