@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupNewAssignmentForm();
   setupBroadcastForm();
   setupMaterialUploadForm();
+  setupEditMaterialForm();
   setupMaterialFilters();
 
   // Initialize Unread Notification Tracker
@@ -252,6 +253,9 @@ function renderFacultyMaterials(materials) {
         <div class="material-actions">
           <button class="btn btn-primary btn-sm" style="flex:1;" onclick="previewFacultyMaterial(${m.id})">
             <i class="fa-solid fa-eye"></i> Read / Preview
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="openEditMaterialModal(${m.id})" title="Edit Material">
+            <i class="fa-solid fa-pen-to-square"></i>
           </button>
           <button class="btn btn-secondary btn-sm" onclick="downloadStudyMaterial(${m.id})" title="Download File">
             <i class="fa-solid fa-download"></i>
@@ -766,4 +770,284 @@ window.saveStudentGrade = function() {
   const feedback = document.getElementById('grade-feedback-input').value;
   showToast(`Graded successfully! Score: ${marks}/100. Student notified.`, 'success');
   closeGradingModal();
+};
+
+// ==========================================
+// Edit Study Material Implementation
+// ==========================================
+let editAttachedMaterialFileData = null;
+
+function setupEditMaterialForm() {
+  const form = document.getElementById('faculty-edit-material-form');
+  const dropzone = document.getElementById('edit-material-dropzone');
+  if (!form) return;
+
+  const unitChips = document.querySelectorAll('.edit-unit-chip');
+  const unitInput = document.getElementById('edit-mat-unit');
+  const unitSummary = document.getElementById('edit-unit-selection-summary');
+
+  function updateEditUnitSelection() {
+    const activeChips = Array.from(document.querySelectorAll('.edit-unit-chip.active'));
+    const selectedUnits = activeChips.map(chip => chip.getAttribute('data-unit'));
+
+    if (selectedUnits.length === 0) {
+      if (unitInput) unitInput.value = '';
+      if (unitSummary) unitSummary.textContent = '';
+      return;
+    }
+
+    if (selectedUnits.includes('All Units')) {
+      if (unitInput) unitInput.value = 'All Units';
+      if (unitSummary) unitSummary.textContent = 'All Units';
+      return;
+    }
+
+    const unitNums = selectedUnits
+      .filter(u => u && u.startsWith('Unit '))
+      .map(u => u.replace('Unit ', ''))
+      .sort((a, b) => Number(a) - Number(b));
+    
+    const others = selectedUnits.filter(u => u && !u.startsWith('Unit '));
+
+    let displayString = '';
+    if (unitNums.length > 0) {
+      if (unitNums.length === 1) {
+        displayString = `Unit ${unitNums[0]}`;
+      } else {
+        displayString = `Units ${unitNums.join(', ')}`;
+      }
+    }
+    if (others.length > 0) {
+      displayString = displayString ? `${displayString}, ${others.join(', ')}` : others.join(', ');
+    }
+
+    if (unitInput) unitInput.value = displayString;
+    if (unitSummary) unitSummary.textContent = displayString;
+  }
+
+  unitChips.forEach(chip => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
+      const unitVal = chip.getAttribute('data-unit');
+      if (unitVal === 'All Units') {
+        const isNowActive = !chip.classList.contains('active');
+        unitChips.forEach(c => c.classList.remove('active'));
+        if (isNowActive) chip.classList.add('active');
+      } else {
+        const allUnitsChip = document.querySelector('.edit-unit-chip[data-unit="All Units"]');
+        if (allUnitsChip) allUnitsChip.classList.remove('active');
+        chip.classList.toggle('active');
+      }
+      updateEditUnitSelection();
+    });
+  });
+
+  // Drag and Drop Listeners for Edit Dropzone
+  if (dropzone) {
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('drag-over');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('drag-over');
+      }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files.length > 0) {
+        processEditAttachedMaterialFile(files[0]);
+      }
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = Number(document.getElementById('edit-mat-id').value);
+    const existing = allFacultyMaterials.find(m => Number(m.id) === id);
+    if (!existing) {
+      showToast('Material not found for updating.', 'error');
+      return;
+    }
+
+    const title = document.getElementById('edit-mat-title').value.trim();
+    const subjectVal = document.getElementById('edit-mat-subject').value;
+    const [subjectCode, subjectName] = subjectVal.split('|');
+    const department = document.getElementById('edit-mat-dept').value;
+    const unit = (document.getElementById('edit-mat-unit')?.value || '').trim();
+    if (!unit) {
+      showToast('Please select at least one Unit.', 'error');
+      return;
+    }
+    const desc = document.getElementById('edit-mat-desc').value.trim();
+
+    let format = existing.format || 'PDF';
+    let fileName = existing.fileName;
+    let fileSize = existing.fileSize;
+    let contentPreview = existing.contentPreview;
+
+    if (editAttachedMaterialFileData) {
+      fileSize = editAttachedMaterialFileData.size;
+      fileName = editAttachedMaterialFileData.name;
+      contentPreview = editAttachedMaterialFileData.contentPreview || desc;
+      const ext = editAttachedMaterialFileData.name.split('.').pop().toLowerCase();
+      if (['pptx', 'ppt'].includes(ext)) format = 'PPTX';
+      else if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) format = 'ZIP';
+      else if (['docx', 'doc'].includes(ext)) format = 'DOCX';
+      else if (['txt', 'py', 'java', 'cpp', 'c', 'sql'].includes(ext)) format = 'TXT';
+      else format = 'PDF';
+    }
+
+    const updatedData = {
+      id,
+      title,
+      subjectCode,
+      subjectName,
+      department,
+      unit,
+      format,
+      description: desc,
+      fileName,
+      fileSize,
+      contentPreview,
+      topics: [
+        `${unit} Lecture Notes & Theory Derivations`,
+        `Core Syllabus Concepts for ${subjectName}`,
+        `Anna University Exam Solutions & Solved Exercises`
+      ]
+    };
+
+    await apiRequest('/faculty/materials', 'PUT', updatedData);
+    showToast(`Study Material "${title}" updated successfully!`, 'success');
+    closeEditMaterialModal();
+    await loadFacultyMaterials();
+  });
+}
+
+window.openEditMaterialModal = function(id) {
+  const mat = allFacultyMaterials.find(m => Number(m.id) === Number(id));
+  if (!mat) return;
+
+  document.getElementById('edit-mat-id').value = mat.id;
+  document.getElementById('edit-mat-title').value = mat.title || '';
+  
+  // Set Subject
+  const subjectSelect = document.getElementById('edit-mat-subject');
+  if (subjectSelect) {
+    const found = Array.from(subjectSelect.options).find(o => o.value.startsWith(mat.subjectCode));
+    if (found) subjectSelect.value = found.value;
+  }
+
+  // Set Department
+  const deptSelect = document.getElementById('edit-mat-dept');
+  if (deptSelect && mat.department) {
+    deptSelect.value = mat.department;
+  }
+
+  // Set Unit chips
+  document.querySelectorAll('.edit-unit-chip').forEach(c => c.classList.remove('active'));
+  const unitStr = mat.unit || '';
+  document.getElementById('edit-mat-unit').value = unitStr;
+  const unitSummary = document.getElementById('edit-unit-selection-summary');
+  if (unitSummary) unitSummary.textContent = unitStr;
+
+  if (unitStr === 'All Units') {
+    document.querySelector('.edit-unit-chip[data-unit="All Units"]')?.classList.add('active');
+  } else if (unitStr === 'Lab Manual') {
+    document.querySelector('.edit-unit-chip[data-unit="Lab Manual"]')?.classList.add('active');
+  } else {
+    document.querySelectorAll('.edit-unit-chip').forEach(chip => {
+      const u = chip.getAttribute('data-unit');
+      if (u && (unitStr.includes(u) || unitStr.includes(u.replace('Unit ', '')))) {
+        chip.classList.add('active');
+      }
+    });
+  }
+
+  document.getElementById('edit-mat-desc').value = mat.description || '';
+
+  // Reset file attachment
+  removeEditAttachedFile();
+  const currentFileLabel = document.getElementById('edit-current-file-label');
+  if (currentFileLabel) {
+    currentFileLabel.textContent = `Current file: ${mat.fileName || 'Attached document'} (${mat.fileSize || '3.5 MB'})`;
+  }
+
+  document.getElementById('edit-material-modal')?.classList.add('active');
+};
+
+window.closeEditMaterialModal = function() {
+  document.getElementById('edit-material-modal')?.classList.remove('active');
+};
+
+window.handleEditMaterialFileSelect = function(event) {
+  const file = event.target.files?.[0];
+  if (file) {
+    processEditAttachedMaterialFile(file);
+  }
+};
+
+window.processEditAttachedMaterialFile = function(file) {
+  if (!file) return;
+  const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+  const sizeKB = (file.size / 1024).toFixed(1);
+  const sizeDisplay = file.size >= 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+
+  editAttachedMaterialFileData = {
+    file: file,
+    name: file.name,
+    size: sizeDisplay,
+    type: file.type,
+    contentPreview: `[Attached File: ${file.name}]\nFormat: ${file.type || 'Binary'}\nSize: ${sizeDisplay}\nUploaded for students.`
+  };
+
+  const emptyState = document.getElementById('edit-dropzone-empty-state');
+  const previewCard = document.getElementById('edit-dropzone-file-preview');
+  const fileNameEl = document.getElementById('edit-attached-file-name');
+  const fileSizeEl = document.getElementById('edit-attached-file-size');
+  const iconWrap = document.getElementById('edit-attached-file-icon-wrap');
+  const iconEl = document.getElementById('edit-attached-file-icon');
+
+  if (emptyState) emptyState.style.display = 'none';
+  if (previewCard) previewCard.style.display = 'flex';
+  if (fileNameEl) fileNameEl.textContent = file.name;
+  if (fileSizeEl) fileSizeEl.textContent = sizeDisplay;
+
+  if (iconWrap && iconEl) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'pdf') {
+      iconWrap.className = 'material-format-icon format-pdf';
+      iconEl.className = 'fa-solid fa-file-pdf';
+    } else if (ext === 'pptx' || ext === 'ppt') {
+      iconWrap.className = 'material-format-icon format-pptx';
+      iconEl.className = 'fa-solid fa-file-powerpoint';
+    } else if (ext === 'zip' || ext === 'rar') {
+      iconWrap.className = 'material-format-icon format-zip';
+      iconEl.className = 'fa-solid fa-file-zipper';
+    } else {
+      iconWrap.className = 'material-format-icon format-docx';
+      iconEl.className = 'fa-solid fa-file-word';
+    }
+  }
+
+  showToast(`New file "${file.name}" attached (${sizeDisplay})`, 'info');
+};
+
+window.removeEditAttachedFile = function() {
+  editAttachedMaterialFileData = null;
+  const fileInput = document.getElementById('edit-mat-file-input');
+  if (fileInput) fileInput.value = '';
+
+  const emptyState = document.getElementById('edit-dropzone-empty-state');
+  const previewCard = document.getElementById('edit-dropzone-file-preview');
+  if (emptyState) emptyState.style.display = 'block';
+  if (previewCard) previewCard.style.display = 'none';
 };

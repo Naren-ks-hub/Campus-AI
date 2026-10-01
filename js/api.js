@@ -341,6 +341,35 @@ function getLocalFallbackData(endpoint, method, data) {
       return { success: true, material: newMaterial, message: 'Material uploaded and published to students successfully!' };
     }
 
+    if ((method === 'PUT' || method === 'PATCH') && data) {
+      const targetId = Number(data.id) || parseInt(endpoint.split('/').pop());
+      let updatedMat = null;
+
+      facultyMaterials = facultyMaterials.map(m => {
+        if (Number(m.id) === targetId || String(m.id) === String(targetId)) {
+          updatedMat = { ...m, ...data, id: m.id, downloads: m.downloads || 0, uploadDate: m.uploadDate || new Date().toISOString() };
+          return updatedMat;
+        }
+        return m;
+      });
+      saveStoredFacultyUploadedMaterials(facultyMaterials);
+
+      let allMaterials = getStoredStudyMaterials();
+      allMaterials = allMaterials.map(m => {
+        if (Number(m.id) === targetId || String(m.id) === String(targetId)) {
+          return { ...m, ...data, id: m.id, downloads: m.downloads || 0, uploadDate: m.uploadDate || new Date().toISOString() };
+        }
+        return m;
+      });
+      saveStoredStudyMaterials(allMaterials);
+
+      try {
+        window.dispatchEvent(new CustomEvent('campusai_material_downloaded', { detail: { id: targetId, material: updatedMat } }));
+      } catch (e) {}
+
+      return { success: true, material: updatedMat, message: 'Material updated successfully!' };
+    }
+
     if (method === 'DELETE') {
       const urlParts = endpoint.split('/');
       const delId = parseInt(urlParts[urlParts.length - 1]);

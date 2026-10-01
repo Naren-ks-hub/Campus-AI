@@ -473,6 +473,124 @@
     </div>
   </div>
 
+  <!-- Edit Study Material Modal -->
+  <div class="modal-backdrop" id="edit-material-modal">
+    <div class="modal-box" style="max-width:680px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-pen-to-square" style="color:var(--primary-light);"></i> Edit Study Material</h3>
+        <button class="chat-btn-icon" onclick="closeEditMaterialModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="faculty-edit-material-form">
+        <input type="hidden" id="edit-mat-id" value="">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="edit-mat-title">Document Title / Topic Name</label>
+            <input type="text" id="edit-mat-title" class="form-control" placeholder="e.g. Unit 3: Attention Mechanism & Transformer Math" required>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="form-group">
+              <label class="form-label" for="edit-mat-subject">Course / Subject</label>
+              <select id="edit-mat-subject" class="form-control" required>
+                <option value="23ADT501|Deep Learning">23ADT501 - Deep Learning</option>
+                <option value="23CSE011|Cloud Service Management">23CSE011 - Cloud Service Mgmt</option>
+                <option value="23CBT502|Data and Information Security">23CBT502 - Data & Info Security</option>
+                <option value="23CST504|Distributed Computing">23CST504 - Distributed Computing</option>
+                <option value="23ADT502|Big Data Analytics">23ADT502 - Big Data Analytics</option>
+                <option value="23CSE005|Business Analytics">23CSE005 - Business Analytics</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="edit-mat-dept">Department</label>
+              <select id="edit-mat-dept" class="form-control" required>
+                <option value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</option>
+                <option value="Bio-Technology">Bio-Technology</option>
+                <option value="Bio-Medical Engineering">Bio-Medical Engineering</option>
+                <option value="Chemical Engineering">Chemical Engineering</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+                <option value="Computer and Communication Engineering">Computer and Communication Engineering</option>
+                <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                <option value="Computer Science and Business System">Computer Science and Business System</option>
+                <option value="Artificial Intelligence and Machine Learning">Artificial Intelligence and Machine Learning</option>
+                <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+                <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
+                <option value="Information Technology">Information Technology</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Unit Multi-Choice Selector for Edit -->
+          <div class="form-group">
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Unit <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Click to choose one or multiple units)</span></span>
+              <span id="edit-unit-selection-summary" style="font-size:0.78rem; color:var(--primary-light); font-weight:600;"></span>
+            </label>
+            <div class="unit-chips-container" id="edit-unit-chips-group">
+              <button type="button" class="unit-chip edit-unit-chip" data-unit="Unit 1">Unit 1</button>
+              <button type="button" class="unit-chip edit-unit-chip" data-unit="Unit 2">Unit 2</button>
+              <button type="button" class="unit-chip edit-unit-chip" data-unit="Unit 3">Unit 3</button>
+              <button type="button" class="unit-chip edit-unit-chip" data-unit="Unit 4">Unit 4</button>
+              <button type="button" class="unit-chip edit-unit-chip" data-unit="Unit 5">Unit 5</button>
+              <button type="button" class="unit-chip edit-unit-chip" data-unit="All Units">All Units</button>
+              <button type="button" class="unit-chip edit-unit-chip" data-unit="Lab Manual">Lab Manual</button>
+            </div>
+            <input type="hidden" id="edit-mat-unit" name="unit" value="" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-mat-desc">Short Overview Description</label>
+            <textarea id="edit-mat-desc" class="form-control" rows="2" placeholder="Brief summary of what this document covers..." required></textarea>
+          </div>
+
+          <!-- File Attachment Replacement Dropzone -->
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span><i class="fa-solid fa-paperclip" style="color:var(--primary-light);"></i> Replace Attached Document <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Optional)</span></span>
+              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">PDF, PPTX, DOCX, ZIP, TXT (Max 50MB)</span>
+            </label>
+            
+            <div id="edit-material-dropzone" class="file-dropzone" onclick="document.getElementById('edit-mat-file-input').click()">
+              <input type="file" id="edit-mat-file-input" accept=".pdf,.pptx,.ppt,.docx,.doc,.zip,.txt,.py" style="display:none;" onchange="handleEditMaterialFileSelect(event)">
+              
+              <div id="edit-dropzone-empty-state">
+                <div class="dropzone-icon">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h4 style="font-size: 0.95rem; margin-bottom: 4px; color: #fff;">Click to replace file or drag & drop</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;" id="edit-current-file-label">Current file will be retained if not replaced</p>
+              </div>
+
+              <!-- Attached File Preview Card -->
+              <div id="edit-dropzone-file-preview" style="display: none; align-items: center; justify-content: space-between; gap: 12px; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                  <div id="edit-attached-file-icon-wrap" class="material-format-icon format-pdf" style="width: 42px; height: 42px; font-size: 1.25rem;">
+                    <i id="edit-attached-file-icon" class="fa-solid fa-file-pdf"></i>
+                  </div>
+                  <div style="text-align: left; min-width: 0;">
+                    <div id="edit-attached-file-name" style="font-weight: 600; font-size: 0.92rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px;">file.pdf</div>
+                    <div style="display: flex; gap: 8px; align-items: center; font-size: 0.76rem; color: var(--text-muted); margin-top: 2px;">
+                      <span id="edit-attached-file-size">4.2 MB</span>
+                      <span class="badge badge-success" style="padding: 1px 6px; font-size: 0.7rem;"><i class="fa-solid fa-check"></i> New File Selected</span>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); removeEditAttachedFile()" title="Remove file" style="padding: 6px 10px;">
+                  <i class="fa-solid fa-trash-can" style="color: var(--danger);"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeEditMaterialModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Note Preview & Reader Modal -->
   <div class="modal-backdrop" id="preview-material-modal">
     <div class="modal-box reader-modal-box">
