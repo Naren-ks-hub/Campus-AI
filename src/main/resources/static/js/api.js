@@ -175,23 +175,65 @@ function getLocalFallbackData(endpoint, method, data) {
 
   if (endpoint.startsWith('/student/timetable') || endpoint.startsWith('/faculty/timetable')) {
     return [
-      { dayOfWeek: 'MONDAY', periodNumber: 1, startTime: '09:00', endTime: '10:00', subjectCode: 'CS501', subjectName: 'Artificial Intelligence & Neural Nets', roomNumber: 'Lab 301' },
-      { dayOfWeek: 'MONDAY', periodNumber: 2, startTime: '10:00', endTime: '11:00', subjectCode: 'CS502', subjectName: 'Database Management Systems', roomNumber: 'Room 204' },
-      { dayOfWeek: 'MONDAY', periodNumber: 3, startTime: '11:15', endTime: '12:15', subjectCode: 'CS503', subjectName: 'Operating Systems & Concurrency', roomNumber: 'Room 204' },
-      { dayOfWeek: 'MONDAY', periodNumber: 4, startTime: '13:00', endTime: '14:30', subjectCode: 'CS504', subjectName: 'Cloud Computing Architecture', roomNumber: 'Lab 102' },
-      { dayOfWeek: 'TUESDAY', periodNumber: 1, startTime: '09:00', endTime: '10:00', subjectCode: 'CS502', subjectName: 'Database Management Systems', roomNumber: 'Room 204' },
-      { dayOfWeek: 'TUESDAY', periodNumber: 2, startTime: '10:00', endTime: '11:00', subjectCode: 'CS505', subjectName: 'Software Engineering & Agile', roomNumber: 'Room 205' },
-      { dayOfWeek: 'TUESDAY', periodNumber: 3, startTime: '11:15', endTime: '12:15', subjectCode: 'CS501', subjectName: 'Artificial Intelligence & Neural Nets', roomNumber: 'Lab 301' },
-      { dayOfWeek: 'TUESDAY', periodNumber: 4, startTime: '13:00', endTime: '15:00', subjectCode: 'CS506', subjectName: 'Full-Stack Java Web Lab', roomNumber: 'Lab 402' },
-      { dayOfWeek: 'WEDNESDAY', periodNumber: 1, startTime: '09:00', endTime: '10:00', subjectCode: 'CS504', subjectName: 'Cloud Computing Architecture', roomNumber: 'Room 204' },
-      { dayOfWeek: 'WEDNESDAY', periodNumber: 2, startTime: '10:00', endTime: '11:00', subjectCode: 'CS503', subjectName: 'Operating Systems & Concurrency', roomNumber: 'Room 204' },
-      { dayOfWeek: 'WEDNESDAY', periodNumber: 3, startTime: '11:15', endTime: '12:15', subjectCode: 'CS505', subjectName: 'Software Engineering & Agile', roomNumber: 'Room 205' },
-      { dayOfWeek: 'THURSDAY', periodNumber: 1, startTime: '09:00', endTime: '10:00', subjectCode: 'CS501', subjectName: 'Artificial Intelligence & Neural Nets', roomNumber: 'Lab 301' },
-      { dayOfWeek: 'THURSDAY', periodNumber: 2, startTime: '10:00', endTime: '11:00', subjectCode: 'CS502', subjectName: 'Database Management Systems', roomNumber: 'Room 204' },
-      { dayOfWeek: 'THURSDAY', periodNumber: 3, startTime: '11:15', endTime: '13:15', subjectCode: 'CS507', subjectName: 'AI Capstone Project', roomNumber: 'AI Center' },
-      { dayOfWeek: 'FRIDAY', periodNumber: 1, startTime: '09:00', endTime: '10:00', subjectCode: 'CS505', subjectName: 'Software Engineering & Agile', roomNumber: 'Room 205' },
-      { dayOfWeek: 'FRIDAY', periodNumber: 2, startTime: '10:00', endTime: '11:00', subjectCode: 'CS504', subjectName: 'Cloud Computing Architecture', roomNumber: 'Room 204' },
-      { dayOfWeek: 'FRIDAY', periodNumber: 3, startTime: '11:15', endTime: '12:15', subjectCode: 'CS503', subjectName: 'Operating Systems & Concurrency', roomNumber: 'Room 204' }
+      // Monday
+      { dayOfWeek: 'MONDAY', periodNumber: 1, startTime: '09:15', endTime: '10:00', subjectCode: 'AP', subjectName: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'MONDAY', periodNumber: 2, startTime: '10:00', endTime: '10:45', subjectCode: 'AP', subjectName: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'MONDAY', periodNumber: 3, startTime: '11:00', endTime: '11:45', subjectCode: 'AP', subjectName: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'MONDAY', periodNumber: 4, startTime: '11:45', endTime: '12:30', subjectCode: 'AP', subjectName: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'MONDAY', periodNumber: 5, startTime: '13:20', endTime: '14:05', subjectCode: '23ADT501', subjectName: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', roomNumber: 'AI Research Lab' },
+      { dayOfWeek: 'MONDAY', periodNumber: 6, startTime: '14:05', endTime: '14:50', subjectCode: '23ADT501', subjectName: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', roomNumber: 'AI Research Lab' },
+      { dayOfWeek: 'MONDAY', periodNumber: 7, startTime: '15:05', endTime: '15:50', subjectCode: '23ADT501', subjectName: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', roomNumber: 'AI Research Lab' },
+      { dayOfWeek: 'MONDAY', periodNumber: 8, startTime: '15:50', endTime: '16:30', subjectCode: '23ADT501', subjectName: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', roomNumber: 'AI Research Lab' },
+
+      // Tuesday
+      { dayOfWeek: 'TUESDAY', periodNumber: 1, startTime: '09:15', endTime: '10:00', subjectCode: '23CSE005', subjectName: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'TUESDAY', periodNumber: 2, startTime: '10:00', endTime: '10:45', subjectCode: '23CBT502', subjectName: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'TUESDAY', periodNumber: 3, startTime: '11:00', endTime: '11:45', subjectCode: '23CSE011', subjectName: 'Cloud Service Mgmt', faculty: 'Dr. K. Manivannan [KM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'TUESDAY', periodNumber: 4, startTime: '11:45', endTime: '12:30', subjectCode: '23ADT501', subjectName: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'TUESDAY', periodNumber: 5, startTime: '13:20', endTime: '14:05', subjectCode: 'WD', subjectName: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', roomNumber: 'Web Dev Lab' },
+      { dayOfWeek: 'TUESDAY', periodNumber: 6, startTime: '14:05', endTime: '14:50', subjectCode: 'WD', subjectName: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', roomNumber: 'Web Dev Lab' },
+      { dayOfWeek: 'TUESDAY', periodNumber: 7, startTime: '15:05', endTime: '15:50', subjectCode: 'WD', subjectName: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', roomNumber: 'Web Dev Lab' },
+      { dayOfWeek: 'TUESDAY', periodNumber: 8, startTime: '15:50', endTime: '16:30', subjectCode: 'WD', subjectName: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', roomNumber: 'Web Dev Lab' },
+
+      // Wednesday
+      { dayOfWeek: 'WEDNESDAY', periodNumber: 1, startTime: '09:15', endTime: '10:00', subjectCode: '23CBT502', subjectName: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'WEDNESDAY', periodNumber: 2, startTime: '10:00', endTime: '10:45', subjectCode: '23ADT501', subjectName: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'WEDNESDAY', periodNumber: 3, startTime: '11:00', endTime: '11:45', subjectCode: 'COMM', subjectName: 'Communication Training', faculty: 'Ms. S. Muthuchelvan [RMN]', roomNumber: 'Language Lab' },
+      { dayOfWeek: 'WEDNESDAY', periodNumber: 4, startTime: '11:45', endTime: '12:30', subjectCode: 'COMM', subjectName: 'Communication Training', faculty: 'Ms. S. Muthuchelvan [RMN]', roomNumber: 'Language Lab' },
+      { dayOfWeek: 'WEDNESDAY', periodNumber: 5, startTime: '13:20', endTime: '14:05', subjectCode: '23CSE011', subjectName: 'Cloud Service Mgmt', faculty: 'Dr. K. Manivannan [KM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'WEDNESDAY', periodNumber: 6, startTime: '14:05', endTime: '14:50', subjectCode: '23CST504', subjectName: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'WEDNESDAY', periodNumber: 7, startTime: '15:05', endTime: '15:50', subjectCode: '23CSE005', subjectName: 'Business Analytics Lab', faculty: 'Mr. M. Ramesh [MR]', roomNumber: 'Analytics Lab' },
+      { dayOfWeek: 'WEDNESDAY', periodNumber: 8, startTime: '15:50', endTime: '16:30', subjectCode: '23CSE005', subjectName: 'Business Analytics Lab', faculty: 'Mr. M. Ramesh [MR]', roomNumber: 'Analytics Lab' },
+
+      // Thursday
+      { dayOfWeek: 'THURSDAY', periodNumber: 1, startTime: '09:15', endTime: '10:00', subjectCode: '23ADT501', subjectName: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'THURSDAY', periodNumber: 2, startTime: '10:00', endTime: '10:45', subjectCode: '23CST504', subjectName: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'THURSDAY', periodNumber: 3, startTime: '11:00', endTime: '11:45', subjectCode: '23CSE005', subjectName: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'THURSDAY', periodNumber: 4, startTime: '11:45', endTime: '12:30', subjectCode: '23ADT502', subjectName: 'Big Data Analytics', faculty: 'Mr. D. Baskar [DB]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'THURSDAY', periodNumber: 5, startTime: '13:20', endTime: '14:05', subjectCode: 'ADS', subjectName: 'Adv Data Structure & Algo', faculty: 'Ms. S. Muthulakshmi [SM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'THURSDAY', periodNumber: 6, startTime: '14:05', endTime: '14:50', subjectCode: 'ADS', subjectName: 'Adv Data Structure & Algo', faculty: 'Ms. S. Muthulakshmi [SM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'THURSDAY', periodNumber: 7, startTime: '15:05', endTime: '15:50', subjectCode: 'ADS', subjectName: 'Adv Data Structure & Algo', faculty: 'Mr. A. Bharathidhasan [AB]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'THURSDAY', periodNumber: 8, startTime: '15:50', endTime: '16:30', subjectCode: 'ADS', subjectName: 'Adv Data Structure & Algo', faculty: 'Dr. R. Murugesan [RM]', roomNumber: 'MB III A-202' },
+
+      // Friday
+      { dayOfWeek: 'FRIDAY', periodNumber: 1, startTime: '09:15', endTime: '10:00', subjectCode: 'COMM', subjectName: 'Communication Training', faculty: 'Mr. D. Baskar [DB]', roomNumber: 'Language Lab' },
+      { dayOfWeek: 'FRIDAY', periodNumber: 2, startTime: '10:00', endTime: '10:45', subjectCode: 'COMM', subjectName: 'Communication Training', faculty: 'Mr. D. Baskar [DB]', roomNumber: 'Language Lab' },
+      { dayOfWeek: 'FRIDAY', periodNumber: 3, startTime: '11:00', endTime: '11:45', subjectCode: '23ADT501', subjectName: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'FRIDAY', periodNumber: 4, startTime: '11:45', endTime: '12:30', subjectCode: '23CST504', subjectName: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'FRIDAY', periodNumber: 5, startTime: '13:20', endTime: '14:05', subjectCode: '23ADT502', subjectName: 'Big Data Analytics Lab', faculty: 'Mr. D. Baskar [DB]', roomNumber: 'Big Data Lab' },
+      { dayOfWeek: 'FRIDAY', periodNumber: 6, startTime: '14:05', endTime: '14:50', subjectCode: '23ADT502', subjectName: 'Big Data Analytics Lab', faculty: 'Mr. D. Baskar [DB]', roomNumber: 'Big Data Lab' },
+      { dayOfWeek: 'FRIDAY', periodNumber: 7, startTime: '15:05', endTime: '15:50', subjectCode: '23CSE005', subjectName: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'FRIDAY', periodNumber: 8, startTime: '15:50', endTime: '16:30', subjectCode: '23CBT502', subjectName: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', roomNumber: 'MB III A-202' },
+
+      // Saturday
+      { dayOfWeek: 'SATURDAY', periodNumber: 1, startTime: '09:15', endTime: '10:00', subjectCode: '23CBT502', subjectName: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'SATURDAY', periodNumber: 2, startTime: '10:00', endTime: '10:45', subjectCode: '23ADT502', subjectName: 'Big Data Analytics', faculty: 'Mr. D. Baskar [DB]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'SATURDAY', periodNumber: 3, startTime: '11:00', endTime: '11:45', subjectCode: '23CSE011', subjectName: 'Cloud Service Mgmt', faculty: 'Dr. K. Manivannan [KM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'SATURDAY', periodNumber: 4, startTime: '11:45', endTime: '12:30', subjectCode: '23CST504', subjectName: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'SATURDAY', periodNumber: 5, startTime: '13:20', endTime: '14:05', subjectCode: '23CSE011', subjectName: 'Cloud Service Mgmt Lab', faculty: 'Mr. A. Bharathidhasan [AB]', roomNumber: 'Cloud Computing Lab' },
+      { dayOfWeek: 'SATURDAY', periodNumber: 6, startTime: '14:05', endTime: '14:50', subjectCode: '23CSE011', subjectName: 'Cloud Service Mgmt Lab', faculty: 'Mr. A. Bharathidhasan [AB]', roomNumber: 'Cloud Computing Lab' },
+      { dayOfWeek: 'SATURDAY', periodNumber: 7, startTime: '15:05', endTime: '15:50', subjectCode: '23CSE005', subjectName: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', roomNumber: 'MB III A-202' },
+      { dayOfWeek: 'SATURDAY', periodNumber: 8, startTime: '15:50', endTime: '16:30', subjectCode: '23ADT502', subjectName: 'Big Data Analytics', faculty: 'Mr. D. Baskar [DB]', roomNumber: 'MB III A-202' }
     ];
   }
 

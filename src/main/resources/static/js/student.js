@@ -288,35 +288,121 @@ async function loadDashboardOverview() {
   }
 }
 
+// Official VSBEC AI&DS 5th Semester Time Table Data
+const OFFICIAL_AIDS_TIMETABLE = [
+  // Monday
+  { dayOfWeek: 'MONDAY', periodNumber: 1, code: 'AP', name: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'MB III A-202' },
+  { dayOfWeek: 'MONDAY', periodNumber: 2, code: 'AP', name: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'MB III A-202' },
+  { dayOfWeek: 'MONDAY', periodNumber: 3, code: 'AP', name: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'MB III A-202' },
+  { dayOfWeek: 'MONDAY', periodNumber: 4, code: 'AP', name: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'MB III A-202' },
+  { dayOfWeek: 'MONDAY', periodNumber: 5, code: 'DL LAB', name: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', type: 'lab', room: 'AI Research Lab' },
+  { dayOfWeek: 'MONDAY', periodNumber: 6, code: 'DL LAB', name: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', type: 'lab', room: 'AI Research Lab' },
+  { dayOfWeek: 'MONDAY', periodNumber: 7, code: 'DL LAB', name: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', type: 'lab', room: 'AI Research Lab' },
+  { dayOfWeek: 'MONDAY', periodNumber: 8, code: 'DL LAB', name: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', type: 'lab', room: 'AI Research Lab' },
+
+  // Tuesday
+  { dayOfWeek: 'TUESDAY', periodNumber: 1, code: 'BA', name: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'TUESDAY', periodNumber: 2, code: 'DIS', name: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'TUESDAY', periodNumber: 3, code: 'CSM', name: 'Cloud Service Mgmt', faculty: 'Dr. K. Manivannan [KM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'TUESDAY', periodNumber: 4, code: 'DL', name: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'TUESDAY', periodNumber: 5, code: 'WD', name: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'Web Dev Lab' },
+  { dayOfWeek: 'TUESDAY', periodNumber: 6, code: 'WD', name: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'Web Dev Lab' },
+  { dayOfWeek: 'TUESDAY', periodNumber: 7, code: 'WD', name: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'Web Dev Lab' },
+  { dayOfWeek: 'TUESDAY', periodNumber: 8, code: 'WD', name: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'Web Dev Lab' },
+
+  // Wednesday
+  { dayOfWeek: 'WEDNESDAY', periodNumber: 1, code: 'DIS', name: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'WEDNESDAY', periodNumber: 2, code: 'DL', name: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'WEDNESDAY', periodNumber: 3, code: 'COMM', name: 'Communication Training', faculty: 'Ms. S. Muthuchelvan [RMN]', type: 'training', room: 'Language Lab' },
+  { dayOfWeek: 'WEDNESDAY', periodNumber: 4, code: 'COMM', name: 'Communication Training', faculty: 'Ms. S. Muthuchelvan [RMN]', type: 'training', room: 'Language Lab' },
+  { dayOfWeek: 'WEDNESDAY', periodNumber: 5, code: 'CSM', name: 'Cloud Service Mgmt', faculty: 'Dr. K. Manivannan [KM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'WEDNESDAY', periodNumber: 6, code: 'DC', name: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'WEDNESDAY', periodNumber: 7, code: 'BA LAB', name: 'Business Analytics Lab', faculty: 'Mr. M. Ramesh [MR]', type: 'lab', room: 'Analytics Lab' },
+  { dayOfWeek: 'WEDNESDAY', periodNumber: 8, code: 'BA LAB', name: 'Business Analytics Lab', faculty: 'Mr. M. Ramesh [MR]', type: 'lab', room: 'Analytics Lab' },
+
+  // Thursday
+  { dayOfWeek: 'THURSDAY', periodNumber: 1, code: 'DL', name: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'THURSDAY', periodNumber: 2, code: 'DC', name: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'THURSDAY', periodNumber: 3, code: 'BA', name: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'THURSDAY', periodNumber: 4, code: 'BDA', name: 'Big Data Analytics', faculty: 'Mr. D. Baskar [DB]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'THURSDAY', periodNumber: 5, code: 'ADS', name: 'Adv. Data Structure & Algo', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'THURSDAY', periodNumber: 6, code: 'ADS', name: 'Adv. Data Structure & Algo', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'THURSDAY', periodNumber: 7, code: 'ADS', name: 'Adv. Data Structure & Algo', faculty: 'Mr. A. Bharathidhasan [AB]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'THURSDAY', periodNumber: 8, code: 'ADS', name: 'Adv. Data Structure & Algo', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
+
+  // Friday
+  { dayOfWeek: 'FRIDAY', periodNumber: 1, code: 'COMM', name: 'Communication Training', faculty: 'Mr. D. Baskar [DB]', type: 'training', room: 'Language Lab' },
+  { dayOfWeek: 'FRIDAY', periodNumber: 2, code: 'COMM', name: 'Communication Training', faculty: 'Mr. D. Baskar [DB]', type: 'training', room: 'Language Lab' },
+  { dayOfWeek: 'FRIDAY', periodNumber: 3, code: 'DL', name: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'FRIDAY', periodNumber: 4, code: 'DC', name: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'FRIDAY', periodNumber: 5, code: 'BDA LAB', name: 'Big Data Analytics Lab', faculty: 'Mr. D. Baskar [DB]', type: 'lab', room: 'Big Data Lab' },
+  { dayOfWeek: 'FRIDAY', periodNumber: 6, code: 'BDA LAB', name: 'Big Data Analytics Lab', faculty: 'Mr. D. Baskar [DB]', type: 'lab', room: 'Big Data Lab' },
+  { dayOfWeek: 'FRIDAY', periodNumber: 7, code: 'BA', name: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'FRIDAY', periodNumber: 8, code: 'DIS', name: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', type: 'theory', room: 'MB III A-202' },
+
+  // Saturday
+  { dayOfWeek: 'SATURDAY', periodNumber: 1, code: 'DIS', name: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'SATURDAY', periodNumber: 2, code: 'BDA', name: 'Big Data Analytics', faculty: 'Mr. D. Baskar [DB]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'SATURDAY', periodNumber: 3, code: 'CSM', name: 'Cloud Service Mgmt', faculty: 'Dr. K. Manivannan [KM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'SATURDAY', periodNumber: 4, code: 'DC', name: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'SATURDAY', periodNumber: 5, code: 'CSM LAB', name: 'Cloud Service Mgmt Lab', faculty: 'Mr. A. Bharathidhasan [AB]', type: 'lab', room: 'Cloud Computing Lab' },
+  { dayOfWeek: 'SATURDAY', periodNumber: 6, code: 'CSM LAB', name: 'Cloud Service Mgmt Lab', faculty: 'Mr. A. Bharathidhasan [AB]', type: 'lab', room: 'Cloud Computing Lab' },
+  { dayOfWeek: 'SATURDAY', periodNumber: 7, code: 'BA', name: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', type: 'theory', room: 'MB III A-202' },
+  { dayOfWeek: 'SATURDAY', periodNumber: 8, code: 'BDA', name: 'Big Data Analytics', faculty: 'Mr. D. Baskar [DB]', type: 'theory', room: 'MB III A-202' }
+];
+
 async function loadTimetable() {
-  const schedule = await apiRequest('/student/timetable');
+  const schedule = OFFICIAL_AIDS_TIMETABLE;
   const container = document.getElementById('timetable-container');
   if (!container || !schedule) return;
 
-  const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'];
-  let html = `
-    <div class="tt-header">Day / Period</div>
-    <div class="tt-header">Period 1 (09:00 - 10:00)</div>
-    <div class="tt-header">Period 2 (10:00 - 11:00)</div>
-    <div class="tt-header">Period 3 (11:15 - 12:15)</div>
-    <div class="tt-header">Period 4 (13:00 - 14:30)</div>
-  `;
+  const periodsHeader = [
+    { num: 'I', time: '09.15 - 10.00' },
+    { num: 'II', time: '10.00 - 10.45' },
+    { num: 'III', time: '11.00 - 11.45' },
+    { num: 'IV', time: '11.45 - 12.30' },
+    { num: 'V', time: '01.20 - 02.05' },
+    { num: 'VI', time: '02.05 - 02.50' },
+    { num: 'VII', time: '03.05 - 03.50' },
+    { num: 'VIII', time: '03.50 - 04.30' }
+  ];
+
+  const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+  
+  let html = `<div class="tt-header" style="background:rgba(99,102,241,0.15);"><strong>Day / Period</strong><div class="tt-time">Academic Schedule</div></div>`;
+  
+  periodsHeader.forEach(p => {
+    html += `
+      <div class="tt-header">
+        <strong>Period ${p.num}</strong>
+        <div class="tt-time">${p.time}</div>
+      </div>
+    `;
+  });
 
   days.forEach(day => {
-    html += `<div class="tt-day"><i class="fa-solid fa-calendar-day" style="margin-right:8px; color:var(--primary-light);"></i>${day.substring(0, 3)}</div>`;
+    const dayName = day.charAt(0) + day.slice(1).toLowerCase();
+    html += `<div class="tt-day"><i class="fa-regular fa-calendar-check" style="margin-right:6px; color:var(--primary-light);"></i>${dayName.substring(0, 3)}</div>`;
     const dayClasses = schedule.filter(s => s.dayOfWeek === day);
 
-    for (let p = 1; p <= 4; p++) {
+    for (let p = 1; p <= 8; p++) {
       const cell = dayClasses.find(s => s.periodNumber === p);
       if (cell) {
+        const cellClass = cell.type === 'lab' ? 'lab-cell' : (cell.type === 'training' ? 'training-cell' : '');
         html += `
-          <div class="tt-cell">
-            <h4>${cell.subjectName}</h4>
-            <p><i class="fa-solid fa-location-dot"></i> ${cell.roomNumber} • <span class="badge badge-primary">${cell.subjectCode}</span></p>
+          <div class="tt-cell ${cellClass}">
+            <div>
+              <span class="tt-code-badge">${cell.code}</span>
+              <h4>${cell.name}</h4>
+            </div>
+            <div>
+              <p class="tt-faculty"><i class="fa-solid fa-chalkboard-user"></i> ${cell.faculty}</p>
+              <p><i class="fa-solid fa-location-dot"></i> ${cell.room}</p>
+            </div>
           </div>
         `;
       } else {
-        html += `<div class="tt-cell" style="opacity:0.4; display:flex; align-items:center; justify-content:center;"><span style="font-size:0.8rem;">Free Period</span></div>`;
+        html += `<div class="tt-cell" style="opacity:0.35; display:flex; align-items:center; justify-content:center;"><span style="font-size:0.75rem; color:var(--text-muted);">Free</span></div>`;
       }
     }
   });

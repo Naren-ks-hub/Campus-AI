@@ -189,29 +189,61 @@ INSERT INTO college_info (category, title, content, keywords) VALUES
 ('HOSTEL', 'Hostel & Transport Facilities (Ref: TRANS/MANUAL/2026/R-50)', 'Separate secure hostels for boys and girls with RO water, Wi-Fi, and mess dining. 50+ college buses connect Karur, Tiruchirappalli, Dindigul, Erode, and Namakkal, departing campus daily at 4:45 PM.', 'hostel, bus, transport, route, mess, trichy, erode, dindigul, karur, accommodation'),
 ('DEPARTMENTS', 'Academic Departments & Courses', 'Departments: Computer Science & Engg (CSE), Artificial Intelligence & Data Science (AI&DS), Information Technology (IT), Electronics & Communication (ECE), Electrical & Electronics (EEE), Mechanical, and Civil Engineering.', 'departments, branches, cse, aids, it, ece, eee, mech, civil');
 
--- Timetable Seed Data (For CS 5th Semester - VSBEC)
+-- Timetable Seed Data (For Artificial Intelligence and Data Science - 5th Semester 'B' - VSBEC)
 INSERT INTO timetable (department, semester, day_of_week, period_number, start_time, end_time, subject_code, subject_name, room_number, faculty_id) VALUES
-('Computer Science & Engineering', 5, 'MONDAY', 1, '09:00:00', '10:00:00', 'CS501', 'Artificial Intelligence & Neural Nets', 'Lab 301', 2),
-('Computer Science & Engineering', 5, 'MONDAY', 2, '10:00:00', '11:00:00', 'CS502', 'Database Management Systems', 'Room 204', 3),
-('Computer Science & Engineering', 5, 'MONDAY', 3, '11:15:00', '12:15:00', 'CS503', 'Operating Systems & Concurrency', 'Room 204', 2),
-('Computer Science & Engineering', 5, 'MONDAY', 4, '13:00:00', '14:30:00', 'CS504', 'Cloud Computing Architecture', 'Lab 102', 3),
+('Artificial Intelligence & Data Science', 5, 'MONDAY', 1, '09:15:00', '10:00:00', 'AP', 'Aptitude', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'MONDAY', 2, '10:00:00', '10:45:00', 'AP', 'Aptitude', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'MONDAY', 3, '11:00:00', '11:45:00', 'AP', 'Aptitude', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'MONDAY', 4, '11:45:00', '12:30:00', 'AP', 'Aptitude', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'MONDAY', 5, '13:20:00', '14:05:00', '23ADT501', 'Deep Learning Lab', 'AI Research Lab', 2),
+('Artificial Intelligence & Data Science', 5, 'MONDAY', 6, '14:05:00', '14:50:00', '23ADT501', 'Deep Learning Lab', 'AI Research Lab', 2),
+('Artificial Intelligence & Data Science', 5, 'MONDAY', 7, '15:05:00', '15:50:00', '23ADT501', 'Deep Learning Lab', 'AI Research Lab', 2),
+('Artificial Intelligence & Data Science', 5, 'MONDAY', 8, '15:50:00', '16:30:00', '23ADT501', 'Deep Learning Lab', 'AI Research Lab', 2),
 
-('Computer Science & Engineering', 5, 'TUESDAY', 1, '09:00:00', '10:00:00', 'CS502', 'Database Management Systems', 'Room 204', 3),
-('Computer Science & Engineering', 5, 'TUESDAY', 2, '10:00:00', '11:00:00', 'CS505', 'Software Engineering & Agile', 'Room 205', 2),
-('Computer Science & Engineering', 5, 'TUESDAY', 3, '11:15:00', '12:15:00', 'CS501', 'Artificial Intelligence & Neural Nets', 'Lab 301', 2),
-('Computer Science & Engineering', 5, 'TUESDAY', 4, '13:00:00', '15:00:00', 'CS506', 'Full-Stack Java Web Development Lab', 'Lab 402', 3),
+('Artificial Intelligence & Data Science', 5, 'TUESDAY', 1, '09:15:00', '10:00:00', '23CSE005', 'Business Analytics', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'TUESDAY', 2, '10:00:00', '10:45:00', '23CBT502', 'Data and Information Security', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'TUESDAY', 3, '11:00:00', '11:45:00', '23CSE011', 'Cloud Service Management', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'TUESDAY', 4, '11:45:00', '12:30:00', '23ADT501', 'Deep Learning', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'TUESDAY', 5, '13:20:00', '14:05:00', 'WD', 'Web Development', 'Web Dev Lab', 2),
+('Artificial Intelligence & Data Science', 5, 'TUESDAY', 6, '14:05:00', '14:50:00', 'WD', 'Web Development', 'Web Dev Lab', 2),
+('Artificial Intelligence & Data Science', 5, 'TUESDAY', 7, '15:05:00', '15:50:00', 'WD', 'Web Development', 'Web Dev Lab', 2),
+('Artificial Intelligence & Data Science', 5, 'TUESDAY', 8, '15:50:00', '16:30:00', 'WD', 'Web Development', 'Web Dev Lab', 2),
 
-('Computer Science & Engineering', 5, 'WEDNESDAY', 1, '09:00:00', '10:00:00', 'CS504', 'Cloud Computing Architecture', 'Room 204', 3),
-('Computer Science & Engineering', 5, 'WEDNESDAY', 2, '10:00:00', '11:00:00', 'CS503', 'Operating Systems & Concurrency', 'Room 204', 2),
-('Computer Science & Engineering', 5, 'WEDNESDAY', 3, '11:15:00', '12:15:00', 'CS505', 'Software Engineering & Agile', 'Room 205', 2),
+('Artificial Intelligence & Data Science', 5, 'WEDNESDAY', 1, '09:15:00', '10:00:00', '23CBT502', 'Data and Information Security', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'WEDNESDAY', 2, '10:00:00', '10:45:00', '23ADT501', 'Deep Learning', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'WEDNESDAY', 3, '11:00:00', '11:45:00', 'COMM', 'Communication Training', 'Language Lab', 3),
+('Artificial Intelligence & Data Science', 5, 'WEDNESDAY', 4, '11:45:00', '12:30:00', 'COMM', 'Communication Training', 'Language Lab', 3),
+('Artificial Intelligence & Data Science', 5, 'WEDNESDAY', 5, '13:20:00', '14:05:00', '23CSE011', 'Cloud Service Management', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'WEDNESDAY', 6, '14:05:00', '14:50:00', '23CST504', 'Distributed Computing', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'WEDNESDAY', 7, '15:05:00', '15:50:00', '23CSE005', 'Business Analytics Lab', 'Analytics Lab', 3),
+('Artificial Intelligence & Data Science', 5, 'WEDNESDAY', 8, '15:50:00', '16:30:00', '23CSE005', 'Business Analytics Lab', 'Analytics Lab', 3),
 
-('Computer Science & Engineering', 5, 'THURSDAY', 1, '09:00:00', '10:00:00', 'CS501', 'Artificial Intelligence & Neural Nets', 'Lab 301', 2),
-('Computer Science & Engineering', 5, 'THURSDAY', 2, '10:00:00', '11:00:00', 'CS502', 'Database Management Systems', 'Room 204', 3),
-('Computer Science & Engineering', 5, 'THURSDAY', 3, '11:15:00', '13:15:00', 'CS507', 'AI & Machine Learning Capstone Lab', 'AI Center', 2),
+('Artificial Intelligence & Data Science', 5, 'THURSDAY', 1, '09:15:00', '10:00:00', '23ADT501', 'Deep Learning', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'THURSDAY', 2, '10:00:00', '10:45:00', '23CST504', 'Distributed Computing', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'THURSDAY', 3, '11:00:00', '11:45:00', '23CSE005', 'Business Analytics', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'THURSDAY', 4, '11:45:00', '12:30:00', '23ADT502', 'Big Data Analytics', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'THURSDAY', 5, '13:20:00', '14:05:00', 'ADS', 'Advanced Data Structure and Algorithm', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'THURSDAY', 6, '14:05:00', '14:50:00', 'ADS', 'Advanced Data Structure and Algorithm', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'THURSDAY', 7, '15:05:00', '15:50:00', 'ADS', 'Advanced Data Structure and Algorithm', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'THURSDAY', 8, '15:50:00', '16:30:00', 'ADS', 'Advanced Data Structure and Algorithm', 'MB III A-202', 2),
 
-('Computer Science & Engineering', 5, 'FRIDAY', 1, '09:00:00', '10:00:00', 'CS505', 'Software Engineering & Agile', 'Room 205', 2),
-('Computer Science & Engineering', 5, 'FRIDAY', 2, '10:00:00', '11:00:00', 'CS504', 'Cloud Computing Architecture', 'Room 204', 3),
-('Computer Science & Engineering', 5, 'FRIDAY', 3, '11:15:00', '12:15:00', 'CS503', 'Operating Systems & Concurrency', 'Room 204', 2);
+('Artificial Intelligence & Data Science', 5, 'FRIDAY', 1, '09:15:00', '10:00:00', 'COMM', 'Communication Training', 'Language Lab', 3),
+('Artificial Intelligence & Data Science', 5, 'FRIDAY', 2, '10:00:00', '10:45:00', 'COMM', 'Communication Training', 'Language Lab', 3),
+('Artificial Intelligence & Data Science', 5, 'FRIDAY', 3, '11:00:00', '11:45:00', '23ADT501', 'Deep Learning', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'FRIDAY', 4, '11:45:00', '12:30:00', '23CST504', 'Distributed Computing', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'FRIDAY', 5, '13:20:00', '14:05:00', '23ADT502', 'Big Data Analytics Lab', 'Big Data Lab', 3),
+('Artificial Intelligence & Data Science', 5, 'FRIDAY', 6, '14:05:00', '14:50:00', '23ADT502', 'Big Data Analytics Lab', 'Big Data Lab', 3),
+('Artificial Intelligence & Data Science', 5, 'FRIDAY', 7, '15:05:00', '15:50:00', '23CSE005', 'Business Analytics', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'FRIDAY', 8, '15:50:00', '16:30:00', '23CBT502', 'Data and Information Security', 'MB III A-202', 2),
+
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 1, '09:15:00', '10:00:00', '23CBT502', 'Data and Information Security', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 2, '10:00:00', '10:45:00', '23ADT502', 'Big Data Analytics', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 3, '11:00:00', '11:45:00', '23CSE011', 'Cloud Service Management', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 4, '11:45:00', '12:30:00', '23CST504', 'Distributed Computing', 'MB III A-202', 2),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 5, '13:20:00', '14:05:00', '23CSE011', 'Cloud Service Management Lab', 'Cloud Computing Lab', 3),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 6, '14:05:00', '14:50:00', '23CSE011', 'Cloud Service Management Lab', 'Cloud Computing Lab', 3),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 7, '15:05:00', '15:50:00', '23CSE005', 'Business Analytics', 'MB III A-202', 3),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 8, '15:50:00', '16:30:00', '23ADT502', 'Big Data Analytics', 'MB III A-202', 3);
 
 -- Attendance Seed Data (For Student Alex Morgan - id: 4)
 INSERT INTO attendance (student_id, subject_code, subject_name, attendance_date, status, marked_by, remarks) VALUES
