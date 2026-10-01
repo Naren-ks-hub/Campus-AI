@@ -135,15 +135,30 @@ window.openEditProfileModal = function() {
     currentProfileAvatarBase64 = profile.avatar;
   }
 
-  document.getElementById('edit-profile-modal')?.classList.add('active');
+  const modal = document.getElementById('edit-profile-modal');
+  if (modal) {
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+  }
 };
 
 /**
- * Closes the Edit Profile Modal
+ * Closes the Edit Profile Modal immediately
  */
 window.closeEditProfileModal = function() {
-  document.getElementById('edit-profile-modal')?.classList.remove('active');
+  const modal = document.getElementById('edit-profile-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
 };
+
+// Global escape key listener to close modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeEditProfileModal();
+  }
+});
 
 /**
  * Handles profile photo upload via FileReader to base64
