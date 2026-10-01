@@ -892,9 +892,6 @@ function renderDaySchedule(dayKey) {
 }
 
 async function loadTimetable() {
-  renderScheduleDayTabs();
-  renderDaySchedule(currentSelectedScheduleDay);
-
   const schedule = OFFICIAL_AIDS_TIMETABLE;
   const container = document.getElementById('timetable-container');
   if (!container || !schedule) return;
