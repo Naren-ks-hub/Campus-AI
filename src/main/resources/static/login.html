@@ -142,7 +142,7 @@
 
   <!-- 1. Google Account Selector / Real Google Identity Modal -->
   <div class="modal-backdrop" id="google-account-modal">
-    <div class="modal-box" style="max-width: 440px; padding: 0;">
+    <div class="modal-box" style="max-width: 460px; padding: 0;">
       <div class="modal-header" style="border-bottom: 1px solid var(--border-glass); padding: 18px 22px;">
         <div style="display: flex; align-items: center; gap: 10px;">
           <svg width="22" height="22" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -153,31 +153,52 @@
           </svg>
           <div>
             <h3 style="font-size: 1.15rem; margin: 0;">Sign in with Google</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Sign in using your device Google Account</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Authenticate with your Google Account</p>
           </div>
         </div>
         <button class="chat-btn-icon" onclick="closeGoogleAccountModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <div class="modal-body" style="padding: 24px 22px; text-align: center;">
-        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">
-          Select your verified Google account from your browser or device to authenticate into CampusAI:
-        </p>
+      <div class="modal-body" style="padding: 22px 22px;">
+        <!-- Container when live Google Client ID is configured -->
+        <div id="google-live-auth-section" style="display: none; text-align: center;">
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 18px;">
+            Select your Google account to instantly sign in to CampusAI:
+          </p>
+          <div id="g_id_signin_modal_container" style="display: flex; justify-content: center; min-height: 46px; margin-bottom: 16px;"></div>
+        </div>
 
-        <!-- Official Google Sign In Button Container -->
-        <div id="g_id_signin_modal_container" style="display: flex; justify-content: center; min-height: 46px; margin-bottom: 20px;"></div>
-
-        <!-- Custom / Direct Email Input Option -->
-        <div style="margin-top: 14px; padding-top: 18px; border-top: 1px solid var(--border-glass); text-align: left;">
-          <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">
-            <i class="fa-regular fa-envelope"></i> Or sign in with another email address:
+        <!-- Direct Email Sign In / Fallback Section -->
+        <div id="google-direct-auth-section">
+          <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.88rem; color: var(--primary-light);">
+              <i class="fa-solid fa-envelope-circle-check"></i> Instant Google Account Sign In
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 0 0; line-height: 1.4;">
+              Enter your Google or college email to log in directly:
+            </p>
           </div>
-          <div style="display: flex; gap: 8px;">
-            <input type="email" id="custom-google-email" class="form-control" placeholder="Enter email (e.g. name@gmail.com)" style="flex: 1; font-size: 0.88rem; padding: 9px 12px;">
-            <button type="button" class="btn btn-primary" onclick="submitCustomEmailAccount()" style="padding: 9px 16px; font-size: 0.88rem; white-space: nowrap;">
-              Continue
+
+          <form onsubmit="event.preventDefault(); submitCustomEmailAccount();">
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label" for="custom-google-email"><i class="fa-regular fa-envelope"></i> Google Email ID</label>
+              <input type="email" id="custom-google-email" class="form-control" placeholder="e.g. narenks0310@gmail.com" required style="font-size: 0.92rem; padding: 10px 14px;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label" for="custom-google-name"><i class="fa-regular fa-user"></i> Full Name (Optional)</label>
+              <input type="text" id="custom-google-name" class="form-control" placeholder="e.g. Naren K S" style="font-size: 0.92rem; padding: 10px 14px;">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px; font-weight: 600;">
+              <i class="fa-solid fa-right-to-bracket"></i> Continue to Dashboard
             </button>
-          </div>
+          </form>
+        </div>
+
+        <!-- Optional Client ID setup note -->
+        <div id="google-client-id-status" style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-glass); font-size: 0.78rem; color: var(--text-muted); text-align: center;">
+          <span id="google-status-text"><i class="fa-solid fa-circle-info"></i> Google OAuth ready for custom Client ID</span>
         </div>
       </div>
     </div>
@@ -383,10 +404,39 @@
       }
     });
 
-    // Google Identity Services (GIS) Configuration
-    const GOOGLE_CLIENT_ID = window.CAMPUS_GOOGLE_CLIENT_ID || '1048293847291-campusai.apps.googleusercontent.com';
+    /**
+     * =========================================================================
+     * 1. GOOGLE OAUTH / GOOGLE IDENTITY SERVICES CONFIGURATION
+     * =========================================================================
+     * To enable live "Sign in with Google" / One Tap popup:
+     * 1. Go to Google Cloud Console: https://console.cloud.google.com/apis/credentials
+     * 2. Create an "OAuth 2.0 Client ID" with Application Type: "Web application"
+     * 3. Add the following "Authorized JavaScript origins":
+     *      - http://localhost:5500
+     *      - http://127.0.0.1:5500
+     *      - http://localhost:8080
+     *      - https://campus-ai-wine.vercel.app
+     * 4. Paste your Client ID below:
+     */
+    const GOOGLE_CLIENT_ID = window.CAMPUS_GOOGLE_CLIENT_ID || "REPLACE_WITH_REAL_CLIENT_ID.apps.googleusercontent.com";
 
-    // Helper to decode Google JWT token securely
+    /**
+     * 2. DEFENSIVE CHECK: Verify if a real Google Client ID is configured
+     */
+    function isGoogleClientIdConfigured() {
+      return (
+        typeof GOOGLE_CLIENT_ID === 'string' &&
+        GOOGLE_CLIENT_ID.trim() !== '' &&
+        !GOOGLE_CLIENT_ID.includes('REPLACE_WITH') &&
+        !GOOGLE_CLIENT_ID.includes('YOUR_CLIENT_ID') &&
+        !GOOGLE_CLIENT_ID.includes('campusai') &&
+        GOOGLE_CLIENT_ID.endsWith('.apps.googleusercontent.com')
+      );
+    }
+
+    /**
+     * 3. Helper to decode Google JWT token securely
+     */
     function parseJwt(token) {
       try {
         const base64Url = token.split('.')[1];
@@ -401,7 +451,9 @@
       }
     }
 
-    // Official Google OAuth callback handler
+    /**
+     * 4. Official Google OAuth callback handler
+     */
     window.handleGoogleCredentialResponse = function(response) {
       if (!response || !response.credential) {
         showToast('Google authentication failed. Please try again.', 'error');
@@ -429,7 +481,30 @@
       selectGoogleAccount(fullName, email, avatar, userRole);
     };
 
+    /**
+     * 5. Initialize Google Identity Services if valid Client ID is present
+     */
     function initGoogleIdentityServices() {
+      const liveAuthSection = document.getElementById('google-live-auth-section');
+      const directAuthSection = document.getElementById('google-direct-auth-section');
+      const statusText = document.getElementById('google-status-text');
+
+      if (!isGoogleClientIdConfigured()) {
+        // Defensive check: Do not invoke broken GIS prompt to prevent Error 401
+        console.info(
+          '%c[CampusAI Auth Notice]%c Google Client ID is not configured yet. Using direct Google email sign-in fallback.\nTo enable live Google OAuth popup, set a valid Client ID from https://console.cloud.google.com/apis/credentials with authorized origin: ' + window.location.origin,
+          'color: #6366f1; font-weight: bold;',
+          'color: inherit;'
+        );
+        if (liveAuthSection) liveAuthSection.style.display = 'none';
+        if (directAuthSection) directAuthSection.style.display = 'block';
+        if (statusText) {
+          statusText.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i> Ready for instant sign in with your Google email.';
+        }
+        return;
+      }
+
+      // Valid Client ID present -> Init Google GSI
       if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
         try {
           google.accounts.id.initialize({
@@ -437,6 +512,9 @@
             callback: window.handleGoogleCredentialResponse,
             auto_select: true
           });
+
+          if (liveAuthSection) liveAuthSection.style.display = 'block';
+          if (directAuthSection) directAuthSection.style.display = 'block';
 
           const modalContainer = document.getElementById('g_id_signin_modal_container');
           if (modalContainer) {
@@ -450,6 +528,10 @@
               width: 320
             });
           }
+
+          if (statusText) {
+            statusText.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i> Connected to Google Identity Services (' + GOOGLE_CLIENT_ID.substring(0, 16) + '...)';
+          }
         } catch (err) {
           console.warn('Google Identity initialization notice:', err);
         }
@@ -458,13 +540,13 @@
 
     // Initialize GIS on page load
     window.addEventListener('load', () => {
-      setTimeout(initGoogleIdentityServices, 500);
+      setTimeout(initGoogleIdentityServices, 400);
     });
 
-    // Google Login button -> Open Google Account Selector Modal & trigger GIS prompt
+    // Google Login button -> Open Modal & trigger prompt if configured
     document.getElementById('google-login-btn').addEventListener('click', () => {
       openGoogleAccountModal();
-      if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      if (isGoogleClientIdConfigured() && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
         try {
           google.accounts.id.prompt();
         } catch (e) {
@@ -496,7 +578,6 @@
       };
 
       if (targetRole === 'STUDENT') {
-        // Open Student Info Prompt
         openStudentInfoModal(pendingAuthUser);
       } else if (targetRole === 'FACULTY') {
         pendingAuthUser.department = 'Computer Science & Engineering';
@@ -510,12 +591,14 @@
     }
 
     function submitCustomEmailAccount() {
-      const email = document.getElementById('custom-google-email').value.trim();
+      const email = (document.getElementById('custom-google-email')?.value || '').trim();
+      const customName = (document.getElementById('custom-google-name')?.value || '').trim();
+
       if (!email || !email.includes('@')) {
         showToast('Please enter a valid email address.', 'error');
         return;
       }
-      const inferredName = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      const inferredName = customName || email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       selectGoogleAccount(inferredName, email, 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120');
     }
 
