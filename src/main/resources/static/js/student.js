@@ -300,70 +300,601 @@ async function loadDashboardOverview() {
   }
 }
 
-// Official VSBEC AI&DS 5th Semester Time Table Data
-const OFFICIAL_AIDS_TIMETABLE = [
-  // Monday
-  { dayOfWeek: 'MONDAY', periodNumber: 1, code: 'AP', name: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'MB III A-202' },
-  { dayOfWeek: 'MONDAY', periodNumber: 2, code: 'AP', name: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'MB III A-202' },
-  { dayOfWeek: 'MONDAY', periodNumber: 3, code: 'AP', name: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'MB III A-202' },
-  { dayOfWeek: 'MONDAY', periodNumber: 4, code: 'AP', name: 'Aptitude', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'MB III A-202' },
-  { dayOfWeek: 'MONDAY', periodNumber: 5, code: 'DL LAB', name: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', type: 'lab', room: 'AI Research Lab' },
-  { dayOfWeek: 'MONDAY', periodNumber: 6, code: 'DL LAB', name: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', type: 'lab', room: 'AI Research Lab' },
-  { dayOfWeek: 'MONDAY', periodNumber: 7, code: 'DL LAB', name: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', type: 'lab', room: 'AI Research Lab' },
-  { dayOfWeek: 'MONDAY', periodNumber: 8, code: 'DL LAB', name: 'Deep Learning Lab', faculty: 'Dr. R. Murugesan [RM]', type: 'lab', room: 'AI Research Lab' },
+// Official Detailed Day-by-Day Schedule for Card View
+const DETAILED_DAY_SCHEDULES = {
+  MON: [
+    {
+      periodLabel: 'Period I',
+      code: 'AP',
+      codeColor: 'sched-code-pink',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Live Now',
+      statusClass: 'sched-status-live',
+      title: 'Quantitative Aptitude & Reasoning',
+      faculty: 'Mr. C. Kavin Prakash [CK]',
+      time: '09:15 AM - 10:00 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period II',
+      code: 'AP',
+      codeColor: 'sched-code-pink',
+      accentColor: 'schedule-card-accent-pink',
+      status: 'Upcoming',
+      statusClass: 'sched-status-upcoming',
+      title: 'Logical Reasoning & Speed Math',
+      faculty: 'Mr. C. Kavin Prakash [CK]',
+      time: '10:00 AM - 10:45 AM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 1 • 10:45 AM - 11:00 AM (15 mins)' }
+    },
+    {
+      periodLabel: 'Period III',
+      code: 'DL',
+      codeColor: 'sched-code-purple',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Deep Learning Neural Architecture',
+      faculty: 'Dr. R. Murugesan [RM]',
+      time: '11:00 AM - 11:45 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period IV',
+      code: 'DIS',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Data and Information Security',
+      faculty: 'Mrs. M. Sivagami [MS]',
+      time: '11:45 AM - 12:30 PM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'lunch', text: '🍴 Lunch & Mentoring • 12:30 PM - 01:20 PM (50 mins)' }
+    },
+    {
+      periodLabel: 'Periods V - VI',
+      code: 'DL LAB',
+      codeColor: 'sched-code-cyan',
+      accentColor: 'schedule-card-accent-cyan',
+      status: 'Practical',
+      statusClass: 'sched-status-practical',
+      title: 'Deep Learning Lab (PyTorch & CUDA)',
+      faculty: 'Dr. R. Murugesan [RM]',
+      time: '01:20 PM - 02:50 PM',
+      room: 'AI Research Lab',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 2 • 02:50 PM - 03:05 PM (15 mins)' }
+    },
+    {
+      periodLabel: 'Periods VII - VIII',
+      code: 'DL LAB',
+      codeColor: 'sched-code-cyan',
+      accentColor: 'schedule-card-accent-cyan',
+      status: 'Practical',
+      statusClass: 'sched-status-practical',
+      title: 'Deep Learning Model Optimization & Deploy',
+      faculty: 'Dr. R. Murugesan [RM]',
+      time: '03:05 PM - 04:30 PM',
+      room: 'AI Research Lab'
+    }
+  ],
 
-  // Tuesday
-  { dayOfWeek: 'TUESDAY', periodNumber: 1, code: 'BA', name: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'TUESDAY', periodNumber: 2, code: 'DIS', name: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'TUESDAY', periodNumber: 3, code: 'CSM', name: 'Cloud Service Mgmt', faculty: 'Dr. K. Manivannan [KM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'TUESDAY', periodNumber: 4, code: 'DL', name: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'TUESDAY', periodNumber: 5, code: 'WD', name: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'Web Dev Lab' },
-  { dayOfWeek: 'TUESDAY', periodNumber: 6, code: 'WD', name: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'Web Dev Lab' },
-  { dayOfWeek: 'TUESDAY', periodNumber: 7, code: 'WD', name: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'Web Dev Lab' },
-  { dayOfWeek: 'TUESDAY', periodNumber: 8, code: 'WD', name: 'Web Development', faculty: 'Mr. C. Kavin Prakash [CK]', type: 'training', room: 'Web Dev Lab' },
+  TUE: [
+    {
+      periodLabel: 'Period I',
+      code: 'BA',
+      codeColor: 'sched-code-amber',
+      accentColor: 'schedule-card-accent-amber',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Business Analytics & Decision Science',
+      faculty: 'Mr. M. Ramesh [MR]',
+      time: '09:15 AM - 10:00 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period II',
+      code: 'DIS',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Data and Information Security',
+      faculty: 'Mrs. M. Sivagami [MS]',
+      time: '10:00 AM - 10:45 AM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 1 • 10:45 AM - 11:00 AM (15 mins)' }
+    },
+    {
+      periodLabel: 'Period III',
+      code: 'CSM',
+      codeColor: 'sched-code-purple',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Cloud Service Management',
+      faculty: 'Dr. K. Manivannan [KM]',
+      time: '11:00 AM - 11:45 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period IV',
+      code: 'DL',
+      codeColor: 'sched-code-purple',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Deep Learning Neural Architecture',
+      faculty: 'Dr. R. Murugesan [RM]',
+      time: '11:45 AM - 12:30 PM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'lunch', text: '🍴 Lunch & Mentoring • 12:30 PM - 01:20 PM (50 mins)' }
+    },
+    {
+      periodLabel: 'Periods V - VI',
+      code: 'WD',
+      codeColor: 'sched-code-pink',
+      accentColor: 'schedule-card-accent-pink',
+      status: 'Training',
+      statusClass: 'sched-status-training',
+      title: 'Full Stack Web Development Lab',
+      faculty: 'Mr. C. Kavin Prakash [CK]',
+      time: '01:20 PM - 02:50 PM',
+      room: 'Web Dev Lab',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 2 • 02:50 PM - 03:05 PM (15 mins)' }
+    },
+    {
+      periodLabel: 'Periods VII - VIII',
+      code: 'WD',
+      codeColor: 'sched-code-pink',
+      accentColor: 'schedule-card-accent-pink',
+      status: 'Training',
+      statusClass: 'sched-status-training',
+      title: 'Web Application Project Workshop',
+      faculty: 'Mr. C. Kavin Prakash [CK]',
+      time: '03:05 PM - 04:30 PM',
+      room: 'Web Dev Lab'
+    }
+  ],
 
-  // Wednesday
-  { dayOfWeek: 'WEDNESDAY', periodNumber: 1, code: 'DIS', name: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'WEDNESDAY', periodNumber: 2, code: 'DL', name: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'WEDNESDAY', periodNumber: 3, code: 'COMM', name: 'Communication Training', faculty: 'Ms. S. Muthuchelvan [RMN]', type: 'training', room: 'Language Lab' },
-  { dayOfWeek: 'WEDNESDAY', periodNumber: 4, code: 'COMM', name: 'Communication Training', faculty: 'Ms. S. Muthuchelvan [RMN]', type: 'training', room: 'Language Lab' },
-  { dayOfWeek: 'WEDNESDAY', periodNumber: 5, code: 'CSM', name: 'Cloud Service Mgmt', faculty: 'Dr. K. Manivannan [KM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'WEDNESDAY', periodNumber: 6, code: 'DC', name: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'WEDNESDAY', periodNumber: 7, code: 'BA LAB', name: 'Business Analytics Lab', faculty: 'Mr. M. Ramesh [MR]', type: 'lab', room: 'Analytics Lab' },
-  { dayOfWeek: 'WEDNESDAY', periodNumber: 8, code: 'BA LAB', name: 'Business Analytics Lab', faculty: 'Mr. M. Ramesh [MR]', type: 'lab', room: 'Analytics Lab' },
+  WED: [
+    {
+      periodLabel: 'Period I',
+      code: 'DIS',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Cryptography & Network Security',
+      faculty: 'Mrs. M. Sivagami [MS]',
+      time: '09:15 AM - 10:00 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period II',
+      code: 'DL',
+      codeColor: 'sched-code-purple',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Convolutional & Recurrent Networks',
+      faculty: 'Dr. R. Murugesan [RM]',
+      time: '10:00 AM - 10:45 AM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 1 • 10:45 AM - 11:00 AM (15 mins)' }
+    },
+    {
+      periodLabel: 'Periods III - IV',
+      code: 'COMM',
+      codeColor: 'sched-code-amber',
+      accentColor: 'schedule-card-accent-amber',
+      status: 'Training',
+      statusClass: 'sched-status-training',
+      title: 'Advanced Communication & Soft Skills',
+      faculty: 'Ms. S. Muthuchelvan [RMN]',
+      time: '11:00 AM - 12:30 PM',
+      room: 'Language Lab',
+      afterBreak: { type: 'lunch', text: '🍴 Lunch & Mentoring • 12:30 PM - 01:20 PM (Dr. R. Murugesan)' }
+    },
+    {
+      periodLabel: 'Period V',
+      code: 'CSM',
+      codeColor: 'sched-code-purple',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Cloud Virtualization & Containers',
+      faculty: 'Dr. K. Manivannan [KM]',
+      time: '01:20 PM - 02:05 PM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period VI',
+      code: 'DC',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Distributed Computing Architecture',
+      faculty: 'Ms. S. Muthulakshmi [SM]',
+      time: '02:05 PM - 02:50 PM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 2 • 02:50 PM - 03:05 PM (15 mins)' }
+    },
+    {
+      periodLabel: 'Periods VII - VIII',
+      code: 'BA LAB',
+      codeColor: 'sched-code-cyan',
+      accentColor: 'schedule-card-accent-cyan',
+      status: 'Practical',
+      statusClass: 'sched-status-practical',
+      title: 'Business Analytics & PowerBI Lab',
+      faculty: 'Mr. M. Ramesh [MR]',
+      time: '03:05 PM - 04:30 PM',
+      room: 'Analytics Lab'
+    }
+  ],
 
-  // Thursday
-  { dayOfWeek: 'THURSDAY', periodNumber: 1, code: 'DL', name: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'THURSDAY', periodNumber: 2, code: 'DC', name: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'THURSDAY', periodNumber: 3, code: 'BA', name: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'THURSDAY', periodNumber: 4, code: 'BDA', name: 'Big Data Analytics', faculty: 'Mr. D. Baskar [DB]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'THURSDAY', periodNumber: 5, code: 'ADS', name: 'Adv. Data Structure & Algo', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'THURSDAY', periodNumber: 6, code: 'ADS', name: 'Adv. Data Structure & Algo', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'THURSDAY', periodNumber: 7, code: 'ADS', name: 'Adv. Data Structure & Algo', faculty: 'Mr. A. Bharathidhasan [AB]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'THURSDAY', periodNumber: 8, code: 'ADS', name: 'Adv. Data Structure & Algo', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
+  THU: [
+    {
+      periodLabel: 'Period I',
+      code: 'DL',
+      codeColor: 'sched-code-purple',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Transformers & Natural Language Processing',
+      faculty: 'Dr. R. Murugesan [RM]',
+      time: '09:15 AM - 10:00 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period II',
+      code: 'DC',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Consensus & Fault Tolerance Systems',
+      faculty: 'Ms. S. Muthulakshmi [SM]',
+      time: '10:00 AM - 10:45 AM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 1 • 10:45 AM - 11:00 AM (15 mins)' }
+    },
+    {
+      periodLabel: 'Period III',
+      code: 'BA',
+      codeColor: 'sched-code-amber',
+      accentColor: 'schedule-card-accent-amber',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Predictive Modeling & Decision Theory',
+      faculty: 'Mr. M. Ramesh [MR]',
+      time: '11:00 AM - 11:45 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period IV',
+      code: 'BDA',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Big Data Analytics & Ecosystem',
+      faculty: 'Mr. D. Baskar [DB]',
+      time: '11:45 AM - 12:30 PM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'lunch', text: '🍴 Lunch & Mentoring • 12:30 PM - 01:20 PM (50 mins)' }
+    },
+    {
+      periodLabel: 'Periods V - VI',
+      code: 'ADS',
+      codeColor: 'sched-code-pink',
+      accentColor: 'schedule-card-accent-pink',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Advanced Data Structures & Algorithms',
+      faculty: 'Ms. S. Muthulakshmi [SM]',
+      time: '01:20 PM - 02:50 PM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 2 • 02:50 PM - 03:05 PM (15 mins)' }
+    },
+    {
+      periodLabel: 'Periods VII - VIII',
+      code: 'ADS',
+      codeColor: 'sched-code-pink',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Algorithm Optimization & Dynamic Programming',
+      faculty: 'Dr. R. Murugesan [RM]',
+      time: '03:05 PM - 04:30 PM',
+      room: 'MB III A-202'
+    }
+  ],
 
-  // Friday
-  { dayOfWeek: 'FRIDAY', periodNumber: 1, code: 'COMM', name: 'Communication Training', faculty: 'Mr. D. Baskar [DB]', type: 'training', room: 'Language Lab' },
-  { dayOfWeek: 'FRIDAY', periodNumber: 2, code: 'COMM', name: 'Communication Training', faculty: 'Mr. D. Baskar [DB]', type: 'training', room: 'Language Lab' },
-  { dayOfWeek: 'FRIDAY', periodNumber: 3, code: 'DL', name: 'Deep Learning', faculty: 'Dr. R. Murugesan [RM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'FRIDAY', periodNumber: 4, code: 'DC', name: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'FRIDAY', periodNumber: 5, code: 'BDA LAB', name: 'Big Data Analytics Lab', faculty: 'Mr. D. Baskar [DB]', type: 'lab', room: 'Big Data Lab' },
-  { dayOfWeek: 'FRIDAY', periodNumber: 6, code: 'BDA LAB', name: 'Big Data Analytics Lab', faculty: 'Mr. D. Baskar [DB]', type: 'lab', room: 'Big Data Lab' },
-  { dayOfWeek: 'FRIDAY', periodNumber: 7, code: 'BA', name: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'FRIDAY', periodNumber: 8, code: 'DIS', name: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', type: 'theory', room: 'MB III A-202' },
+  FRI: [
+    {
+      periodLabel: 'Periods I - II',
+      code: 'COMM',
+      codeColor: 'sched-code-amber',
+      accentColor: 'schedule-card-accent-amber',
+      status: 'Training',
+      statusClass: 'sched-status-training',
+      title: 'Corporate Etiquette & Placement Training',
+      faculty: 'Mr. D. Baskar [DB]',
+      time: '09:15 AM - 10:45 AM',
+      room: 'Language Lab',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 1 • 10:45 AM - 11:00 AM (15 mins)' }
+    },
+    {
+      periodLabel: 'Period III',
+      code: 'DL',
+      codeColor: 'sched-code-purple',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Reinforcement Learning & Generative AI',
+      faculty: 'Dr. R. Murugesan [RM]',
+      time: '11:00 AM - 11:45 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period IV',
+      code: 'DC',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Microservices & Distributed Storage',
+      faculty: 'Ms. S. Muthulakshmi [SM]',
+      time: '11:45 AM - 12:30 PM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'lunch', text: '🍴 Lunch & Mentoring • 12:30 PM - 01:20 PM (50 mins)' }
+    },
+    {
+      periodLabel: 'Periods V - VI',
+      code: 'BDA LAB',
+      codeColor: 'sched-code-cyan',
+      accentColor: 'schedule-card-accent-cyan',
+      status: 'Practical',
+      statusClass: 'sched-status-practical',
+      title: 'Apache Spark & Hadoop Cluster Lab',
+      faculty: 'Mr. D. Baskar [DB]',
+      time: '01:20 PM - 02:50 PM',
+      room: 'Big Data Lab',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 2 • 02:50 PM - 03:05 PM (15 mins)' }
+    },
+    {
+      periodLabel: 'Period VII',
+      code: 'BA',
+      codeColor: 'sched-code-amber',
+      accentColor: 'schedule-card-accent-amber',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Optimization & Decision Trees',
+      faculty: 'Mr. M. Ramesh [MR]',
+      time: '03:05 PM - 03:50 PM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period VIII',
+      code: 'DIS',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Cyber Forensics & Threat Defense',
+      faculty: 'Mrs. M. Sivagami [MS]',
+      time: '03:50 PM - 04:30 PM',
+      room: 'MB III A-202'
+    }
+  ],
 
-  // Saturday
-  { dayOfWeek: 'SATURDAY', periodNumber: 1, code: 'DIS', name: 'Data & Info Security', faculty: 'Mrs. M. Sivagami [MS]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'SATURDAY', periodNumber: 2, code: 'BDA', name: 'Big Data Analytics', faculty: 'Mr. D. Baskar [DB]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'SATURDAY', periodNumber: 3, code: 'CSM', name: 'Cloud Service Mgmt', faculty: 'Dr. K. Manivannan [KM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'SATURDAY', periodNumber: 4, code: 'DC', name: 'Distributed Computing', faculty: 'Ms. S. Muthulakshmi [SM]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'SATURDAY', periodNumber: 5, code: 'CSM LAB', name: 'Cloud Service Mgmt Lab', faculty: 'Mr. A. Bharathidhasan [AB]', type: 'lab', room: 'Cloud Computing Lab' },
-  { dayOfWeek: 'SATURDAY', periodNumber: 6, code: 'CSM LAB', name: 'Cloud Service Mgmt Lab', faculty: 'Mr. A. Bharathidhasan [AB]', type: 'lab', room: 'Cloud Computing Lab' },
-  { dayOfWeek: 'SATURDAY', periodNumber: 7, code: 'BA', name: 'Business Analytics', faculty: 'Mr. M. Ramesh [MR]', type: 'theory', room: 'MB III A-202' },
-  { dayOfWeek: 'SATURDAY', periodNumber: 8, code: 'BDA', name: 'Big Data Analytics', faculty: 'Mr. D. Baskar [DB]', type: 'theory', room: 'MB III A-202' }
-];
+  SAT: [
+    {
+      periodLabel: 'Period I',
+      code: 'DIS',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Security Protocols & Web Defense',
+      faculty: 'Mrs. M. Sivagami [MS]',
+      time: '09:15 AM - 10:00 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period II',
+      code: 'BDA',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'Stream Processing with Apache Kafka',
+      faculty: 'Mr. D. Baskar [DB]',
+      time: '10:00 AM - 10:45 AM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 1 • 10:45 AM - 11:00 AM (15 mins)' }
+    },
+    {
+      periodLabel: 'Period III',
+      code: 'CSM',
+      codeColor: 'sched-code-purple',
+      accentColor: 'schedule-card-accent-purple',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'AWS Cloud Infrastructure & Serverless',
+      faculty: 'Dr. K. Manivannan [KM]',
+      time: '11:00 AM - 11:45 AM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period IV',
+      code: 'DC',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Peer-to-Peer Networks & Blockchain',
+      faculty: 'Ms. S. Muthulakshmi [SM]',
+      time: '11:45 AM - 12:30 PM',
+      room: 'MB III A-202',
+      afterBreak: { type: 'lunch', text: '🍴 Lunch & Mentoring • 12:30 PM - 01:20 PM (50 mins)' }
+    },
+    {
+      periodLabel: 'Periods V - VI',
+      code: 'CSM LAB',
+      codeColor: 'sched-code-cyan',
+      accentColor: 'schedule-card-accent-cyan',
+      status: 'Practical',
+      statusClass: 'sched-status-practical',
+      title: 'AWS & Docker Cloud Deployment Lab',
+      faculty: 'Mr. A. Bharathidhasan [AB]',
+      time: '01:20 PM - 02:50 PM',
+      room: 'Cloud Computing Lab',
+      afterBreak: { type: 'tea', text: '☕ Tea Break 2 • 02:50 PM - 03:05 PM (15 mins)' }
+    },
+    {
+      periodLabel: 'Period VII',
+      code: 'BA',
+      codeColor: 'sched-code-amber',
+      accentColor: 'schedule-card-accent-amber',
+      status: 'Lecture',
+      statusClass: 'sched-status-lecture',
+      title: 'Executive Case Studies & Data Storytelling',
+      faculty: 'Mr. M. Ramesh [MR]',
+      time: '03:05 PM - 03:50 PM',
+      room: 'MB III A-202'
+    },
+    {
+      periodLabel: 'Period VIII',
+      code: 'BDA',
+      codeColor: 'sched-code-blue',
+      accentColor: 'schedule-card-accent-blue',
+      status: 'Core Course',
+      statusClass: 'sched-status-core',
+      title: 'NoSQL Databases (MongoDB & Cassandra)',
+      faculty: 'Mr. D. Baskar [DB]',
+      time: '03:50 PM - 04:30 PM',
+      room: 'MB III A-202'
+    }
+  ]
+};
+
+let currentSelectedScheduleDay = 'MON';
+
+window.setTimetableView = function(view) {
+  const cardsView = document.getElementById('day-schedule-view');
+  const matrixView = document.getElementById('matrix-schedule-view');
+  const btnCards = document.getElementById('btn-view-cards');
+  const btnMatrix = document.getElementById('btn-view-matrix');
+
+  if (view === 'cards') {
+    if (cardsView) cardsView.style.display = 'block';
+    if (matrixView) matrixView.style.display = 'none';
+    if (btnCards) {
+      btnCards.className = 'btn btn-sm btn-primary';
+      btnCards.style.background = '';
+    }
+    if (btnMatrix) {
+      btnMatrix.className = 'btn btn-sm btn-secondary';
+      btnMatrix.style.background = 'transparent';
+    }
+  } else {
+    if (cardsView) cardsView.style.display = 'none';
+    if (matrixView) matrixView.style.display = 'block';
+    if (btnMatrix) {
+      btnMatrix.className = 'btn btn-sm btn-primary';
+      btnMatrix.style.background = '';
+    }
+    if (btnCards) {
+      btnCards.className = 'btn btn-sm btn-secondary';
+      btnCards.style.background = 'transparent';
+    }
+  }
+};
+
+function renderScheduleDayTabs() {
+  const tabsContainer = document.getElementById('schedule-day-tabs');
+  if (!tabsContainer) return;
+
+  const daysConfig = [
+    { key: 'MON', name: 'MON', num: '05' },
+    { key: 'TUE', name: 'TUE', num: '06' },
+    { key: 'WED', name: 'WED', num: '07' },
+    { key: 'THU', name: 'THU', num: '08' },
+    { key: 'FRI', name: 'FRI', num: '09' },
+    { key: 'SAT', name: 'SAT', num: '10' }
+  ];
+
+  tabsContainer.innerHTML = daysConfig.map(d => `
+    <div class="schedule-day-pill ${d.key === currentSelectedScheduleDay ? 'active' : ''}" onclick="selectScheduleDay('${d.key}')">
+      <span class="day-name">${d.name}</span>
+      <span class="day-num">${d.num}</span>
+    </div>
+  `).join('');
+}
+
+window.selectScheduleDay = function(dayKey) {
+  currentSelectedScheduleDay = dayKey;
+  renderScheduleDayTabs();
+  renderDaySchedule(dayKey);
+};
+
+function renderDaySchedule(dayKey) {
+  const listContainer = document.getElementById('schedule-cards-list');
+  if (!listContainer) return;
+
+  const periods = DETAILED_DAY_SCHEDULES[dayKey] || DETAILED_DAY_SCHEDULES['MON'];
+
+  let html = '';
+  periods.forEach(p => {
+    html += `
+      <div class="schedule-card ${p.accentColor || ''}">
+        <div class="schedule-card-top">
+          <div class="schedule-card-left-tag">
+            <span class="sched-code-pill ${p.codeColor || 'sched-code-pink'}">${p.code}</span>
+            <span class="sched-period-text">${p.periodLabel}</span>
+          </div>
+          <span class="sched-status-pill ${p.statusClass || 'sched-status-core'}">
+            ${p.status === 'Live Now' ? '<span class="pulse-dot"></span> ' : ''}${p.status}
+          </span>
+        </div>
+        <h4 class="sched-title">${p.title}</h4>
+        <div class="sched-faculty-row">
+          <i class="fa-solid fa-user"></i> ${p.faculty}
+        </div>
+        <div class="sched-footer-row">
+          <div class="sched-time-box">
+            <i class="fa-regular fa-clock"></i> ${p.time}
+          </div>
+          <div class="sched-room-badge">
+            <i class="fa-solid fa-location-dot"></i> ${p.room}
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Interstitial break banner
+    if (p.afterBreak) {
+      const isLunch = p.afterBreak.type === 'lunch';
+      html += `
+        <div class="schedule-break-card ${isLunch ? 'schedule-break-lunch' : 'schedule-break-tea'}">
+          ${p.afterBreak.text}
+        </div>
+      `;
+    }
+  });
+
+  listContainer.innerHTML = html;
+}
 
 async function loadTimetable() {
+  renderScheduleDayTabs();
+  renderDaySchedule(currentSelectedScheduleDay);
+
   const schedule = OFFICIAL_AIDS_TIMETABLE;
   const container = document.getElementById('timetable-container');
   if (!container || !schedule) return;

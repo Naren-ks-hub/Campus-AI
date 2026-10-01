@@ -198,37 +198,110 @@
 
         <!-- 2. TIMETABLE TAB -->
         <section id="tab-timetable" class="tab-pane">
-          <div class="section-header" style="flex-wrap:wrap; gap:12px;">
+          <!-- Timetable View Switcher & Top Header -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
             <div>
-              <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                <h2 style="margin:0;">Weekly Class Schedule</h2>
-                <span class="badge badge-success" style="font-size:0.75rem;"><i class="fa-solid fa-circle-check"></i> W.E.F. 13.07.2026</span>
-              </div>
-              <p style="color:var(--text-muted); font-size:0.9rem; margin:0;">
-                <strong>Department of Artificial Intelligence and Data Science</strong> • Class: III Year - 'B' / V Semester B.Tech. AI&DS (Room: <strong>MB III A-202</strong>)
+              <h2 style="margin: 0 0 4px 0;">Class Schedule & Timetable</h2>
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">
+                Department of Artificial Intelligence & Data Science • III Year - 'B' / Sem V
               </p>
             </div>
-            <div style="display:flex; gap:8px; align-items:center;">
-              <span class="badge badge-primary"><i class="fa-solid fa-building-columns"></i> V.S.B. Engineering College</span>
-              <span class="badge badge-info"><i class="fa-solid fa-clock"></i> 09:15 AM - 04:30 PM (Mon - Sat)</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <div class="view-switcher" style="display: flex; background: rgba(15, 23, 42, 0.6); padding: 4px; border-radius: 12px; border: 1px solid var(--border-glass);">
+                <button id="btn-view-cards" class="btn btn-sm btn-primary" onclick="setTimetableView('cards')" style="border-radius: 8px;">
+                  <i class="fa-solid fa-calendar-day"></i> Day Schedule
+                </button>
+                <button id="btn-view-matrix" class="btn btn-sm btn-secondary" onclick="setTimetableView('matrix')" style="border-radius: 8px; border:none; background:transparent;">
+                  <i class="fa-solid fa-table-cells"></i> 6-Day Matrix
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Break Times Indicator Bar -->
-          <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; background: rgba(15, 23, 42, 0.5); padding: 10px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass); font-size: 0.82rem; color: var(--text-muted);">
-            <div><i class="fa-solid fa-mug-hot" style="color:var(--warning);"></i> <strong>Tea Break 1:</strong> 10:45 AM - 11:00 AM</div>
-            <div style="color:var(--border-glass);">|</div>
-            <div><i class="fa-solid fa-utensils" style="color:var(--accent);"></i> <strong>Lunch Break:</strong> 12:30 PM - 01:20 PM</div>
-            <div style="color:var(--border-glass);">|</div>
-            <div><i class="fa-solid fa-mug-hot" style="color:var(--warning);"></i> <strong>Tea Break 2:</strong> 02:50 PM - 03:05 PM</div>
-            <div style="color:var(--border-glass);">|</div>
-            <div style="color:var(--primary-light);"><i class="fa-solid fa-user-tie"></i> <strong>Mentoring:</strong> Wed 12:30 - 01:20 PM (Dr. R. Murugesan)</div>
+          <!-- 1. Day Schedule Card Format View (Matching Reference Mobile Design) -->
+          <div id="day-schedule-view" class="schedule-container">
+            <!-- Top App-Style Header Card -->
+            <div class="schedule-top-banner">
+              <div class="schedule-top-info">
+                <div class="schedule-calendar-icon">
+                  <i class="fa-regular fa-calendar-days"></i>
+                </div>
+                <div class="schedule-top-text">
+                  <h3>
+                    Weekly Schedule 
+                    <span class="sched-status-live" style="font-size:0.75rem; padding: 2px 8px; border-radius: 12px;">
+                      <span class="pulse-dot"></span> Live
+                    </span>
+                  </h3>
+                  <p>Sem V • AI&DS (Sec B)</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn-icon" onclick="document.querySelector('[data-tab=announcements]').click()" title="Notifications" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid var(--border-glass); color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                  <i class="fa-regular fa-bell"></i>
+                </button>
+                <button class="btn-icon" onclick="openProfileModal()" title="Profile" style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">
+                  <i class="fa-regular fa-user"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Schedule Title Bar -->
+            <div class="schedule-sub-header">
+              <div class="schedule-sub-title-group">
+                <h3 class="schedule-sub-title">Weekly Schedule</h3>
+                <span class="schedule-wef-pill">W.E.F 13.07</span>
+              </div>
+              <div class="schedule-sem-tag">Semester V (Odd)</div>
+            </div>
+
+            <!-- Horizontal Day Navigation Tabs (MON 05, TUE 06, etc.) -->
+            <div class="schedule-day-nav" id="schedule-day-tabs">
+              <!-- Rendered via JS -->
+            </div>
+
+            <!-- Selected Day Period Cards & Break Banners -->
+            <div class="schedule-cards-list" id="schedule-cards-list">
+              <!-- Rendered dynamically via renderDaySchedule() -->
+            </div>
+
+            <!-- Sem V Repository Banner Card -->
+            <div class="schedule-repo-card">
+              <div class="schedule-repo-info">
+                <div class="schedule-repo-icon">
+                  <i class="fa-solid fa-book-bookmark"></i>
+                </div>
+                <div class="schedule-repo-text">
+                  <h4>Sem V Repository</h4>
+                  <p>14 Courses & Lab Manuals</p>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="document.querySelector('[data-tab=notes]').click()" style="border-radius: 10px; font-weight: 600; padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px;">
+                Open <i class="fa-solid fa-arrow-right" style="font-size: 0.75rem;"></i>
+              </button>
+            </div>
           </div>
 
-          <!-- Timetable 8-Period Matrix -->
-          <div class="timetable-wrapper">
-            <div class="timetable-grid" id="timetable-container"></div>
+          <!-- 2. Full 6-Day Matrix View (Alternative Grid) -->
+          <div id="matrix-schedule-view" style="display: none;">
+            <!-- Break Times Indicator Bar -->
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; background: rgba(15, 23, 42, 0.5); padding: 10px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass); font-size: 0.82rem; color: var(--text-muted);">
+              <div><i class="fa-solid fa-mug-hot" style="color:var(--warning);"></i> <strong>Tea Break 1:</strong> 10:45 AM - 11:00 AM</div>
+              <div style="color:var(--border-glass);">|</div>
+              <div><i class="fa-solid fa-utensils" style="color:var(--accent);"></i> <strong>Lunch Break:</strong> 12:30 PM - 01:20 PM</div>
+              <div style="color:var(--border-glass);">|</div>
+              <div><i class="fa-solid fa-mug-hot" style="color:var(--warning);"></i> <strong>Tea Break 2:</strong> 02:50 PM - 03:05 PM</div>
+              <div style="color:var(--border-glass);">|</div>
+              <div style="color:var(--primary-light);"><i class="fa-solid fa-user-tie"></i> <strong>Mentoring:</strong> Wed 12:30 - 01:20 PM (Dr. R. Murugesan)</div>
+            </div>
+
+            <!-- Timetable 8-Period Matrix -->
+            <div class="timetable-wrapper">
+              <div class="timetable-grid" id="timetable-container"></div>
+            </div>
           </div>
+
+          <!-- Subject and Faculty Details Directory -->
 
           <!-- Subject and Faculty Details Directory -->
           <div class="glass-card" style="padding: 22px; margin-top: 24px;">
