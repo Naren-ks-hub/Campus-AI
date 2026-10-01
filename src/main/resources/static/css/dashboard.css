@@ -110,6 +110,46 @@
   transform: scale(0);
 }
 
+/* File Attachment Dropzone */
+.file-dropzone {
+  border: 2px dashed rgba(99, 102, 241, 0.4);
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: var(--radius-md);
+  padding: 22px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.file-dropzone:hover, .file-dropzone.drag-over {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.08);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+}
+
+.dropzone-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin: 0 auto 10px auto;
+  transition: transform 0.2s ease;
+}
+
+.file-dropzone:hover .dropzone-icon {
+  transform: translateY(-2px) scale(1.05);
+}
+
 .sidebar-footer {
   padding: 18px 16px;
   border-top: 1px solid var(--border-glass);

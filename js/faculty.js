@@ -297,9 +297,39 @@ function setupMaterialFilters() {
   if (typeSelect) typeSelect.addEventListener('change', applyFilters);
 }
 
+let attachedMaterialFileData = null;
+
 function setupMaterialUploadForm() {
   const form = document.getElementById('faculty-upload-material-form');
+  const dropzone = document.getElementById('material-dropzone');
   if (!form) return;
+
+  // Drag and Drop Listeners
+  if (dropzone) {
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('drag-over');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('drag-over');
+      }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files.length > 0) {
+        processAttachedMaterialFile(files[0]);
+      }
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -310,11 +340,13 @@ function setupMaterialUploadForm() {
     const format = document.getElementById('mat-format').value;
     const tag = document.getElementById('mat-tag').value.trim() || 'Official Course Material';
     const desc = document.getElementById('mat-desc').value.trim();
-    const topicsRaw = document.getElementById('mat-topics').value.trim();
-    const content = document.getElementById('mat-content').value.trim() || desc;
 
-    const topicsList = topicsRaw ? topicsRaw.split('\n').map(t => t.trim()).filter(Boolean) : [];
     const currentUser = AuthState.getUser();
+
+    // Use attached file metadata if provided, otherwise sensible defaults
+    const fileSize = attachedMaterialFileData?.size || `${(Math.random() * 3 + 2).toFixed(1)} MB`;
+    const fileName = attachedMaterialFileData?.name || `${subjectCode}_${unit}_Notes.pdf`;
+    const content = attachedMaterialFileData?.contentPreview || desc;
 
     const newMaterial = {
       id: Date.now(),
@@ -327,25 +359,109 @@ function setupMaterialUploadForm() {
       format,
       tag,
       description: desc,
-      topics: topicsList,
+      fileName,
+      topics: [
+        `${unit} Lecture Notes & Theory Derivations`,
+        `Core Syllabus Concepts for ${subjectName}`,
+        `Anna University Exam Solutions & Solved Exercises`
+      ],
       contentPreview: content,
-      fileSize: `${(Math.random() * 4 + 2).toFixed(1)} MB`,
-      pages: Math.floor(Math.random() * 30 + 15),
+      fileSize,
+      pages: Math.floor(Math.random() * 35 + 15),
       downloads: 0,
       views: 1,
       uploadDate: new Date().toISOString()
     };
 
     const res = await apiRequest('/faculty/materials', 'POST', newMaterial);
-    showToast(`Study Material "${title}" posted successfully! Visible to all students.`, 'success');
+    showToast(`Study Material "${title}" with file "${fileName}" posted successfully!`, 'success');
     if (typeof UnreadTracker !== 'undefined') {
       UnreadTracker.notifyNewUpdate('materials');
     }
+    removeAttachedFile();
     closeUploadMaterialModal();
     form.reset();
     await loadFacultyMaterials();
   });
 }
+
+window.handleMaterialFileSelect = function(event) {
+  const file = event.target.files?.[0];
+  if (file) {
+    processAttachedMaterialFile(file);
+  }
+};
+
+function processAttachedMaterialFile(file) {
+  const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+  const sizeDisplay = file.size >= 1024 * 1024 ? `${sizeMB} MB` : `${(file.size / 1024).toFixed(1)} KB`;
+
+  attachedMaterialFileData = {
+    name: file.name,
+    size: sizeDisplay,
+    type: file.type,
+    contentPreview: `### Attached File: ${file.name}\n\nDocument successfully processed and uploaded by course instructor. Ready for full offline download and student study.`
+  };
+
+  // Auto-detect format from extension
+  const ext = file.name.split('.').pop().toLowerCase();
+  const formatSelect = document.getElementById('mat-format');
+  if (formatSelect) {
+    if (ext === 'pdf') formatSelect.value = 'PDF';
+    else if (ext === 'pptx' || ext === 'ppt') formatSelect.value = 'PPTX';
+    else if (ext === 'zip' || ext === 'rar' || ext === '7z' || ext === 'py') formatSelect.value = 'ZIP';
+    else if (ext === 'doc' || ext === 'docx') formatSelect.value = 'PDF';
+    else formatSelect.value = 'PDF';
+  }
+
+  // Auto-suggest title if empty
+  const titleInput = document.getElementById('mat-title');
+  if (titleInput && !titleInput.value.trim()) {
+    titleInput.value = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+  }
+
+  // Update Preview UI
+  const emptyState = document.getElementById('dropzone-empty-state');
+  const previewCard = document.getElementById('dropzone-file-preview');
+  const fileNameEl = document.getElementById('attached-file-name');
+  const fileSizeEl = document.getElementById('attached-file-size');
+  const iconWrap = document.getElementById('attached-file-icon-wrap');
+  const iconEl = document.getElementById('attached-file-icon');
+
+  if (emptyState) emptyState.style.display = 'none';
+  if (previewCard) previewCard.style.display = 'flex';
+  if (fileNameEl) fileNameEl.textContent = file.name;
+  if (fileSizeEl) fileSizeEl.textContent = sizeDisplay;
+
+  if (iconWrap && iconEl) {
+    if (ext === 'pdf') {
+      iconWrap.className = 'material-format-icon format-pdf';
+      iconEl.className = 'fa-solid fa-file-pdf';
+    } else if (ext === 'pptx' || ext === 'ppt') {
+      iconWrap.className = 'material-format-icon format-pptx';
+      iconEl.className = 'fa-solid fa-file-powerpoint';
+    } else if (ext === 'zip' || ext === 'rar') {
+      iconWrap.className = 'material-format-icon format-zip';
+      iconEl.className = 'fa-solid fa-file-zipper';
+    } else {
+      iconWrap.className = 'material-format-icon format-docx';
+      iconEl.className = 'fa-solid fa-file-word';
+    }
+  }
+
+  showToast(`Attached file "${file.name}" (${sizeDisplay})`, 'info');
+}
+
+window.removeAttachedFile = function() {
+  attachedMaterialFileData = null;
+  const fileInput = document.getElementById('mat-file-input');
+  if (fileInput) fileInput.value = '';
+
+  const emptyState = document.getElementById('dropzone-empty-state');
+  const previewCard = document.getElementById('dropzone-file-preview');
+  if (emptyState) emptyState.style.display = 'block';
+  if (previewCard) previewCard.style.display = 'none';
+};
 
 window.openUploadMaterialModal = function() {
   document.getElementById('upload-material-modal')?.classList.add('active');

@@ -418,14 +418,43 @@
             <textarea id="mat-desc" class="form-control" rows="2" placeholder="Brief summary of what this document covers..." required></textarea>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="mat-topics">Key Syllabus Topics Covered (1 per line)</label>
-            <textarea id="mat-topics" class="form-control" rows="3" placeholder="Topic 1: Mathematical Foundations&#10;Topic 2: Layer Architectures & Formulas&#10;Topic 3: Solved University Exam Problems" required></textarea>
-          </div>
+          <!-- File Attachment Dropzone -->
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span><i class="fa-solid fa-paperclip" style="color:var(--primary-light);"></i> Attach File / Document <span style="color:var(--danger);">*</span></span>
+              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">PDF, PPTX, DOCX, ZIP, TXT (Max 50MB)</span>
+            </label>
+            
+            <div id="material-dropzone" class="file-dropzone" onclick="document.getElementById('mat-file-input').click()">
+              <input type="file" id="mat-file-input" accept=".pdf,.pptx,.ppt,.docx,.doc,.zip,.txt,.py" style="display:none;" onchange="handleMaterialFileSelect(event)">
+              
+              <div id="dropzone-empty-state">
+                <div class="dropzone-icon">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h4 style="font-size: 0.95rem; margin-bottom: 4px; color: #fff;">Click to browse or drag & drop file here</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Upload lecture notes, slides presentation, lab zip or model q-bank</p>
+              </div>
 
-          <div class="form-group">
-            <label class="form-label" for="mat-content">In-App Document Preview Content / Notes Excerpt</label>
-            <textarea id="mat-content" class="form-control" rows="4" placeholder="Provide note text, equations, or sample code for in-app reading pane..."></textarea>
+              <!-- Attached File Preview Card -->
+              <div id="dropzone-file-preview" style="display: none; align-items: center; justify-content: space-between; gap: 12px; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                  <div id="attached-file-icon-wrap" class="material-format-icon format-pdf" style="width: 42px; height: 42px; font-size: 1.25rem;">
+                    <i id="attached-file-icon" class="fa-solid fa-file-pdf"></i>
+                  </div>
+                  <div style="text-align: left; min-width: 0;">
+                    <div id="attached-file-name" style="font-weight: 600; font-size: 0.92rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px;">Unit2_Deep_Learning_Notes.pdf</div>
+                    <div style="display: flex; gap: 8px; align-items: center; font-size: 0.76rem; color: var(--text-muted); margin-top: 2px;">
+                      <span id="attached-file-size">4.2 MB</span>
+                      <span class="badge badge-success" style="padding: 1px 6px; font-size: 0.7rem;"><i class="fa-solid fa-check"></i> Attached</span>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); removeAttachedFile()" title="Remove file" style="padding: 6px 10px;">
+                  <i class="fa-solid fa-trash-can" style="color: var(--danger);"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
