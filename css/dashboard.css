@@ -2167,21 +2167,104 @@ body.light-theme .faculty-cell-sec {
 
 .faculty-tt-cell-free {
   background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border: 1.5px dashed rgba(99, 102, 241, 0.25);
   border-radius: var(--radius-sm);
   padding: 10px 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 5px;
   min-height: 86px;
   color: var(--text-muted);
-  font-size: 0.76rem;
-  opacity: 0.6;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.faculty-tt-cell-free:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: var(--primary);
+  border-style: solid;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.2);
+}
+
+.faculty-tt-add-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.14);
+  color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.faculty-tt-cell-free:hover .faculty-tt-add-btn {
+  background: var(--primary);
+  color: #ffffff;
+  transform: scale(1.15) rotate(90deg);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.45);
+}
+
+.faculty-tt-add-text {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.faculty-tt-cell-free:hover .faculty-tt-add-text {
+  color: var(--primary-light);
 }
 
 body.light-theme .faculty-tt-cell-free {
   background: #f8fafc;
-  border-color: #e2e8f0;
-  color: #94a3b8;
+  border-color: #cbd5e1;
 }
+
+body.light-theme .faculty-tt-cell-free:hover {
+  background: #eff6ff;
+  border-color: #6366f1;
+}
+
+body.light-theme .faculty-tt-add-btn {
+  background: #e0e7ff;
+  color: #4f46e5;
+  border-color: #c7d2fe;
+}
+
+.faculty-tt-delete-slot-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.faculty-tt-cell-occupied:hover .faculty-tt-delete-slot-btn {
+  display: flex;
+}
+
+.faculty-tt-delete-slot-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
 

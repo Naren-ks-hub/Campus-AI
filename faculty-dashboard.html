@@ -750,6 +750,104 @@
     </div>
   </div>
 
+  <!-- Add / Customize Class Period Modal -->
+  <div class="modal-backdrop" id="add-period-modal" style="display:none;">
+    <div class="modal-box" style="max-width:520px;">
+      <div class="modal-header">
+        <h3 id="add-period-modal-title"><i class="fa-solid fa-calendar-plus" style="color:var(--primary-light);"></i> Add Class Period</h3>
+        <button class="modal-close" onclick="closeAddPeriodModal()">&times;</button>
+      </div>
+      <form id="add-period-form" onsubmit="handleSaveCustomPeriod(event)">
+        <div class="modal-body" style="padding:20px;">
+          <input type="hidden" id="custom-period-faculty-id">
+          <input type="hidden" id="custom-period-day">
+          <input type="hidden" id="custom-period-num">
+
+          <div style="background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.25); border-radius:8px; padding:10px 14px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span id="custom-period-slot-badge" style="font-weight:700; color:var(--primary-light); font-size:0.88rem;">Monday • Period 1</span>
+              <div id="custom-period-time-label" style="font-size:0.76rem; color:var(--text-muted);">09:15 - 10:00</div>
+            </div>
+            <span class="badge badge-primary" id="custom-period-faculty-badge">Faculty Member</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-subject-select">Subject / Course Name</label>
+            <select id="custom-subject-select" class="form-control" onchange="handleSubjectSelectChange()" required>
+              <option value="">-- Choose Subject or Custom --</option>
+              <option value="23ADT501: Deep Learning [DL]">23ADT501: Deep Learning [DL]</option>
+              <option value="23ADT501: Deep Learning Lab [DL Lab]">23ADT501: Deep Learning Lab [DL Lab]</option>
+              <option value="23CSE005: Business Analytics [BA]">23CSE005: Business Analytics [BA]</option>
+              <option value="23CSE005: Business Analytics Lab [BA Lab]">23CSE005: Business Analytics Lab [BA Lab]</option>
+              <option value="23CBT502: Data & Information Security [DIS]">23CBT502: Data and Information Security [DIS]</option>
+              <option value="23CST504: Distributed Computing [DC]">23CST504: Distributed Computing [DC]</option>
+              <option value="23ADT502: Big Data Analytics [BDA]">23ADT502: Big Data Analytics [BDA]</option>
+              <option value="23ADT502: Big Data Analytics Lab [BDA Lab]">23ADT502: Big Data Analytics Lab [BDA Lab]</option>
+              <option value="23CSE011: Cloud Service Management [CSM]">23CSE011: Cloud Service Management [CSM]</option>
+              <option value="23CSE011: Cloud Service Management Lab [CSM Lab]">23CSE011: Cloud Service Management Lab [CSM Lab]</option>
+              <option value="Aptitude [AP]">Aptitude Training [AP]</option>
+              <option value="Web Development [WD]">Web Development [WD]</option>
+              <option value="Advanced Data Structure & Algorithm [ADS]">Advanced Data Structure & Algorithm [ADS]</option>
+              <option value="Communication Training [COMM]">Communication Training [COMM]</option>
+              <option value="Counseling & Mentoring">Counseling & Mentoring Session</option>
+              <option value="Remedial / Extra Lecture">Remedial / Extra Lecture</option>
+              <option value="CUSTOM">➕ Custom Course / Other...</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="custom-subject-name-group" style="display:none;">
+            <label class="form-label" for="custom-subject-name-input">Custom Subject Title & Code</label>
+            <input type="text" id="custom-subject-name-input" class="form-control" placeholder="e.g. 23ADT601: Natural Language Processing [NLP]">
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label class="form-label" for="custom-section-select">Class / Section</label>
+              <select id="custom-section-select" class="form-control" required>
+                <option value="III Year 'A'">III Year 'A' (AIDS)</option>
+                <option value="III Year 'B'">III Year 'B' (AIDS)</option>
+                <option value="III Year 'C'">III Year 'C' (AIDS)</option>
+                <option value="III Year 'D'">III Year 'D' (AIDS)</option>
+                <option value="II Year AIDS">II Year AIDS</option>
+                <option value="IV Year AIDS">IV Year AIDS</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="custom-room-input">Room / Laboratory Venue</label>
+              <input type="text" id="custom-room-input" class="form-control" placeholder="e.g. MB III A-201" list="classroom-options" required>
+              <datalist id="classroom-options">
+                <option value="MB III A-201">
+                <option value="MB III A-202">
+                <option value="MB III A-203">
+                <option value="MB III A-204">
+                <option value="AI Research Lab">
+                <option value="Big Data Analytics Lab">
+                <option value="Web Tech Lab">
+                <option value="Language Lab">
+                <option value="Seminar Hall 2">
+              </datalist>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-type-select">Session Format</label>
+            <select id="custom-type-select" class="form-control" required>
+              <option value="theory">Theory Lecture</option>
+              <option value="lab">Laboratory / Practical Session</option>
+              <option value="aptitude">Aptitude Training</option>
+              <option value="training">Communication / Soft Skills</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAddPeriodModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Class to Timetable</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/api.js"></script>
   <script src="js/chatbot.js"></script>

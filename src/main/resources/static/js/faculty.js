@@ -678,6 +678,7 @@ const PERIODS_DEFINITION = [
 const WEEK_DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
 
 async function loadFacultyTimetable() {
+  loadFacultyScheduleFromStorage();
   renderFacultyChips();
   const detailsSection = document.getElementById('faculty-timetable-details-section');
   const emptyState = document.getElementById('faculty-tt-empty-state');
@@ -890,21 +891,27 @@ function renderSelectedFacultyTimetable(facultyId) {
 
           html += `
             <div class="faculty-tt-cell-occupied ${cellTypeClass}" title="${slot.subject} • ${slot.section} • ${slot.room}">
+              <div class="faculty-tt-delete-slot-btn" onclick="event.stopPropagation(); deleteCustomPeriodSlot('${faculty.id}', '${day}', ${p})" title="Clear/Remove this period">
+                <i class="fa-solid fa-trash-can"></i>
+              </div>
               <div class="faculty-cell-top">
-                <span class="faculty-cell-subj">${slot.code !== '-' ? slot.code : slot.subject.split('[')[0]}</span>
+                <span class="faculty-cell-subj">${slot.code && slot.code !== '-' ? slot.code : slot.subject.split('[')[0]}</span>
                 <span class="faculty-cell-sec">${slot.section}</span>
               </div>
               <div class="faculty-cell-title">${slot.subject}</div>
               <div class="faculty-cell-bottom">
                 <span class="faculty-cell-room"><i class="fa-solid fa-location-dot"></i> ${slot.room}</span>
-                <span class="badge ${slot.type === 'lab' ? 'badge-info' : 'badge-primary'}" style="font-size:0.62rem; padding:1px 4px;">${typeLabel}</span>
+                <span class="badge ${slot.type === 'lab' ? 'badge-info' : (slot.type === 'aptitude' ? 'badge-warning' : (slot.type === 'training' ? 'badge-secondary' : 'badge-primary'))}" style="font-size:0.62rem; padding:1px 4px;">${typeLabel}</span>
               </div>
             </div>
           `;
         } else {
           html += `
-            <div class="faculty-tt-cell-free">
-              <span>—</span>
+            <div class="faculty-tt-cell-free" onclick="openAddPeriodModal('${faculty.id}', '${day}', ${p})" title="Click + to add custom class or schedule for Period ${p}">
+              <div class="faculty-tt-add-btn">
+                <i class="fa-solid fa-plus"></i>
+              </div>
+              <span class="faculty-tt-add-text">Add Class</span>
             </div>
           `;
         }
@@ -918,7 +925,7 @@ function renderSelectedFacultyTimetable(facultyId) {
   const breakdownContainer = document.getElementById('faculty-workload-breakdown');
   if (breakdownContainer) {
     const dayRows = WEEK_DAYS.map(d => {
-      const dName = d.charAt(0) + d.slice(1).toLowerCase();
+      const dName = d.charAt(0) + day.slice(1).toLowerCase();
       const slots = faculty.schedule[d] || {};
       const periodKeys = Object.keys(slots).sort((a,b) => Number(a) - Number(b));
       
@@ -943,6 +950,141 @@ function renderSelectedFacultyTimetable(facultyId) {
         <div>${dayRows}</div>
       </div>
     `;
+  }
+}
+
+// ==========================================
+// Custom Period Modal Handling & Persistence
+// ==========================================
+function openAddPeriodModal(facultyId, day, periodNum) {
+  const faculty = OFFICIAL_FACULTY_LIST.find(f => f.id === facultyId) || OFFICIAL_FACULTY_LIST[0];
+  const pDef = PERIODS_DEFINITION.find(p => p.num === periodNum) || { label: `Period ${periodNum}`, time: '' };
+
+  document.getElementById('custom-period-faculty-id').value = faculty.id;
+  document.getElementById('custom-period-day').value = day;
+  document.getElementById('custom-period-num').value = periodNum;
+
+  const dName = day.charAt(0) + day.slice(1).toLowerCase();
+  document.getElementById('custom-period-slot-badge').textContent = `${dName} • ${pDef.label}`;
+  document.getElementById('custom-period-time-label').textContent = pDef.time;
+  document.getElementById('custom-period-faculty-badge').textContent = faculty.name;
+
+  // Reset form
+  document.getElementById('custom-subject-select').value = '';
+  document.getElementById('custom-subject-name-group').style.display = 'none';
+  document.getElementById('custom-subject-name-input').value = '';
+  document.getElementById('custom-room-input').value = 'MB III A-201';
+  document.getElementById('custom-type-select').value = 'theory';
+
+  const modal = document.getElementById('add-period-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeAddPeriodModal() {
+  const modal = document.getElementById('add-period-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function handleSubjectSelectChange() {
+  const select = document.getElementById('custom-subject-select');
+  const customGroup = document.getElementById('custom-subject-name-group');
+  const typeSelect = document.getElementById('custom-type-select');
+
+  if (select.value === 'CUSTOM') {
+    customGroup.style.display = 'block';
+    document.getElementById('custom-subject-name-input').required = true;
+  } else {
+    customGroup.style.display = 'none';
+    document.getElementById('custom-subject-name-input').required = false;
+
+    // Auto-select session format
+    if (select.value.toLowerCase().includes('lab')) {
+      typeSelect.value = 'lab';
+    } else if (select.value.toLowerCase().includes('aptitude') || select.value.toLowerCase().includes('ap')) {
+      typeSelect.value = 'aptitude';
+    } else if (select.value.toLowerCase().includes('training') || select.value.toLowerCase().includes('comm')) {
+      typeSelect.value = 'training';
+    } else {
+      typeSelect.value = 'theory';
+    }
+  }
+}
+
+function handleSaveCustomPeriod(e) {
+  e.preventDefault();
+  const facultyId = document.getElementById('custom-period-faculty-id').value;
+  const day = document.getElementById('custom-period-day').value;
+  const periodNum = parseInt(document.getElementById('custom-period-num').value);
+
+  const subjectSelect = document.getElementById('custom-subject-select').value;
+  const customSubjInput = document.getElementById('custom-subject-name-input').value;
+  const section = document.getElementById('custom-section-select').value;
+  const room = document.getElementById('custom-room-input').value;
+  const type = document.getElementById('custom-type-select').value;
+
+  const subjectFullName = subjectSelect === 'CUSTOM' ? (customSubjInput || 'Custom Course') : subjectSelect;
+  let code = '-';
+  if (subjectFullName.includes(':')) {
+    code = subjectFullName.split(':')[0].trim();
+  }
+
+  const faculty = OFFICIAL_FACULTY_LIST.find(f => f.id === facultyId);
+  if (faculty) {
+    if (!faculty.schedule[day]) faculty.schedule[day] = {};
+    faculty.schedule[day][periodNum] = {
+      code: code,
+      subject: subjectFullName,
+      section: section,
+      room: room,
+      type: type,
+      customAdded: true
+    };
+    saveFacultyScheduleToStorage();
+  }
+
+  closeAddPeriodModal();
+  renderFacultyChips(document.getElementById('faculty-search-input')?.value || "");
+  renderSelectedFacultyTimetable(facultyId);
+}
+
+function deleteCustomPeriodSlot(facultyId, day, periodNum) {
+  if (!confirm(`Are you sure you want to remove the class from Period ${periodNum}?`)) {
+    return;
+  }
+  const faculty = OFFICIAL_FACULTY_LIST.find(f => f.id === facultyId);
+  if (faculty && faculty.schedule[day] && faculty.schedule[day][periodNum]) {
+    delete faculty.schedule[day][periodNum];
+    saveFacultyScheduleToStorage();
+    renderFacultyChips(document.getElementById('faculty-search-input')?.value || "");
+    renderSelectedFacultyTimetable(facultyId);
+  }
+}
+
+function saveFacultyScheduleToStorage() {
+  try {
+    const customSchedules = {};
+    OFFICIAL_FACULTY_LIST.forEach(f => {
+      customSchedules[f.id] = f.schedule;
+    });
+    localStorage.setItem('CAMPUS_AI_CUSTOM_FACULTY_SCHEDULES', JSON.stringify(customSchedules));
+  } catch (err) {
+    console.error("Storage error:", err);
+  }
+}
+
+function loadFacultyScheduleFromStorage() {
+  try {
+    const saved = localStorage.getItem('CAMPUS_AI_CUSTOM_FACULTY_SCHEDULES');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      OFFICIAL_FACULTY_LIST.forEach(f => {
+        if (parsed[f.id]) {
+          f.schedule = parsed[f.id];
+        }
+      });
+    }
+  } catch (err) {
+    console.error("Storage parse error:", err);
   }
 }
 
