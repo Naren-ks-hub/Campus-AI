@@ -158,23 +158,10 @@ CREATE TABLE IF NOT EXISTS chatbot_logs (
 -- Passwords below are plain/hashed for demo: "admin123", "faculty123", "student123"
 -- ==========================================================
 
--- Default Users
+-- Default Users (Clean Accounts)
 INSERT INTO users (id, username, password, full_name, email, role, department, roll_number, semester, academic_year, phone, avatar, status, created_at) VALUES
 (1, 'admin', 'admin123', 'Dr. Alistair Vance', 'admin@campusai.edu', 'ADMIN', 'Administration', 'ADM-001', 0, 'Faculty', '+91 98424-10001', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'ACTIVE', '2026-08-01 09:00:00'),
-(2, 'faculty_smith', 'faculty123', 'Prof. Sarah Jenkins', 's.jenkins@campusai.edu', 'FACULTY', 'Computer Science & Engineering', 'FAC-CS-101', 0, 'Faculty', '+91 98424-20001', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150', 'ACTIVE', '2026-08-05 10:30:00'),
-(3, 'faculty_rao', 'faculty123', 'Dr. Ramesh Rao', 'r.rao@campusai.edu', 'FACULTY', 'Computer Science & Engineering', 'FAC-CS-102', 0, 'Faculty', '+91 98424-20002', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150', 'ACTIVE', '2026-08-10 11:15:00'),
-(4, 'student_alex', 'student123', 'Alex Morgan', 'alex.m@campusai.edu', 'STUDENT', 'Computer Science & Engineering', 'CS2024-042', 5, '3rd Year', '+91 98424-30001', 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150', 'ACTIVE', '2026-09-01 09:15:00'),
-(5, 'student_priya', 'student123', 'Priya Sharma', 'priya.s@campusai.edu', 'STUDENT', 'Computer Science & Engineering', 'CS2024-043', 5, '3rd Year', '+91 98424-30002', 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150', 'ACTIVE', '2026-09-02 10:45:00'),
-(6, 'student_naren', 'student123', 'Naren K S', 'narenks.vsb@gmail.com', 'STUDENT', 'Artificial Intelligence & Data Science', 'AIDS-2024-019', 5, '3rd Year', '+91 94432-51201', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150', 'ACTIVE', '2026-09-05 14:20:00'),
-(7, 'student_aarav', 'student123', 'Aarav Patel', 'aarav.p@campusai.edu', 'STUDENT', 'Artificial Intelligence & Data Science', 'AIDS-2024-020', 3, '2nd Year', '+91 94432-51202', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'ACTIVE', '2026-09-08 11:30:00'),
-(8, 'student_sneha', 'student123', 'Sneha Reddy', 'sneha.r@campusai.edu', 'STUDENT', 'Information Technology', 'IT2024-088', 5, '3rd Year', '+91 97890-44101', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', 'ACTIVE', '2026-09-10 16:00:00'),
-(9, 'student_karthik', 'student123', 'Karthik Raja', 'karthik.r@campusai.edu', 'STUDENT', 'Information Technology', 'IT2024-089', 1, '1st Year', '+91 97890-44102', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', 'ACTIVE', '2026-09-12 09:30:00'),
-(10, 'student_divya', 'student123', 'Divya Sundaram', 'divya.s@campusai.edu', 'STUDENT', 'Electronics & Communication Engineering', 'ECE-2024-051', 5, '3rd Year', '+91 98401-77210', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150', 'ACTIVE', '2026-09-15 13:10:00'),
-(11, 'student_rahul', 'student123', 'Rahul Verma', 'rahul.v@campusai.edu', 'STUDENT', 'Electronics & Communication Engineering', 'ECE-2024-052', 7, '4th Year', '+91 98401-77211', 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150', 'ACTIVE', '2026-09-18 15:45:00'),
-(12, 'student_ananya', 'student123', 'Ananya Iyer', 'ananya.i@campusai.edu', 'STUDENT', 'Electrical & Electronics Engineering', 'EEE-2024-014', 3, '2nd Year', '+91 99402-33100', 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150', 'ACTIVE', '2026-09-20 10:00:00'),
-(13, 'student_vikram', 'student123', 'Vikram Seth', 'vikram.s@campusai.edu', 'STUDENT', 'Mechanical Engineering', 'MECH-2024-033', 5, '3rd Year', '+91 96001-99880', 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150', 'ACTIVE', '2026-09-22 11:20:00'),
-(14, 'student_meera', 'student123', 'Meera Krishnan', 'meera.k@campusai.edu', 'STUDENT', 'Civil Engineering', 'CIVIL-2024-027', 1, '1st Year', '+91 94441-66770', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'ACTIVE', '2026-09-25 14:00:00'),
-(15, 'student_rohan', 'student123', 'Rohan Das', 'rohan.d@campusai.edu', 'STUDENT', 'Computer Science & Engineering', 'CS2024-044', 3, '2nd Year', '+91 98424-30003', 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150', 'INACTIVE', '2026-08-20 09:00:00')
+(6, 'student_naren', 'student123', 'Naren K S', 'narenks.vsb@gmail.com', 'STUDENT', 'Artificial Intelligence & Data Science', 'AIDS-2024-019', 5, '3rd Year', '+91 94432-51201', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150', 'ACTIVE', '2026-09-05 14:20:00')
 ON DUPLICATE KEY UPDATE full_name=VALUES(full_name);
 
 -- Knowledge Base / College Information for AI Bot (VSB Engineering College Karur)
@@ -240,40 +227,40 @@ INSERT INTO timetable (department, semester, day_of_week, period_number, start_t
 ('Artificial Intelligence & Data Science', 5, 'SATURDAY', 2, '10:00:00', '10:45:00', '23ADT502', 'Big Data Analytics', 'MB III A-202', 3),
 ('Artificial Intelligence & Data Science', 5, 'SATURDAY', 3, '11:00:00', '11:45:00', '23CSE011', 'Cloud Service Management', 'MB III A-202', 3),
 ('Artificial Intelligence & Data Science', 5, 'SATURDAY', 4, '11:45:00', '12:30:00', '23CST504', 'Distributed Computing', 'MB III A-202', 2),
-('Artificial Intelligence & Data Science', 5, 'SATURDAY', 5, '13:20:00', '14:05:00', '23CSE011', 'Cloud Service Management Lab', 'Cloud Computing Lab', 3),
-('Artificial Intelligence & Data Science', 5, 'SATURDAY', 6, '14:05:00', '14:50:00', '23CSE011', 'Cloud Service Management Lab', 'Cloud Computing Lab', 3),
-('Artificial Intelligence & Data Science', 5, 'SATURDAY', 7, '15:05:00', '15:50:00', '23CSE005', 'Business Analytics', 'MB III A-202', 3),
-('Artificial Intelligence & Data Science', 5, 'SATURDAY', 8, '15:50:00', '16:30:00', '23ADT502', 'Big Data Analytics', 'MB III A-202', 3);
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 5, '13:20:00', '14:05:00', '23CSE011', 'Cloud Service Management Lab', 'Cloud Computing Lab', 1),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 6, '14:05:00', '14:50:00', '23CSE011', 'Cloud Service Management Lab', 'Cloud Computing Lab', 1),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 7, '15:05:00', '15:50:00', '23CSE005', 'Business Analytics', 'MB III A-202', 1),
+('Artificial Intelligence & Data Science', 5, 'SATURDAY', 8, '15:50:00', '16:30:00', '23ADT502', 'Big Data Analytics', 'MB III A-202', 1);
 
--- Attendance Seed Data (For Student Alex Morgan - id: 4)
+-- Attendance Seed Data (For Student Naren K S - id: 6)
 INSERT INTO attendance (student_id, subject_code, subject_name, attendance_date, status, marked_by, remarks) VALUES
-(4, '23ADT501', 'Deep Learning', '2026-09-01', 'PRESENT', 2, 'Active participation'),
-(4, '23ADT501', 'Deep Learning', '2026-09-08', 'PRESENT', 2, 'On time'),
-(4, '23ADT501', 'Deep Learning', '2026-09-15', 'PRESENT', 2, 'On time'),
-(4, '23ADT501', 'Deep Learning', '2026-09-22', 'ABSENT', 2, 'Medical leave'),
-(4, '23CSE011', 'Cloud Service Management', '2026-09-02', 'PRESENT', 3, 'Lab completed'),
-(4, '23CSE011', 'Cloud Service Management', '2026-09-09', 'PRESENT', 3, 'On time'),
-(4, '23CSE011', 'Cloud Service Management', '2026-09-16', 'PRESENT', 3, 'On time'),
-(4, '23CSE011', 'Cloud Service Management', '2026-09-23', 'PRESENT', 3, 'On time'),
-(4, '23CBT502', 'Data and Information Security', '2026-09-03', 'PRESENT', 2, 'On time'),
-(4, '23CBT502', 'Data and Information Security', '2026-09-10', 'ABSENT', 2, 'Unexcused'),
-(4, '23CBT502', 'Data and Information Security', '2026-09-17', 'PRESENT', 2, 'On time'),
-(4, '23CBT502', 'Data and Information Security', '2026-09-24', 'PRESENT', 2, 'On time'),
-(4, '23CST504', 'Distributed Computing', '2026-09-04', 'PRESENT', 3, 'On time'),
-(4, '23CST504', 'Distributed Computing', '2026-09-11', 'PRESENT', 3, 'On time'),
-(4, '23ADT502', 'Big Data Analytics', '2026-09-18', 'PRESENT', 3, 'On time'),
-(4, '23CSE005', 'Business Analytics', '2026-09-19', 'PRESENT', 2, 'Case study presentation');
+(6, '23ADT501', 'Deep Learning', '2026-09-01', 'PRESENT', 1, 'Active participation'),
+(6, '23ADT501', 'Deep Learning', '2026-09-08', 'PRESENT', 1, 'On time'),
+(6, '23ADT501', 'Deep Learning', '2026-09-15', 'PRESENT', 1, 'On time'),
+(6, '23ADT501', 'Deep Learning', '2026-09-22', 'ABSENT', 1, 'Medical leave'),
+(6, '23CSE011', 'Cloud Service Management', '2026-09-02', 'PRESENT', 1, 'Lab completed'),
+(6, '23CSE011', 'Cloud Service Management', '2026-09-09', 'PRESENT', 1, 'On time'),
+(6, '23CSE011', 'Cloud Service Management', '2026-09-16', 'PRESENT', 1, 'On time'),
+(6, '23CSE011', 'Cloud Service Management', '2026-09-23', 'PRESENT', 1, 'On time'),
+(6, '23CBT502', 'Data and Information Security', '2026-09-03', 'PRESENT', 1, 'On time'),
+(6, '23CBT502', 'Data and Information Security', '2026-09-10', 'ABSENT', 1, 'Unexcused'),
+(6, '23CBT502', 'Data and Information Security', '2026-09-17', 'PRESENT', 1, 'On time'),
+(6, '23CBT502', 'Data and Information Security', '2026-09-24', 'PRESENT', 1, 'On time'),
+(6, '23CST504', 'Distributed Computing', '2026-09-04', 'PRESENT', 1, 'On time'),
+(6, '23CST504', 'Distributed Computing', '2026-09-11', 'PRESENT', 1, 'On time'),
+(6, '23ADT502', 'Big Data Analytics', '2026-09-18', 'PRESENT', 1, 'On time'),
+(6, '23CSE005', 'Business Analytics', '2026-09-19', 'PRESENT', 1, 'Case study presentation');
 
 -- Assignments Seed Data
 INSERT INTO assignments (id, faculty_id, department, semester, subject_code, subject_name, title, description, max_marks, due_date) VALUES
-(1, 2, 'Artificial Intelligence & Data Science', 5, '23ADT501', 'Deep Learning', 'Deep Learning Convolutional & ResNet Architecture Implementation', 'Implement a ResNet-style convolutional neural network from scratch using PyTorch/TensorFlow and train on CIFAR-10 dataset.', 100, '2026-10-05 23:59:00'),
-(2, 3, 'Artificial Intelligence & Data Science', 5, '23CSE011', 'Cloud Service Management', 'Cloud Infrastructure Provisioning with Terraform & Kubernetes', 'Design and deploy a containerized microservices cluster with automated horizontal pod autoscaling on AWS/GCP.', 50, '2026-10-10 23:59:00'),
-(3, 2, 'Artificial Intelligence & Data Science', 5, '23CBT502', 'Data and Information Security', 'Elliptic Curve Cryptography & Multi-Factor Auth Protocol', 'Build a secure handshake simulation with AES-256 GCM encryption and digital signature verification.', 50, '2026-10-18 23:59:00'),
-(4, 3, 'Artificial Intelligence & Data Science', 5, '23ADT502', 'Big Data Analytics', 'Distributed Log Analytics with Apache PySpark & Hadoop HDFS', 'Process 10GB streaming clickstream logs and generate real-time metrics with Spark SQL and sliding window aggregations.', 50, '2026-10-24 23:59:00');
+(1, 1, 'Artificial Intelligence & Data Science', 5, '23ADT501', 'Deep Learning', 'Deep Learning Convolutional & ResNet Architecture Implementation', 'Implement a ResNet-style convolutional neural network from scratch using PyTorch/TensorFlow and train on CIFAR-10 dataset.', 100, '2026-10-05 23:59:00'),
+(2, 1, 'Artificial Intelligence & Data Science', 5, '23CSE011', 'Cloud Service Management', 'Cloud Infrastructure Provisioning with Terraform & Kubernetes', 'Design and deploy a containerized microservices cluster with automated horizontal pod autoscaling on AWS/GCP.', 50, '2026-10-10 23:59:00'),
+(3, 1, 'Artificial Intelligence & Data Science', 5, '23CBT502', 'Data and Information Security', 'Elliptic Curve Cryptography & Multi-Factor Auth Protocol', 'Build a secure handshake simulation with AES-256 GCM encryption and digital signature verification.', 50, '2026-10-18 23:59:00'),
+(4, 1, 'Artificial Intelligence & Data Science', 5, '23ADT502', 'Big Data Analytics', 'Distributed Log Analytics with Apache PySpark & Hadoop HDFS', 'Process 10GB streaming clickstream logs and generate real-time metrics with Spark SQL and sliding window aggregations.', 50, '2026-10-24 23:59:00');
 
 -- Assignment Submissions Seed Data
 INSERT INTO assignment_submissions (assignment_id, student_id, submission_text, status, marks_obtained, feedback, submitted_at) VALUES
-(1, 4, 'Implemented 3-layer MLP with Sigmoid & ReLU activation. Accuracy reached 96.4% on test split. GitHub repository link included.', 'GRADED', 94, 'Excellent mathematical analysis and clean code structure.', '2026-09-25 14:30:00');
+(1, 6, 'Implemented 3-layer MLP with Sigmoid & ReLU activation. Accuracy reached 96.4% on test split. GitHub repository link included.', 'GRADED', 94, 'Excellent mathematical analysis and clean code structure.', '2026-09-25 14:30:00');
 
 -- Real Events Seed Data (VSB Engineering College, Karur)
 INSERT INTO events (title, category, description, event_date, location, organizer, banner_url, registration_link) VALUES
@@ -286,10 +273,10 @@ INSERT INTO events (title, category, description, event_date, location, organize
 INSERT INTO announcements (author_id, title, content, priority, target_role, department) VALUES
 (1, 'Autonomous COE End-Semester Examinations Schedule Released', 'Controller of Examinations (COE) has released the End-Semester Examination timetable for all 3rd, 5th, and 7th semester B.E/B.Tech students. Exams commence on October 28th. Hall tickets are available on the student portal.', 'URGENT', 'STUDENT', 'ALL'),
 (1, 'Campus Placement Drive 2026: Tier-1 IT & Product Companies (Autodesk, Zoho, TCS, Infosys)', 'Career Development Center (CDC) announces registration for upcoming on-campus recruitment drives. Highest package offered this season is INR 47 Lakhs. Mandatory pre-placement training starts Monday.', 'HIGH', 'ALL', 'ALL'),
-(2, 'AICTE - IDEA Lab Hands-On Workshop on Generative AI & IoT', 'Department of CSE & AI&DS is organizing a 3-day hands-on workshop on Edge Computing and Large Language Models at the VSB AICTE IDEA Lab.', 'NORMAL', 'STUDENT', 'Computer Science & Engineering'),
+(1, 'AICTE - IDEA Lab Hands-On Workshop on Generative AI & IoT', 'Department of CSE & AI&DS is organizing a 3-day hands-on workshop on Edge Computing and Large Language Models at the VSB AICTE IDEA Lab.', 'NORMAL', 'STUDENT', 'Computer Science & Engineering'),
 (1, 'College Bus Transport & Route Timings - Karur, Trichy, Dindigul & Erode', 'Updated morning pick-up and evening drop schedules for all 50 college bus routes (covering Karur, Trichy, Dindigul, Erode, and Namakkal) have been posted.', 'NORMAL', 'ALL', 'ALL');
 
 -- Complaints / Grievances Seed Data
 INSERT INTO complaints (student_id, category, subject, description, status, admin_response) VALUES
-(4, 'Infrastructure', 'Wi-Fi connection drop in CS Lab 301', 'The high-speed Wi-Fi router in CS Lab 301 has frequent disconnects during afternoon sessions.', 'IN_PROGRESS', 'Network team has been dispatched to replace the access point router switch.'),
-(5, 'Library', 'Request for additional AI & Machine Learning text books', 'Kindly add more physical copies of Deep Learning by Ian Goodfellow in the reference section.', 'RESOLVED', '5 additional copies added to shelf B-14 in Central Library.');
+(6, 'Infrastructure', 'Wi-Fi connection drop in CS Lab 301', 'The high-speed Wi-Fi router in CS Lab 301 has frequent disconnects during afternoon sessions.', 'IN_PROGRESS', 'Network team has been dispatched to replace the access point router switch.'),
+(6, 'Library', 'Request for additional AI & Machine Learning text books', 'Kindly add more physical copies of Deep Learning by Ian Goodfellow in the reference section.', 'RESOLVED', '5 additional copies added to shelf B-14 in Central Library.');

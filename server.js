@@ -205,29 +205,17 @@ const server = http.createServer(async (req, res) => {
 
     // Default Fallback Accounts
     let fallbackUser = {
-      id: 4,
-      username: username || 'student_alex',
-      fullName: 'Alex Morgan',
-      email: 'alex.m@campusai.edu',
+      id: 6,
+      username: username || 'student_naren',
+      fullName: 'Naren K S',
+      email: 'narenks.vsb@gmail.com',
       role: role || 'STUDENT',
-      department: 'Computer Science & Engineering',
-      rollNumber: 'CS2024-042',
+      department: 'Artificial Intelligence & Data Science',
+      rollNumber: 'AIDS-2024-019',
       semester: 5,
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'
     };
-    if (role === 'FACULTY' || (username && username.includes('faculty'))) {
-      fallbackUser = {
-        id: 2,
-        username: 'faculty_smith',
-        fullName: 'Prof. Sarah Jenkins',
-        email: 's.jenkins@campusai.edu',
-        role: 'FACULTY',
-        department: 'Computer Science & Engineering',
-        rollNumber: 'FAC-CS-101',
-        semester: 0,
-        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150'
-      };
-    } else if (role === 'ADMIN' || (username && username.includes('admin'))) {
+    if (role === 'ADMIN' || (username && username.includes('admin'))) {
       fallbackUser = {
         id: 1,
         username: 'admin',

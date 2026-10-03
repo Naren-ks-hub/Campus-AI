@@ -13,17 +13,17 @@ const AuthState = {
     if (u) {
       try { return JSON.parse(u); } catch(e){}
     }
-    // Default fallback demo user (Student: Alex Morgan)
+    // Default student user
     return {
-      id: 4,
-      username: 'student_alex',
-      fullName: 'Alex Morgan',
-      email: 'alex.m@campusai.edu',
+      id: 6,
+      username: 'student_naren',
+      fullName: 'Naren K S',
+      email: 'narenks.vsb@gmail.com',
       role: 'STUDENT',
-      department: 'Computer Science & Engineering',
-      rollNumber: 'CS2024-042',
+      department: 'Artificial Intelligence & Data Science',
+      rollNumber: 'AIDS-2024-019',
       semester: 5,
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'
     };
   },
   setUser(user) {
@@ -109,29 +109,17 @@ function getLocalFallbackData(endpoint, method, data) {
   if (endpoint.startsWith('/auth/login')) {
     const { username, role } = data || {};
     let matchedUser = {
-      id: 4,
-      username: username || 'student_alex',
-      fullName: 'Alex Morgan',
-      email: 'alex.m@campusai.edu',
+      id: 6,
+      username: username || 'student_naren',
+      fullName: 'Naren K S',
+      email: 'narenks.vsb@gmail.com',
       role: role || 'STUDENT',
-      department: 'Computer Science & Engineering',
-      rollNumber: 'CS2024-042',
+      department: 'Artificial Intelligence & Data Science',
+      rollNumber: 'AIDS-2024-019',
       semester: 5,
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'
     };
-    if (role === 'FACULTY' || (username && username.includes('faculty'))) {
-      matchedUser = {
-        id: 2,
-        username: 'faculty_smith',
-        fullName: 'Prof. Sarah Jenkins',
-        email: 's.jenkins@campusai.edu',
-        role: 'FACULTY',
-        department: 'Computer Science & Engineering',
-        rollNumber: 'FAC-CS-101',
-        semester: 0,
-        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150'
-      };
-    } else if (role === 'ADMIN' || (username && username.includes('admin'))) {
+    if (role === 'ADMIN' || (username && username.includes('admin'))) {
       matchedUser = {
         id: 1,
         username: 'admin',
@@ -144,7 +132,7 @@ function getLocalFallbackData(endpoint, method, data) {
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'
       };
     }
-    return { success: true, user: matchedUser, token: 'demo-token-' + Date.now() };
+    return { success: true, user: matchedUser, token: 'clean-token-' + Date.now() };
   }
 
   if (endpoint.startsWith('/student/dashboard-stats')) {
@@ -768,30 +756,6 @@ function getStoredStudentsList() {
 
   const defaultStudents = [
     {
-      id: 4,
-      studentId: 'CS2024-042',
-      name: 'Alex Morgan',
-      email: 'alex.m@campusai.edu',
-      department: 'Computer Science & Engineering',
-      year: '3rd Year',
-      phone: '+91 98424-30001',
-      registrationDate: '2026-09-01T09:15:00',
-      status: 'Active',
-      residenceType: 'Hostel'
-    },
-    {
-      id: 5,
-      studentId: 'CS2024-043',
-      name: 'Priya Sharma',
-      email: 'priya.s@campusai.edu',
-      department: 'Computer Science & Engineering',
-      year: '3rd Year',
-      phone: '+91 98424-30002',
-      registrationDate: '2026-09-02T10:45:00',
-      status: 'Active',
-      residenceType: 'Dayscholar'
-    },
-    {
       id: 6,
       studentId: 'AIDS-2024-019',
       name: 'Naren K S',
@@ -802,114 +766,6 @@ function getStoredStudentsList() {
       registrationDate: '2026-09-05T14:20:00',
       status: 'Active',
       residenceType: 'Hostel'
-    },
-    {
-      id: 7,
-      studentId: 'AIDS-2024-020',
-      name: 'Aarav Patel',
-      email: 'aarav.p@campusai.edu',
-      department: 'Artificial Intelligence & Data Science',
-      year: '2nd Year',
-      phone: '+91 94432-51202',
-      registrationDate: '2026-09-08T11:30:00',
-      status: 'Active',
-      residenceType: 'Dayscholar'
-    },
-    {
-      id: 8,
-      studentId: 'IT2024-088',
-      name: 'Sneha Reddy',
-      email: 'sneha.r@campusai.edu',
-      department: 'Information Technology',
-      year: '3rd Year',
-      phone: '+91 97890-44101',
-      registrationDate: '2026-09-10T16:00:00',
-      status: 'Active',
-      residenceType: 'Hostel'
-    },
-    {
-      id: 9,
-      studentId: 'IT2024-089',
-      name: 'Karthik Raja',
-      email: 'karthik.r@campusai.edu',
-      department: 'Information Technology',
-      year: '1st Year',
-      phone: '+91 97890-44102',
-      registrationDate: '2026-09-12T09:30:00',
-      status: 'Active',
-      residenceType: 'Dayscholar'
-    },
-    {
-      id: 10,
-      studentId: 'ECE-2024-051',
-      name: 'Divya Sundaram',
-      email: 'divya.s@campusai.edu',
-      department: 'Electronics & Communication Engineering',
-      year: '3rd Year',
-      phone: '+91 98401-77210',
-      registrationDate: '2026-09-15T13:10:00',
-      status: 'Active',
-      residenceType: 'Hostel'
-    },
-    {
-      id: 11,
-      studentId: 'ECE-2024-052',
-      name: 'Rahul Verma',
-      email: 'rahul.v@campusai.edu',
-      department: 'Electronics & Communication Engineering',
-      year: '4th Year',
-      phone: '+91 98401-77211',
-      registrationDate: '2026-09-18T15:45:00',
-      status: 'Active',
-      residenceType: 'Dayscholar'
-    },
-    {
-      id: 12,
-      studentId: 'EEE-2024-014',
-      name: 'Ananya Iyer',
-      email: 'ananya.i@campusai.edu',
-      department: 'Electrical & Electronics Engineering',
-      year: '2nd Year',
-      phone: '+91 99402-33100',
-      registrationDate: '2026-09-20T10:00:00',
-      status: 'Active',
-      residenceType: 'Hostel'
-    },
-    {
-      id: 13,
-      studentId: 'MECH-2024-033',
-      name: 'Vikram Seth',
-      email: 'vikram.s@campusai.edu',
-      department: 'Mechanical Engineering',
-      year: '3rd Year',
-      phone: '+91 96001-99880',
-      registrationDate: '2026-09-22T11:20:00',
-      status: 'Active',
-      residenceType: 'Dayscholar'
-    },
-    {
-      id: 14,
-      studentId: 'CIVIL-2024-027',
-      name: 'Meera Krishnan',
-      email: 'meera.k@campusai.edu',
-      department: 'Civil Engineering',
-      year: '1st Year',
-      phone: '+91 94441-66770',
-      registrationDate: '2026-09-25T14:00:00',
-      status: 'Active',
-      residenceType: 'Hostel'
-    },
-    {
-      id: 15,
-      studentId: 'CS2024-044',
-      name: 'Rohan Das',
-      email: 'rohan.d@campusai.edu',
-      department: 'Computer Science & Engineering',
-      year: '2nd Year',
-      phone: '+91 98424-30003',
-      registrationDate: '2026-08-20T09:00:00',
-      status: 'Inactive',
-      residenceType: 'Dayscholar'
     }
   ];
 
