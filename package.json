@@ -1,0 +1,24 @@
+{
+  "name": "campusai",
+  "version": "1.0.0",
+  "description": "CampusAI - College Management Assistant with Cloud TiDB MySQL Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "migrate": "node migrate.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "mysql2": "^3.9.7"
+  },
+  "keywords": [
+    "campusai",
+    "tidb-cloud",
+    "mysql",
+    "college-management",
+    "ai-chatbot"
+  ],
+  "author": "CampusAI Team",
+  "license": "ISC"
+}

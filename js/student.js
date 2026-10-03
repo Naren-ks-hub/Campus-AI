@@ -234,6 +234,11 @@ window.saveUserProfile = function(event) {
   };
   AuthState.setUser(updatedUser);
 
+  // Sync with Cloud TiDB Backend
+  if (typeof apiRequest === 'function') {
+    apiRequest('/student/profile', 'PUT', updatedUser).catch(console.warn);
+  }
+
   // Instant real-time UI refresh
   applyUserProfileToUI(updatedProfile);
   closeEditProfileModal();
