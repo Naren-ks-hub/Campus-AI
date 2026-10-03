@@ -413,6 +413,55 @@ textarea.form-control {
   pointer-events: auto;
 }
 
+.modal-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-close-outside-btn {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  color: #f8fafc;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1005;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-close-outside-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: scale(1.15) rotate(90deg);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.6);
+}
+
+body.light-theme .modal-close-outside-btn {
+  background: #ffffff;
+  color: #1e293b;
+  border: 2px solid #cbd5e1;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+
+body.light-theme .modal-close-outside-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
 .modal-box {
   background: var(--bg-surface);
   border: 1px solid var(--border-glass-bright);
@@ -424,6 +473,7 @@ textarea.form-control {
   box-shadow: var(--shadow-lg);
   transform: translateY(20px);
   transition: var(--transition);
+  position: relative;
 }
 
 .modal-backdrop.active .modal-box {
@@ -431,6 +481,11 @@ textarea.form-control {
 }
 
 .modal-header {
+  position: sticky;
+  top: 0;
+  background: inherit;
+  backdrop-filter: blur(12px);
+  z-index: 10;
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-glass);
   display: flex;

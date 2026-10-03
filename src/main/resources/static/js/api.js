@@ -1056,3 +1056,73 @@ const UnreadTracker = {
   }
 };
 
+// ==========================================
+// Universal Modal Close & Outside Close Button Setup
+// ==========================================
+function initModalBehaviors() {
+  // 1. Close modal when clicking anywhere on the shaded backdrop outside the modal box
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('modal-backdrop') && e.target.classList.contains('active')) {
+      e.target.classList.remove('active');
+    }
+  });
+
+  // 2. Close modal when pressing Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
+    }
+  });
+
+  // 3. Inject outside close buttons on all modals
+  function attachOutsideButtons() {
+    document.querySelectorAll('.modal-backdrop').forEach(modal => {
+      const box = modal.querySelector('.modal-box');
+      if (!box) return;
+
+      // Prevent duplicate buttons
+      if (modal.querySelector('.modal-close-outside-btn')) return;
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'modal-close-outside-btn';
+      closeBtn.setAttribute('title', 'Close (Esc)');
+      closeBtn.setAttribute('type', 'button');
+      closeBtn.setAttribute('aria-label', 'Close Modal');
+      closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      closeBtn.onclick = (event) => {
+        event.stopPropagation();
+        modal.classList.remove('active');
+      };
+
+      // If already wrapped in modal-wrapper, attach to wrapper
+      if (box.parentElement && box.parentElement.classList.contains('modal-wrapper')) {
+        box.parentElement.appendChild(closeBtn);
+      } else {
+        // Create wrapper around box so button floats right at top-right outside corner
+        const wrapper = document.createElement('div');
+        wrapper.className = 'modal-wrapper';
+        if (box.style.maxWidth) wrapper.style.maxWidth = box.style.maxWidth;
+        box.parentNode.insertBefore(wrapper, box);
+        wrapper.appendChild(closeBtn);
+        wrapper.appendChild(box);
+      }
+    });
+  }
+
+  attachOutsideButtons();
+
+  // Watch for dynamically added modals
+  if (typeof MutationObserver !== 'undefined') {
+    const observer = new MutationObserver(() => {
+      attachOutsideButtons();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initModalBehaviors);
+} else {
+  initModalBehaviors();
+}
+
