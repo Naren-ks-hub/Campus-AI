@@ -493,6 +493,14 @@ body.light-theme .modal-close-outside-btn:hover {
   justify-content: space-between;
 }
 
+/* Remove redundant inside close button from modal headers */
+.modal-box .modal-header > .chat-btn-icon,
+.modal-box .modal-header > button.close,
+.modal-box .modal-header > button[onclick*="close"],
+.modal-box .modal-header > button[onclick*="Close"] {
+  display: none !important;
+}
+
 .modal-body {
   padding: 24px;
 }
