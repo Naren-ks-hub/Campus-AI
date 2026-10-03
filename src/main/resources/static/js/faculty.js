@@ -662,7 +662,7 @@ const OFFICIAL_FACULTY_LIST = [
   }
 ];
 
-let selectedFacultyId = "RM";
+let selectedFacultyId = null;
 
 const PERIODS_DEFINITION = [
   { num: 1, label: "Period I", time: "09.15 - 10.00" },
@@ -679,7 +679,20 @@ const WEEK_DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATU
 
 async function loadFacultyTimetable() {
   renderFacultyChips();
-  renderSelectedFacultyTimetable(selectedFacultyId);
+  const detailsSection = document.getElementById('faculty-timetable-details-section');
+  const emptyState = document.getElementById('faculty-tt-empty-state');
+  const printBtn = document.getElementById('btn-print-timetable');
+
+  if (!selectedFacultyId) {
+    if (detailsSection) detailsSection.style.display = 'none';
+    if (emptyState) emptyState.style.display = 'block';
+    if (printBtn) printBtn.style.display = 'none';
+  } else {
+    if (detailsSection) detailsSection.style.display = 'flex';
+    if (emptyState) emptyState.style.display = 'none';
+    if (printBtn) printBtn.style.display = 'inline-flex';
+    renderSelectedFacultyTimetable(selectedFacultyId);
+  }
 }
 
 function countTotalPeriods(faculty) {
@@ -752,7 +765,21 @@ function selectFaculty(facultyId) {
   selectedFacultyId = facultyId;
   const searchVal = document.getElementById('faculty-search-input')?.value || "";
   renderFacultyChips(searchVal);
+
+  const detailsSection = document.getElementById('faculty-timetable-details-section');
+  const emptyState = document.getElementById('faculty-tt-empty-state');
+  const printBtn = document.getElementById('btn-print-timetable');
+
+  if (detailsSection) detailsSection.style.display = 'flex';
+  if (emptyState) emptyState.style.display = 'none';
+  if (printBtn) printBtn.style.display = 'inline-flex';
+
   renderSelectedFacultyTimetable(facultyId);
+
+  // Smooth scroll to timetable details
+  if (detailsSection) {
+    detailsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 function renderSelectedFacultyTimetable(facultyId) {
