@@ -1716,21 +1716,9 @@ async function loadClubs() {
 
           <!-- Tagline & Description -->
           <p style="font-size: 0.88rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">${club.tagline}</p>
-          <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+          <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
             ${club.description}
           </p>
-
-          <!-- Quick Metadata info -->
-          <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass);">
-            <div><i class="fa-regular fa-clock" style="color: ${club.color}; width: 16px;"></i> ${club.timing}</div>
-            <div><i class="fa-solid fa-location-dot" style="color: var(--danger); width: 16px;"></i> ${club.venue}</div>
-            <div><i class="fa-solid fa-graduation-cap" style="color: var(--secondary); width: 16px;"></i> Lead: ${club.studentLead}</div>
-          </div>
-
-          <!-- Tags -->
-          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
-            ${club.tags.slice(0, 4).map(t => `<span style="font-size: 0.72rem; padding: 3px 8px; background: rgba(255,255,255,0.05); border-radius: 6px; color: var(--text-muted); border: 1px solid var(--border-glass);">#${t}</span>`).join('')}
-          </div>
         </div>
 
         <!-- Card Footer Actions -->
