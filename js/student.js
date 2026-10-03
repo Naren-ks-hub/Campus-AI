@@ -2531,6 +2531,20 @@ window.addEventListener('campusai_material_downloaded', () => {
   }
 });
 
+window.addEventListener('campusai:material_published', () => {
+  if (typeof loadStudentMaterials === 'function') {
+    loadStudentMaterials();
+  }
+});
+
+window.addEventListener('campusai:update', (e) => {
+  if (e.detail && e.detail.tabKey === 'materials') {
+    if (typeof loadStudentMaterials === 'function') {
+      loadStudentMaterials();
+    }
+  }
+});
+
 
 
 

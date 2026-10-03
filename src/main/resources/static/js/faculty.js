@@ -1498,18 +1498,76 @@ function setupMaterialUploadForm() {
       uploadDate: new Date().toISOString()
     };
 
-    const res = await apiRequest('/faculty/materials', 'POST', newMaterial);
-    showToast(`Study Material "${title}" for ${unit} posted successfully!`, 'success');
-    if (typeof UnreadTracker !== 'undefined') {
-      UnreadTracker.notifyNewUpdate('materials');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Material';
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing to Students...';
     }
-    removeAttachedFile();
-    closeUploadMaterialModal();
-    form.reset();
-    document.querySelectorAll('.unit-chip').forEach(c => c.classList.remove('active'));
-    if (unitInput) unitInput.value = '';
-    if (unitSummary) unitSummary.textContent = '';
-    await loadFacultyMaterials();
+
+    try {
+      // 1. Post to backend/cloud DB
+      const res = await apiRequest('/faculty/materials', 'POST', newMaterial);
+
+      // 2. Publish to student notes repository in local state for instant cross-tab sync
+      try {
+        let studentNotes = typeof getStoredStudyMaterials === 'function' ? getStoredStudyMaterials() : [];
+        if (!Array.isArray(studentNotes)) studentNotes = [];
+        studentNotes.unshift(newMaterial);
+        if (typeof saveStoredStudyMaterials === 'function') {
+          saveStoredStudyMaterials(studentNotes);
+        } else {
+          localStorage.setItem('campusai_study_materials', JSON.stringify(studentNotes));
+        }
+
+        let facultyNotes = typeof getStoredFacultyUploadedMaterials === 'function' ? getStoredFacultyUploadedMaterials() : [];
+        if (!Array.isArray(facultyNotes)) facultyNotes = [];
+        facultyNotes.unshift(newMaterial);
+        if (typeof saveStoredFacultyUploadedMaterials === 'function') {
+          saveStoredFacultyUploadedMaterials(facultyNotes);
+        } else {
+          localStorage.setItem('campusai_faculty_uploaded_materials', JSON.stringify(facultyNotes));
+        }
+      } catch (stErr) {}
+
+      // 3. Update submit button to Published state
+      if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Published! ✓';
+        submitBtn.style.background = '#10b981';
+      }
+
+      showToast(`✓ Study Material "${title}" published to student notes!`, 'success');
+
+      if (typeof UnreadTracker !== 'undefined') {
+        UnreadTracker.notifyNewUpdate('materials');
+      }
+
+      window.dispatchEvent(new CustomEvent('campusai:material_published', { detail: newMaterial }));
+
+      // 4. Clean and automatically close modal
+      setTimeout(() => {
+        removeAttachedFile();
+        closeUploadMaterialModal();
+        form.reset();
+        document.querySelectorAll('.unit-chip').forEach(c => c.classList.remove('active'));
+        if (unitInput) unitInput.value = '';
+        if (unitSummary) unitSummary.textContent = '';
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHtml;
+          submitBtn.style.background = '';
+        }
+      }, 400);
+
+      await loadFacultyMaterials();
+    } catch (err) {
+      showToast('Error publishing material. Please try again.', 'error');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+      }
+    }
   });
 }
 

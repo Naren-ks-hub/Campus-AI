@@ -476,7 +476,110 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // 9. Admin Users Management
+  // 9. Study Notes & Materials Endpoints (Faculty Upload & Student Notes Pool)
+  if (pathname.startsWith('/api/faculty/materials') || pathname.startsWith('/api/student/materials')) {
+    if (method === 'GET') {
+      if (isDbConnected && dbPool) {
+        try {
+          const [rows] = await dbPool.query(
+            'SELECT id, title, subject_code as subjectCode, subject_name as subjectName, department, faculty_name as facultyName, faculty_avatar as facultyAvatar, unit, format, description, file_name as fileName, file_size as fileSize, pages, downloads, views, content_preview as contentPreview, DATE_FORMAT(created_at, "%Y-%m-%dT%H:%i:%s") as uploadDate FROM study_materials ORDER BY created_at DESC'
+          );
+          if (rows && rows.length > 0) return sendJson(res, 200, rows);
+        } catch (err) {
+          if (err.message.includes("Table") && err.message.includes("doesn't exist")) {
+            await dbPool.query(`CREATE TABLE IF NOT EXISTS study_materials (
+              id BIGINT AUTO_INCREMENT PRIMARY KEY,
+              title VARCHAR(255) NOT NULL,
+              subject_code VARCHAR(50) NOT NULL,
+              subject_name VARCHAR(150) NOT NULL,
+              department VARCHAR(100) NOT NULL,
+              faculty_name VARCHAR(100) DEFAULT 'Prof. Sarah Jenkins',
+              faculty_avatar VARCHAR(255) DEFAULT 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
+              unit VARCHAR(100) NOT NULL,
+              format VARCHAR(50) DEFAULT 'PDF',
+              description TEXT,
+              file_name VARCHAR(255),
+              file_size VARCHAR(50) DEFAULT '2.4 MB',
+              pages INT DEFAULT 24,
+              downloads INT DEFAULT 0,
+              views INT DEFAULT 1,
+              content_preview TEXT,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );`).catch(() => {});
+          }
+        }
+      }
+    }
+
+    if (method === 'POST') {
+      const body = await parseJsonBody(req);
+      if (isDbConnected && dbPool) {
+        try {
+          await dbPool.query(`CREATE TABLE IF NOT EXISTS study_materials (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            subject_code VARCHAR(50) NOT NULL,
+            subject_name VARCHAR(150) NOT NULL,
+            department VARCHAR(100) NOT NULL,
+            faculty_name VARCHAR(100) DEFAULT 'Prof. Sarah Jenkins',
+            faculty_avatar VARCHAR(255) DEFAULT 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
+            unit VARCHAR(100) NOT NULL,
+            format VARCHAR(50) DEFAULT 'PDF',
+            description TEXT,
+            file_name VARCHAR(255),
+            file_size VARCHAR(50) DEFAULT '2.4 MB',
+            pages INT DEFAULT 24,
+            downloads INT DEFAULT 0,
+            views INT DEFAULT 1,
+            content_preview TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );`).catch(() => {});
+
+          const [insertRes] = await dbPool.query(
+            'INSERT INTO study_materials (title, subject_code, subject_name, department, faculty_name, faculty_avatar, unit, format, description, file_name, file_size, pages, downloads, views, content_preview) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+              body.title || 'New Study Material',
+              body.subjectCode || '23ADT501',
+              body.subjectName || 'Deep Learning',
+              body.department || 'Computer Science & Engineering',
+              body.facultyName || 'Prof. Sarah Jenkins',
+              body.facultyAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
+              body.unit || 'Unit 1',
+              body.format || 'PDF',
+              body.description || '',
+              body.fileName || 'notes.pdf',
+              body.fileSize || '2.4 MB',
+              body.pages || 24,
+              body.downloads || 0,
+              body.views || 1,
+              body.contentPreview || body.description || ''
+            ]
+          );
+          const createdMat = { ...body, id: insertRes.insertId, uploadDate: new Date().toISOString() };
+          return sendJson(res, 201, { success: true, material: createdMat, message: 'Published successfully to Student Portal!' });
+        } catch (err) {
+          console.error('[API Materials POST Error]:', err.message);
+        }
+      }
+      return sendJson(res, 201, { success: true, material: body, message: 'Published to Student Portal!' });
+    }
+
+    if (method === 'DELETE') {
+      const idMatch = pathname.match(/\/materials\/(\d+)/);
+      const targetId = idMatch ? parseInt(idMatch[1]) : null;
+      if (isDbConnected && dbPool && targetId) {
+        try {
+          await dbPool.query('DELETE FROM study_materials WHERE id = ?', [targetId]);
+          return sendJson(res, 200, { success: true, message: 'Study material deleted' });
+        } catch (err) {
+          console.error('[API Materials DELETE Error]:', err.message);
+        }
+      }
+      return sendJson(res, 200, { success: true, message: 'Material deleted' });
+    }
+  }
+
+  // 10. Admin Users Management
   if (pathname.startsWith('/api/admin/users')) {
     if (method === 'GET') {
       if (isDbConnected && dbPool) {
