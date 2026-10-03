@@ -133,21 +133,877 @@ async function loadFacultyAssignments() {
   `).join('');
 }
 
-async function loadFacultyTimetable() {
-  const schedule = await apiRequest('/student/timetable');
-  const container = document.getElementById('faculty-timetable-container');
-  if (!container || !schedule) return;
+// ==========================================
+// OFFICIAL INSTITUTIONAL FACULTY TIMETABLE DATA (AI & DS - Academic Year 2026-2027)
+// Extracted with 100% precision from official Class Timetables
+// ==========================================
+const OFFICIAL_FACULTY_LIST = [
+  {
+    id: "RM",
+    name: "Dr. R. Murugesan",
+    code: "RM",
+    designation: "Professor & HoD",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+    initials: "RM",
+    subjects: [
+      { code: "23ADT501", name: "Deep Learning", short: "DL", type: "theory" },
+      { code: "23ADT501", name: "Deep Learning Lab", short: "DL Lab", type: "lab" },
+      { code: "-", name: "Advanced Data Structure and Algorithm", short: "ADS", type: "theory" }
+    ],
+    mentoring: "Wednesday 12:30 PM - 01:20 PM",
+    schedule: {
+      MONDAY: {
+        2: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        5: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" },
+        6: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" },
+        7: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" },
+        8: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" }
+      },
+      TUESDAY: {
+        4: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        6: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      WEDNESDAY: {
+        2: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        3: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      THURSDAY: {
+        1: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        5: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        8: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      FRIDAY: {
+        3: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      SATURDAY: {
+        5: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" },
+        6: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" },
+        7: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" },
+        8: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" }
+      }
+    }
+  },
+  {
+    id: "MR-Ramesh",
+    name: "Mr. M. Ramesh",
+    code: "MR",
+    designation: "Assistant Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+    initials: "MR",
+    subjects: [
+      { code: "23CSE005", name: "Business Analytics", short: "BA", type: "theory" },
+      { code: "23CSE005", name: "Business Analytics Lab", short: "BA Lab", type: "lab" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {
+        1: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        4: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        7: { code: "23CSE005", subject: "Business Analytics Lab [BA Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" },
+        8: { code: "23CSE005", subject: "Business Analytics Lab [BA Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" }
+      },
+      TUESDAY: {
+        1: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      WEDNESDAY: {
+        7: { code: "23CSE005", subject: "Business Analytics Lab [BA Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" },
+        8: { code: "23CSE005", subject: "Business Analytics Lab [BA Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" }
+      },
+      THURSDAY: {
+        3: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        7: { code: "23CSE005", subject: "Business Analytics Lab [BA Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" },
+        8: { code: "23CSE005", subject: "Business Analytics Lab [BA Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" }
+      },
+      FRIDAY: {
+        1: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        5: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        7: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      SATURDAY: {
+        2: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        3: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        4: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        6: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        7: { code: "23CSE005", subject: "Business Analytics [BA]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      }
+    }
+  },
+  {
+    id: "MR-Rajendran",
+    name: "Dr. M. Rajendran",
+    code: "MR",
+    designation: "Faculty / Specialist",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+    initials: "MR",
+    subjects: [
+      { code: "-", name: "Web Development", short: "WD", type: "theory" },
+      { code: "-", name: "Communication Training", short: "COMM", type: "training" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {},
+      TUESDAY: {},
+      WEDNESDAY: {
+        1: { code: "-", subject: "Web Development [WD]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        2: { code: "-", subject: "Web Development [WD]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      THURSDAY: {},
+      FRIDAY: {
+        3: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'A'", room: "MB III A-201", type: "training" },
+        4: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'A'", room: "MB III A-201", type: "training" }
+      },
+      SATURDAY: {}
+    }
+  },
+  {
+    id: "RMN",
+    name: "Mr. R. Muthuchelvan",
+    code: "RMN",
+    designation: "Assistant Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150",
+    initials: "RMN",
+    subjects: [
+      { code: "23CSE011", name: "Cloud Service Management", short: "CSM", type: "theory" },
+      { code: "23CSE011", name: "Cloud Service Management Lab", short: "CSM Lab", type: "lab" },
+      { code: "-", name: "Advanced Data Structure and Algorithm", short: "ADS", type: "theory" },
+      { code: "-", name: "Communication Training", short: "COMM", type: "training" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {
+        2: { code: "23CSE011", subject: "Cloud Service Management [CSM]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      TUESDAY: {
+        7: { code: "23CSE011", subject: "Cloud Service Management Lab [CSM Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" },
+        8: { code: "23CSE011", subject: "Cloud Service Management Lab [CSM Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" }
+      },
+      WEDNESDAY: {
+        3: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'B'", room: "MB III A-202", type: "training" },
+        4: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'B'", room: "MB III A-202", type: "training" },
+        6: { code: "23CSE011", subject: "Cloud Service Management [CSM]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      THURSDAY: {
+        6: { code: "23CSE011", subject: "Cloud Service Management [CSM]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        8: { code: "23CSE011", subject: "Cloud Service Management [CSM]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      FRIDAY: {
+        1: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        2: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        3: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        4: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      SATURDAY: {
+        1: { code: "23CSE011", subject: "Cloud Service Management [CSM]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        2: { code: "23CSE011", subject: "Cloud Service Management [CSM]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      }
+    }
+  },
+  {
+    id: "MS",
+    name: "Mrs. M. Sivagami",
+    code: "MS",
+    designation: "Assistant Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150",
+    initials: "MS",
+    subjects: [
+      { code: "23CBT502", name: "Data and Information Security", short: "DIS", type: "theory" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {
+        3: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      TUESDAY: {
+        2: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        5: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      WEDNESDAY: {
+        1: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        7: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      THURSDAY: {},
+      FRIDAY: {
+        6: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        8: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      SATURDAY: {
+        1: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      }
+    }
+  },
+  {
+    id: "SM",
+    name: "Ms. S. Muthulakshmi",
+    code: "SM",
+    designation: "Assistant Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150",
+    initials: "SM",
+    subjects: [
+      { code: "23CST504", name: "Distributed Computing", short: "DC", type: "theory" },
+      { code: "-", name: "Advanced Data Structure and Algorithm", short: "ADS", type: "theory" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {
+        4: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      TUESDAY: {},
+      WEDNESDAY: {
+        6: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        8: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      THURSDAY: {
+        2: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        5: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        6: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      FRIDAY: {
+        2: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        4: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        7: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      SATURDAY: {
+        4: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      }
+    }
+  },
+  {
+    id: "DB",
+    name: "Mr. D. Baskar",
+    code: "DB",
+    designation: "Assistant Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150",
+    initials: "DB",
+    subjects: [
+      { code: "23ADT502", name: "Big Data Analytics", short: "BDA", type: "theory" },
+      { code: "23ADT502", name: "Big Data Analytics Lab", short: "BDA Lab", type: "lab" },
+      { code: "-", name: "Communication Training", short: "COMM", type: "training" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {},
+      TUESDAY: {},
+      WEDNESDAY: {
+        4: { code: "23ADT502", subject: "Big Data Analytics [BDA]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        5: { code: "23ADT502", subject: "Big Data Analytics Lab [BDA Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" },
+        6: { code: "23ADT502", subject: "Big Data Analytics Lab [BDA Lab]", section: "III Year 'A'", room: "MB III A-201", type: "lab" }
+      },
+      THURSDAY: {
+        4: { code: "23ADT502", subject: "Big Data Analytics [BDA]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      FRIDAY: {
+        1: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'B'", room: "MB III A-202", type: "training" },
+        2: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'B'", room: "MB III A-202", type: "training" },
+        5: { code: "23ADT502", subject: "Big Data Analytics Lab [BDA Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" },
+        6: { code: "23ADT502", subject: "Big Data Analytics Lab [BDA Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" },
+        8: { code: "23ADT502", subject: "Big Data Analytics [BDA]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      SATURDAY: {
+        2: { code: "23ADT502", subject: "Big Data Analytics [BDA]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        4: { code: "23ADT502", subject: "Big Data Analytics [BDA]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        8: { code: "23ADT502", subject: "Big Data Analytics [BDA]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      }
+    }
+  },
+  {
+    id: "DA",
+    name: "Dr. D. Anandhan",
+    code: "DA",
+    designation: "Associate Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150",
+    initials: "DA",
+    subjects: [
+      { code: "-", name: "Aptitude", short: "AP", type: "aptitude" },
+      { code: "23ADT502", name: "Big Data Analytics", short: "BDA", type: "theory" },
+      { code: "23ADT502", name: "Big Data Analytics Lab", short: "BDA Lab", type: "lab" },
+      { code: "-", name: "Communication Training", short: "COMM", type: "training" },
+      { code: "-", name: "Web Development", short: "WD", type: "theory" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {
+        3: { code: "23ADT502", subject: "Big Data Analytics [BDA]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        5: { code: "-", subject: "Aptitude [AP]", section: "III Year 'A'", room: "MB III A-201", type: "aptitude" },
+        6: { code: "-", subject: "Aptitude [AP]", section: "III Year 'A'", room: "MB III A-201", type: "aptitude" },
+        7: { code: "-", subject: "Aptitude [AP]", section: "III Year 'A'", room: "MB III A-201", type: "aptitude" },
+        8: { code: "-", subject: "Aptitude [AP]", section: "III Year 'A'", room: "MB III A-201", type: "aptitude" }
+      },
+      TUESDAY: {
+        1: { code: "23ADT502", subject: "Big Data Analytics [BDA]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        3: { code: "-", subject: "Web Development [WD]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        4: { code: "-", subject: "Web Development [WD]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      WEDNESDAY: {
+        7: { code: "23ADT502", subject: "Big Data Analytics Lab [BDA Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" },
+        8: { code: "23ADT502", subject: "Big Data Analytics Lab [BDA Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" }
+      },
+      THURSDAY: {
+        1: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'C'", room: "MB III A-203", type: "training" },
+        2: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'C'", room: "MB III A-203", type: "training" },
+        3: { code: "23ADT502", subject: "Big Data Analytics [BDA]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      FRIDAY: {},
+      SATURDAY: {
+        7: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'C'", room: "MB III A-203", type: "training" },
+        8: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'C'", room: "MB III A-203", type: "training" }
+      }
+    }
+  },
+  {
+    id: "CK",
+    name: "Mr. C. Kavin Prakash",
+    code: "CK",
+    designation: "Assistant Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150",
+    initials: "CK",
+    subjects: [
+      { code: "-", name: "Aptitude", short: "AP", type: "aptitude" },
+      { code: "23CST504", name: "Distributed Computing", short: "DC", type: "theory" },
+      { code: "-", name: "Web Development", short: "WD", type: "theory" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {
+        1: { code: "-", subject: "Aptitude [AP]", section: "III Year 'B'", room: "MB III A-202", type: "aptitude" },
+        2: { code: "-", subject: "Aptitude [AP]", section: "III Year 'B'", room: "MB III A-202", type: "aptitude" },
+        3: { code: "-", subject: "Aptitude [AP]", section: "III Year 'B'", room: "MB III A-202", type: "aptitude" },
+        4: { code: "-", subject: "Aptitude [AP]", section: "III Year 'B'", room: "MB III A-202", type: "aptitude" },
+        5: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      TUESDAY: {
+        5: { code: "-", subject: "Web Development [WD]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        6: { code: "-", subject: "Web Development [WD]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        7: { code: "-", subject: "Web Development [WD]", section: "III Year 'B'", room: "MB III A-202", type: "theory" },
+        8: { code: "-", subject: "Web Development [WD]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      WEDNESDAY: {},
+      THURSDAY: {
+        4: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        6: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      FRIDAY: {},
+      SATURDAY: {
+        5: { code: "23CST504", subject: "Distributed Computing [DC]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      }
+    }
+  },
+  {
+    id: "SG",
+    name: "Mr. S. Gobinath",
+    code: "SG",
+    designation: "Assistant Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150",
+    initials: "SG",
+    subjects: [
+      { code: "23ADT501", name: "Deep Learning", short: "DL", type: "theory" },
+      { code: "23ADT501", name: "Deep Learning Lab", short: "DL Lab", type: "lab" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {
+        6: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      TUESDAY: {
+        2: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      WEDNESDAY: {
+        5: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      THURSDAY: {},
+      FRIDAY: {
+        5: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" },
+        6: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" },
+        7: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" },
+        8: { code: "23ADT501", subject: "Deep Learning Lab [DL Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" }
+      },
+      SATURDAY: {
+        1: { code: "23ADT501", subject: "Deep Learning [DL]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      }
+    }
+  },
+  {
+    id: "RP",
+    name: "Mr. R. Palraj",
+    code: "RP",
+    designation: "Assistant Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150",
+    initials: "RP",
+    subjects: [
+      { code: "23CBT502", name: "Data and Information Security", short: "DIS", type: "theory" },
+      { code: "-", name: "Aptitude", short: "AP", type: "aptitude" },
+      { code: "-", name: "Web Development", short: "WD", type: "theory" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {
+        1: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      TUESDAY: {
+        5: { code: "-", subject: "Aptitude [AP]", section: "III Year 'C'", room: "MB III A-203", type: "aptitude" },
+        6: { code: "-", subject: "Aptitude [AP]", section: "III Year 'C'", room: "MB III A-203", type: "aptitude" },
+        7: { code: "-", subject: "Aptitude [AP]", section: "III Year 'C'", room: "MB III A-203", type: "aptitude" },
+        8: { code: "-", subject: "Aptitude [AP]", section: "III Year 'C'", room: "MB III A-203", type: "aptitude" }
+      },
+      WEDNESDAY: {
+        3: { code: "-", subject: "Web Development [WD]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        4: { code: "-", subject: "Web Development [WD]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      THURSDAY: {
+        5: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'C'", room: "MB III A-203", type: "theory" },
+        7: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      },
+      FRIDAY: {},
+      SATURDAY: {
+        3: { code: "23CBT502", subject: "Data and Information Security [DIS]", section: "III Year 'C'", room: "MB III A-203", type: "theory" }
+      }
+    }
+  },
+  {
+    id: "AB",
+    name: "Mr. A. Bharathidhasan",
+    code: "AB",
+    designation: "Assistant Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+    initials: "AB",
+    subjects: [
+      { code: "23CSE011", name: "Cloud Service Management Lab", short: "CSM Lab", type: "lab" },
+      { code: "-", name: "Communication Training", short: "COMM", type: "training" },
+      { code: "-", name: "Advanced Data Structure and Algorithm", short: "ADS", type: "theory" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {},
+      TUESDAY: {
+        3: { code: "23CSE011", subject: "Cloud Service Management Lab [CSM Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" },
+        4: { code: "23CSE011", subject: "Cloud Service Management Lab [CSM Lab]", section: "III Year 'C'", room: "MB III A-203", type: "lab" }
+      },
+      WEDNESDAY: {
+        1: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'A'", room: "MB III A-201", type: "training" },
+        2: { code: "-", subject: "Communication Training [COMM]", section: "III Year 'A'", room: "MB III A-201", type: "training" }
+      },
+      THURSDAY: {
+        7: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      FRIDAY: {},
+      SATURDAY: {
+        5: { code: "23CSE011", subject: "Cloud Service Management Lab [CSM Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" },
+        6: { code: "23CSE011", subject: "Cloud Service Management Lab [CSM Lab]", section: "III Year 'B'", room: "MB III A-202", type: "lab" }
+      }
+    }
+  },
+  {
+    id: "CV",
+    name: "Ms. C. Vishnupriya",
+    code: "CV",
+    designation: "Assistant Professor & Class Advisor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+    initials: "CV",
+    subjects: [
+      { code: "-", name: "Web Development", short: "WD", type: "theory" },
+      { code: "-", name: "Advanced Data Structure and Algorithm", short: "ADS", type: "theory" }
+    ],
+    mentoring: "Wednesday 12:30 PM - 01:20 PM",
+    schedule: {
+      MONDAY: {},
+      TUESDAY: {
+        1: { code: "-", subject: "Web Development [WD]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        2: { code: "-", subject: "Web Development [WD]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      WEDNESDAY: {},
+      THURSDAY: {
+        1: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        2: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        3: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'A'", room: "MB III A-201", type: "theory" },
+        4: { code: "-", subject: "Advanced Data Structure & Algorithm [ADS]", section: "III Year 'A'", room: "MB III A-201", type: "theory" }
+      },
+      FRIDAY: {},
+      SATURDAY: {}
+    }
+  },
+  {
+    id: "KM",
+    name: "Dr. K. Manivannan",
+    code: "KM",
+    designation: "Professor",
+    department: "Artificial Intelligence and Data Science",
+    avatar: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=150",
+    initials: "KM",
+    subjects: [
+      { code: "23CSE011", name: "Cloud Service Management", short: "CSM", type: "theory" }
+    ],
+    mentoring: null,
+    schedule: {
+      MONDAY: {},
+      TUESDAY: {
+        3: { code: "23CSE011", subject: "Cloud Service Management [CSM]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      WEDNESDAY: {
+        5: { code: "23CSE011", subject: "Cloud Service Management [CSM]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      },
+      THURSDAY: {},
+      FRIDAY: {},
+      SATURDAY: {
+        3: { code: "23CSE011", subject: "Cloud Service Management [CSM]", section: "III Year 'B'", room: "MB III A-202", type: "theory" }
+      }
+    }
+  }
+];
 
-  container.innerHTML = schedule.slice(0, 8).map(s => `
-    <div class="glass-card" style="padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <span class="badge badge-primary" style="margin-bottom:6px;">${s.dayOfWeek} • Period ${s.periodNumber}</span>
-        <h4>${s.subjectName}</h4>
-        <p style="font-size:0.8rem; color:var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${s.roomNumber} (${s.startTime} - ${s.endTime})</p>
+let selectedFacultyId = "RM";
+
+const PERIODS_DEFINITION = [
+  { num: 1, label: "Period I", time: "09.15 - 10.00" },
+  { num: 2, label: "Period II", time: "10.00 - 10.45" },
+  { num: 3, label: "Period III", time: "11.00 - 11.45" },
+  { num: 4, label: "Period IV", time: "11.45 - 12.30" },
+  { num: 5, label: "Period V", time: "01.20 - 02.05" },
+  { num: 6, label: "Period VI", time: "02.05 - 02.50" },
+  { num: 7, label: "Period VII", time: "03.05 - 03.50" },
+  { num: 8, label: "Period VIII", time: "03.50 - 04.30" }
+];
+
+const WEEK_DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+
+async function loadFacultyTimetable() {
+  renderFacultyChips();
+  renderSelectedFacultyTimetable(selectedFacultyId);
+}
+
+function countTotalPeriods(faculty) {
+  let count = 0;
+  WEEK_DAYS.forEach(d => {
+    const dayObj = faculty.schedule[d] || {};
+    count += Object.keys(dayObj).length;
+  });
+  return count;
+}
+
+function countPeriodTypes(faculty) {
+  let theory = 0, lab = 0, other = 0;
+  WEEK_DAYS.forEach(d => {
+    const dayObj = faculty.schedule[d] || {};
+    Object.values(dayObj).forEach(slot => {
+      if (slot.type === 'lab') lab++;
+      else if (slot.type === 'theory') theory++;
+      else other++;
+    });
+  });
+  return { theory, lab, other, total: theory + lab + other };
+}
+
+function renderFacultyChips(filterQuery = "") {
+  const container = document.getElementById('faculty-chip-container');
+  if (!container) return;
+
+  const q = filterQuery.trim().toLowerCase();
+  const filtered = OFFICIAL_FACULTY_LIST.filter(f => {
+    if (!q) return true;
+    return f.name.toLowerCase().includes(q) ||
+           f.code.toLowerCase().includes(q) ||
+           f.designation.toLowerCase().includes(q) ||
+           f.subjects.some(s => s.name.toLowerCase().includes(q) || s.short.toLowerCase().includes(q));
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div style="padding:16px; color:var(--text-muted); font-size:0.85rem;">No faculty matching "${filterQuery}" found.</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(f => {
+    const totalPeriods = countTotalPeriods(f);
+    const isActive = f.id === selectedFacultyId;
+    const subjPreview = f.subjects.map(s => s.short).join(', ');
+
+    return `
+      <div class="faculty-chip ${isActive ? 'active' : ''}" onclick="selectFaculty('${f.id}')" title="Click to view full Period 1-8 timetable for ${f.name}">
+        <div class="faculty-chip-avatar">${f.initials}</div>
+        <div class="faculty-chip-info">
+          <div class="faculty-chip-name">${f.name}</div>
+          <div class="faculty-chip-sub">
+            <span class="faculty-chip-badge">${f.code}</span>
+            <span style="font-size:0.7rem; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${subjPreview}</span>
+          </div>
+        </div>
+        <div class="faculty-chip-count" title="Total teaching periods/week">${totalPeriods} hrs</div>
       </div>
-      <span class="badge badge-success">AI&DS Sem 5</span>
-    </div>
-  `).join('');
+    `;
+  }).join('');
+}
+
+function filterFacultyChips() {
+  const query = document.getElementById('faculty-search-input')?.value || "";
+  renderFacultyChips(query);
+}
+
+function selectFaculty(facultyId) {
+  selectedFacultyId = facultyId;
+  const searchVal = document.getElementById('faculty-search-input')?.value || "";
+  renderFacultyChips(searchVal);
+  renderSelectedFacultyTimetable(facultyId);
+}
+
+function renderSelectedFacultyTimetable(facultyId) {
+  const faculty = OFFICIAL_FACULTY_LIST.find(f => f.id === facultyId) || OFFICIAL_FACULTY_LIST[0];
+  if (!faculty) return;
+
+  // 1. Render Active Faculty Profile Banner
+  const profileContainer = document.getElementById('faculty-active-profile-card');
+  if (profileContainer) {
+    const stats = countPeriodTypes(faculty);
+    const subjectsBadges = faculty.subjects.map(s => {
+      const typeClass = s.type === 'lab' ? 'badge-info' : (s.type === 'theory' ? 'badge-primary' : 'badge-warning');
+      return `<span class="badge ${typeClass}" style="margin-right:4px;">${s.code !== '-' ? s.code + ': ' : ''}${s.name} [${s.short}]</span>`;
+    }).join('');
+
+    profileContainer.innerHTML = `
+      <div class="faculty-active-banner">
+        <div class="faculty-banner-main">
+          <div class="faculty-banner-avatar">${faculty.initials}</div>
+          <div class="faculty-banner-text">
+            <h3>
+              ${faculty.name} 
+              <span class="badge badge-primary" style="font-size:0.75rem; vertical-align:middle;">[${faculty.code}]</span>
+            </h3>
+            <p>
+              <span><i class="fa-solid fa-graduation-cap" style="color:var(--primary-light);"></i> ${faculty.designation}</span>
+              <span>•</span>
+              <span><i class="fa-solid fa-building-columns" style="color:var(--primary-light);"></i> ${faculty.department}</span>
+            </p>
+            <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-right:4px;">Assigned Subjects:</span>
+              ${subjectsBadges}
+            </div>
+          </div>
+        </div>
+
+        <div class="faculty-banner-stats">
+          <div class="faculty-stat-pill" title="Total Weekly Periods">
+            <i class="fa-solid fa-calendar-check" style="color:#10b981;"></i>
+            <span><strong>${stats.total}</strong> Total Periods/Wk</span>
+          </div>
+          <div class="faculty-stat-pill" title="Theory Class Periods">
+            <i class="fa-solid fa-book-open" style="color:#6366f1;"></i>
+            <span><strong>${stats.theory}</strong> Theory</span>
+          </div>
+          <div class="faculty-stat-pill" title="Laboratory Practical Periods">
+            <i class="fa-solid fa-flask" style="color:#06b6d4;"></i>
+            <span><strong>${stats.lab}</strong> Practical/Lab</span>
+          </div>
+          ${stats.other > 0 ? `
+            <div class="faculty-stat-pill" title="Aptitude & Training">
+              <i class="fa-solid fa-bullseye" style="color:#f59e0b;"></i>
+              <span><strong>${stats.other}</strong> Aptitude/Training</span>
+            </div>
+          ` : ''}
+          ${faculty.mentoring ? `
+            <div class="faculty-stat-pill" style="border-color:#3b82f6; background:rgba(59,130,246,0.1);" title="Counseling & Mentoring Session">
+              <i class="fa-solid fa-user-group" style="color:#3b82f6;"></i>
+              <span>${faculty.mentoring}</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. Render Weekly Timetable Matrix (Mon - Sat x Periods 1 - 8)
+  const matrixContainer = document.getElementById('faculty-timetable-matrix');
+  if (matrixContainer) {
+    let html = `<div class="tt-header" style="background:rgba(99,102,241,0.15); border-color:rgba(99,102,241,0.3);">
+      <strong style="font-size:0.84rem;">Day / Period</strong>
+      <div class="tt-time" style="font-size:0.7rem; color:var(--text-muted);">Institutional Time</div>
+    </div>`;
+
+    PERIODS_DEFINITION.forEach(p => {
+      html += `
+        <div class="tt-header">
+          <strong>${p.label}</strong>
+          <div class="tt-time">${p.time}</div>
+        </div>
+      `;
+    });
+
+    WEEK_DAYS.forEach(day => {
+      const dayName = day.charAt(0) + day.slice(1).toLowerCase();
+      const daySchedule = faculty.schedule[day] || {};
+
+      html += `<div class="tt-day">
+        <i class="fa-regular fa-calendar" style="margin-right:6px; color:var(--primary-light);"></i>
+        ${dayName.substring(0, 3)}
+      </div>`;
+
+      for (let p = 1; p <= 8; p++) {
+        const slot = daySchedule[p];
+        if (slot) {
+          let cellTypeClass = 'cell-theory';
+          let typeLabel = 'Theory';
+          if (slot.type === 'lab') {
+            cellTypeClass = 'cell-lab';
+            typeLabel = 'Lab';
+          } else if (slot.type === 'aptitude') {
+            cellTypeClass = 'cell-aptitude';
+            typeLabel = 'Aptitude';
+          } else if (slot.type === 'training') {
+            cellTypeClass = 'cell-training';
+            typeLabel = 'Training';
+          }
+
+          html += `
+            <div class="faculty-tt-cell-occupied ${cellTypeClass}" title="${slot.subject} • ${slot.section} • ${slot.room}">
+              <div class="faculty-cell-top">
+                <span class="faculty-cell-subj">${slot.code !== '-' ? slot.code : slot.subject.split('[')[0]}</span>
+                <span class="faculty-cell-sec">${slot.section}</span>
+              </div>
+              <div class="faculty-cell-title">${slot.subject}</div>
+              <div class="faculty-cell-bottom">
+                <span class="faculty-cell-room"><i class="fa-solid fa-location-dot"></i> ${slot.room}</span>
+                <span class="badge ${slot.type === 'lab' ? 'badge-info' : 'badge-primary'}" style="font-size:0.62rem; padding:1px 4px;">${typeLabel}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="faculty-tt-cell-free">
+              <span>—</span>
+            </div>
+          `;
+        }
+      }
+    });
+
+    matrixContainer.innerHTML = html;
+  }
+
+  // 3. Render Workload Breakdown Card
+  const breakdownContainer = document.getElementById('faculty-workload-breakdown');
+  if (breakdownContainer) {
+    const dayRows = WEEK_DAYS.map(d => {
+      const dName = d.charAt(0) + d.slice(1).toLowerCase();
+      const slots = faculty.schedule[d] || {};
+      const periodKeys = Object.keys(slots).sort((a,b) => Number(a) - Number(b));
+      
+      const periodsContent = periodKeys.length > 0
+        ? periodKeys.map(k => `<span class="badge badge-primary" style="margin-right:4px;">P${k}: ${slots[k].subject.split('[')[0].trim()} (${slots[k].section})</span>`).join('')
+        : `<span style="color:var(--text-muted); font-size:0.8rem;">No classes scheduled</span>`;
+
+      return `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-glass);">
+          <strong style="width:120px; font-size:0.85rem;"><i class="fa-regular fa-calendar-check" style="color:var(--primary-light); margin-right:6px;"></i> ${dName}</strong>
+          <div style="flex:1; display:flex; flex-wrap:wrap; gap:4px;">${periodsContent}</div>
+          <span class="badge badge-success" style="font-size:0.75rem;">${periodKeys.length} Periods</span>
+        </div>
+      `;
+    }).join('');
+
+    breakdownContainer.innerHTML = `
+      <div class="glass-card" style="padding:22px; margin-top:20px;">
+        <h4 style="font-size:1rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-list-check" style="color:var(--primary-light);"></i> Daily Schedule Breakdown: ${faculty.name}
+        </h4>
+        <div>${dayRows}</div>
+      </div>
+    `;
+  }
+}
+
+function printFacultyTimetable() {
+  const faculty = OFFICIAL_FACULTY_LIST.find(f => f.id === selectedFacultyId) || OFFICIAL_FACULTY_LIST[0];
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert("Please allow popups to export the timetable.");
+    return;
+  }
+
+  let tableRows = '';
+  WEEK_DAYS.forEach(day => {
+    const dName = day.charAt(0) + day.slice(1).toLowerCase();
+    const daySchedule = faculty.schedule[day] || {};
+    let cells = `<td><strong>${dName}</strong></td>`;
+    for (let p = 1; p <= 8; p++) {
+      const s = daySchedule[p];
+      if (s) {
+        cells += `<td><strong>${s.code !== '-' ? s.code : ''} ${s.subject}</strong><br><small>${s.section} • ${s.room}</small></td>`;
+      } else {
+        cells += `<td style="color:#94a3b8; text-align:center;">—</td>`;
+      }
+    }
+    tableRows += `<tr>${cells}</tr>`;
+  });
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Faculty Timetable - ${faculty.name}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; color: #1e293b; }
+        .header { text-align: center; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 20px; }
+        .header h2 { margin: 0 0 6px 0; font-size: 18pt; }
+        .header h3 { margin: 0 0 6px 0; font-size: 13pt; color: #475569; }
+        .info-bar { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 11pt; background: #f1f5f9; padding: 10px 14px; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 9pt; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px 6px; vertical-align: top; }
+        th { background: #e2e8f0; font-weight: bold; text-align: center; }
+        .footer { margin-top: 24px; display: flex; justify-content: space-between; font-size: 10pt; color: #475569; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h2>V.S.B. ENGINEERING COLLEGE, KARUR</h2>
+        <h3>Department of Artificial Intelligence and Data Science</h3>
+        <p style="margin:4px 0; font-size:10pt;"><strong>FACULTY TIME TABLE</strong> • Academic Year 2026-2027 (ODD Semester)</p>
+      </div>
+
+      <div class="info-bar">
+        <div><strong>Faculty:</strong> ${faculty.name} [${faculty.code}] (${faculty.designation})</div>
+        <div><strong>Department:</strong> ${faculty.department}</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Day / Period</th>
+            <th>P1<br><small>09:15-10:00</small></th>
+            <th>P2<br><small>10:00-10:45</small></th>
+            <th>P3<br><small>11:00-11:45</small></th>
+            <th>P4<br><small>11:45-12:30</small></th>
+            <th>P5<br><small>01:20-02:05</small></th>
+            <th>P6<br><small>02:05-02:50</small></th>
+            <th>P7<br><small>03:05-03:50</small></th>
+            <th>P8<br><small>03:50-04:30</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+
+      <div class="footer">
+        <div><strong>Class Advisor</strong></div>
+        <div><strong>HoD / AI & DS</strong></div>
+        <div><strong>Principal</strong></div>
+      </div>
+
+      <script>
+        window.onload = function() { window.print(); }
+      </script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
 
 // ==========================================
