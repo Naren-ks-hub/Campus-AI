@@ -477,8 +477,7 @@
               <button type="button" class="format-chip" data-format="ZIP"><i class="fa-solid fa-file-zipper" style="color:#c084fc;"></i> Lab Manuals & Code</button>
               <button type="button" class="format-chip" data-format="Q-BANK"><i class="fa-solid fa-file-lines" style="color:#facc15;"></i> Question Banks</button>
               <button type="button" class="format-chip" data-format="CHEATSHEET"><i class="fa-solid fa-bolt" style="color:#34d399;"></i> Formula Sheets</button>
-            </div>
-            <input type="hidden" id="mat-format" name="format" value="PDF" required>
+                        <input type="hidden" id="mat-format" name="format" value="PDF">
           </div>
 
           <!-- Unit Multi-Choice Selector -->
@@ -496,7 +495,7 @@
               <button type="button" class="unit-chip" data-unit="All Units"><i class="fa-regular fa-square unit-check-icon"></i> <span>All Units</span></button>
               <button type="button" class="unit-chip" data-unit="Lab Manual"><i class="fa-regular fa-square unit-check-icon"></i> <span>Lab Manual</span></button>
             </div>
-            <input type="hidden" id="mat-unit" name="unit" value="" required>
+            <input type="hidden" id="mat-unit" name="unit" value="">
           </div>
 
           <div class="form-group">
@@ -545,13 +544,13 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" onclick="closeUploadMaterialModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Material</button>
+          <button type="submit" id="publish-material-submit-btn" class="btn btn-primary" onclick="window.handlePublishMaterialSubmit(event)"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Material</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Edit Study Material Modal -->
+  <!-- Edit Material Modal -->
   <div class="modal-backdrop" id="edit-material-modal">
     <div class="modal-box" style="max-width:680px;">
       <div class="modal-header">
@@ -612,7 +611,7 @@
               <button type="button" class="format-chip edit-format-chip" data-format="Q-BANK"><i class="fa-solid fa-file-lines" style="color:#facc15;"></i> Question Banks</button>
               <button type="button" class="format-chip edit-format-chip" data-format="CHEATSHEET"><i class="fa-solid fa-bolt" style="color:#34d399;"></i> Formula Sheets</button>
             </div>
-            <input type="hidden" id="edit-mat-format" name="format" value="PDF" required>
+            <input type="hidden" id="edit-mat-format" name="format" value="PDF">
           </div>
 
           <!-- Unit Multi-Choice Selector for Edit -->
@@ -630,7 +629,7 @@
               <button type="button" class="unit-chip edit-unit-chip" data-unit="All Units"><i class="fa-regular fa-square unit-check-icon"></i> <span>All Units</span></button>
               <button type="button" class="unit-chip edit-unit-chip" data-unit="Lab Manual"><i class="fa-regular fa-square unit-check-icon"></i> <span>Lab Manual</span></button>
             </div>
-            <input type="hidden" id="edit-mat-unit" name="unit" value="" required>
+            <input type="hidden" id="edit-mat-unit" name="unit" value="">
           </div>
 
           <div class="form-group">
